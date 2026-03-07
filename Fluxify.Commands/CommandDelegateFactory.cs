@@ -63,6 +63,6 @@ public static class CommandDelegateFactory
         var services = Expression.MakeMemberAccess(ctxParam, typeof(CommandContext).GetProperty(nameof(CommandContext.Services))!);
         var func = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService));
         
-        return Expression.Call(services, func!, Expression.Constant(info.ParameterType));
+        return Expression.Convert(Expression.Call(services, func!, Expression.Constant(info.ParameterType)), info.ParameterType);
     }
 }
