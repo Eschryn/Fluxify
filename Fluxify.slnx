@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="Fluxify.Bot.Hosting\Fluxify.Bot.Hosting.csproj" />
+  <Project Path="Fluxify.Bot\Fluxify.Bot.csproj" />
+  <Project Path="Fluxify.Commands.SourceGenerator\Fluxify.Commands.SourceGenerator.csproj" />
+  <Project Path="Fluxify.Commands\Fluxify.Commands.csproj" />
+  <Project Path="Fluxify.Core\Fluxify.Core.csproj" />
+  <Project Path="Fluxify.Dto\Fluxify.Dto.csproj" />
+  <Project Path="Fluxify.Gateway\Fluxify.Gateway.csproj" />
+  <Project Path="Fluxify.Rest\Fluxify.Rest.csproj" />
+  <Project Path="Silicon/Silicon.csproj" />
+</Solution>
