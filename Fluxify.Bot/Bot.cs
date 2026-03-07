@@ -11,7 +11,7 @@ public class Bot(string prefix, FluxerConfig config)
 
     public async Task RunAsync(BotTokenCredentials credentials)
     {
-        var dispatcher = Commands.BuildDispatcher(prefix);
+        var dispatcher = Commands.BuildDispatcher(prefix, config.ServiceProvider);
         Gateway.MessageCreate += dispatcher.DispatchAsync;
         await Gateway.RunAsync(credentials);
     }
