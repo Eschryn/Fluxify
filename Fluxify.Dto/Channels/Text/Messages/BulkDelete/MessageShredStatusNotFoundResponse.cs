@@ -1,0 +1,3 @@
+namespace Fluxify.Dto.Channels.Text.Messages.BulkDelete;
+
+public record MessageShredStatusNotFoundResponse(MessageShredStatusProgressResponseStatus Status);

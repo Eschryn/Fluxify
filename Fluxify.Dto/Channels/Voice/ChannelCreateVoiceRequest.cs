@@ -1,0 +1,15 @@
+using Fluxify.Core;
+
+namespace Fluxify.Dto.Channels.Voice;
+
+public record ChannelCreateVoiceRequest(
+    int? Bitrate,
+    string Name,
+    Snowflake? ParentId,
+    ChannelPermissionOverwrite[]? PermissionOverwrites,
+    int? UserLimit
+) : ChannelCreateRequest(
+    Name,
+    ChannelType.VoiceChannel,
+    ParentId,
+    PermissionOverwrites);
