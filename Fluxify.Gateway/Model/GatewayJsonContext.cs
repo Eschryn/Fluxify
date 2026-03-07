@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Fluxify.Gateway.Model.Data;
+using Fluxify.Gateway.Model.Data.Channel;
 using Fluxify.Gateway.Model.Data.Guild;
 using Fluxify.Gateway.Model.Dto;
 

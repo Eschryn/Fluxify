@@ -12,6 +12,7 @@ using Fluxify.Dto.Users.Relationships;
 using Fluxify.Dto.Users.Settings;
 using Fluxify.Gateway.Model;
 using Fluxify.Gateway.Model.Data;
+using Fluxify.Gateway.Model.Data.Channel;
 using Fluxify.Gateway.Model.Data.Guild;
 using Fluxify.Gateway.Model.Dto;
 
