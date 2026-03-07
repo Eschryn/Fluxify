@@ -1,11 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
     <ItemGroup>
       <ProjectReference Include="..\Fluxify.Commands\Fluxify.Commands.csproj" IncludeAssets="All" />
       <ProjectReference Include="..\Fluxify.Core\Fluxify.Core.csproj" IncludeAssets="All" />
