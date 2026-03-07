@@ -1,5 +1,4 @@
 using Fluxify.Core;
-using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Voice;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
@@ -20,7 +19,7 @@ public record ReadyPayload(
     string SessionId,
     UserPrivate User,
     GuildReadyData[] Guilds,
-    Channel[] PrivateChannels,
+    Fluxify.Dto.Channels.Channel[] PrivateChannels,
     Relationship[] Relationships,
     User[] Users,
     Presence[] Presences,

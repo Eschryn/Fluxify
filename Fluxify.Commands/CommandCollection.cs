@@ -18,5 +18,5 @@ public class CommandCollection : ICommandCollection
         return this;
     }
 
-    public TextCommandDispatcher BuildDispatcher(string prefix) => TextCommandDispatcher.FromCommandCollection(prefix, this);
+    public TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider? serviceProvider = null) => TextCommandDispatcher.FromCommandCollection(prefix, this, serviceProvider);
 }
