@@ -6,15 +6,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Fluxify.Core;
 
-internal class DummyProvider : IServiceProvider
-{
-    public object? GetService(Type serviceType)
-    {
-        return null;
-    }
-}
-
-
 public class FluxerConfig(ILoggerFactory? loggerFactory = null, IServiceProvider? serviceProvider = null)
 {
     private const int ApiVersion  = 1;
