@@ -1,0 +1,48 @@
+using System.Text.Json.Serialization;
+using Fluxify.Gateway.Model.Data;
+using Fluxify.Gateway.Model.Data.Guild;
+using Fluxify.Gateway.Model.Dto;
+
+namespace Fluxify.Gateway.Model;
+
+[JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
+[JsonSerializable(typeof(GatewayPayload))]
+[JsonSerializable(typeof(IdentifyPayloadData))]
+[JsonSerializable(typeof(HelloPayloadData))]
+[JsonSerializable(typeof(ReadyPayload))]
+[JsonSerializable(typeof(ResumePayloadData))]
+[JsonSerializable(typeof(GatewayUserNoteUpdate))]
+[JsonSerializable(typeof(GatewayMemeIdResponse))]
+[JsonSerializable(typeof(GatewayMessageIdResponse))]
+[JsonSerializable(typeof(GatewayAuthSessionChange))]
+[JsonSerializable(typeof(Presence))]
+[JsonSerializable(typeof(GatewayGuildCreate))]
+[JsonSerializable(typeof(GatewayGuildDelete))]
+[JsonSerializable(typeof(GatewayGuildMemberDelete))]
+[JsonSerializable(typeof(GatewayGuildRole))]
+[JsonSerializable(typeof(GatewayGuildRoleDelete))]
+[JsonSerializable(typeof(GatewayGuildRoleBulk))]
+[JsonSerializable(typeof(GatewayEmojiUpdate))]
+[JsonSerializable(typeof(GatewayStickerUpdate))]
+[JsonSerializable(typeof(GatewayBanData))]
+[JsonSerializable(typeof(GatewayBulkChannelUpdate))]
+[JsonSerializable(typeof(GatewayChannelPinsUpdate))]
+[JsonSerializable(typeof(GatewayChannelPinsAck))]
+[JsonSerializable(typeof(GatewayMessageCreate))]
+[JsonSerializable(typeof(GatewayMessageDelete))]
+[JsonSerializable(typeof(GatewayMessageDeleteBulk))]
+[JsonSerializable(typeof(GatewayReaction))]
+[JsonSerializable(typeof(GatewayReactionRemoveAll))]
+[JsonSerializable(typeof(GatewayReactionRemoveEmoji))]
+[JsonSerializable(typeof(GatewayMessageAck))]
+[JsonSerializable(typeof(GatewayTypingStart))]
+[JsonSerializable(typeof(GatewayChannelId))]
+[JsonSerializable(typeof(GatewayInviteDelete))]
+[JsonSerializable(typeof(GatewayRelationshipId))]
+[JsonSerializable(typeof(GatewayVoiceServer))]
+[JsonSerializable(typeof(VoiceStateResponse))]
+[JsonSerializable(typeof(GatewayCallSchema))]
+[JsonSerializable(typeof(GatewaySession[]))]
+[JsonSerializable(typeof(object))]
+[JsonSerializable(typeof(bool))]
+public partial class GatewayJsonContext : JsonSerializerContext;
