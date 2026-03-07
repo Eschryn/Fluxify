@@ -9,7 +9,7 @@ var bot = new Bot("!", new FluxerConfig())
 
 bot.Commands.Command("ping", () => Console.WriteLine("pong!"));
 
-bot.Start();
+await bot.RunAsync(new BotTokenCredentials("..."));
 ```
 
 ### Logging (Simple)
