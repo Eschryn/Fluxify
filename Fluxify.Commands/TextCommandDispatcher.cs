@@ -40,7 +40,7 @@ public class TextCommandDispatcher
 
             try
             {
-                if (currentTreeNode.Commands?.TryGetValue(command.ToString(), out var nextTreeNode) == true)
+                if (currentTreeNode.Commands.TryGetValue(command.ToString(), out var nextTreeNode))
                 {
                     currentTreeNode = nextTreeNode;
                 }
