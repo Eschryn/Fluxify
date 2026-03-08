@@ -40,7 +40,7 @@ public sealed partial class GatewayClient
         _credentials = null;
         _logger = logger;
         _client = new WebSocketClient<FluxerProtocol, GatewayPayload>(
-            new FluxerProtocol(fluxerConfig), 
+            new FluxerProtocol(fluxerConfig),
             config.WebSocketClientConfig
         );
         _config = config;
@@ -95,7 +95,7 @@ public sealed partial class GatewayClient
                 {
                     var payload = await _client.ReceiveAsync(cancellationToken);
 
-                    await HandlePayloadAsync(payload!, cancellationToken);
+                    await HandlePayloadAsync(payload, cancellationToken);
                 }
             }
             catch (GatewayCloseException e)
@@ -128,9 +128,9 @@ public sealed partial class GatewayClient
         }
     }
 
-    private async Task HandlePayloadAsync(GatewayPayload payload, CancellationToken cancellationToken)
+    private async Task HandlePayloadAsync(GatewayPayload? payload, CancellationToken cancellationToken)
     {
-        switch (payload.Opcode)
+        switch (payload?.Opcode)
         {
             case GatewayOpCode.Dispatch:
                 _lastSequence = payload.Sequence;
@@ -165,6 +165,10 @@ public sealed partial class GatewayClient
                 Log.ServerAcknowledgedHeartbeat(_logger);
                 AcknowledgeHeartbeatResponse();
                 break;
+            case null:
+                // this should only happen if the JSON couldn't deserialize.
+                // since we don't have any insight, we expect that FluxerProtocol has already logged the exception  
+                break;
             default:
                 Log.UnexpectedOpCode(_logger, payload.Opcode);
                 break;
@@ -174,8 +178,9 @@ public sealed partial class GatewayClient
     private async Task LoginAsync(CancellationToken cancellationToken)
     {
         using var timeoutTokenSource = new CancellationTokenSource(_config.SendTimeout);
-        using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutTokenSource.Token);
-        
+        using var linkedTokenSource =
+            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutTokenSource.Token);
+
         ConnectionState = ConnectionState.Authenticating;
 
         var payload = _sessionId switch
@@ -195,11 +200,12 @@ public sealed partial class GatewayClient
                     new PresenceUpdatePacketData(UserStatus.Online)
                 ))
         };
-        
+
         await _client.SendAsync(payload, linkedTokenSource.Token);
     }
 
-    private async Task DisconnectAsync(WebSocketCloseStatus status, string description, bool invalidateSession, CancellationToken cancellationToken = default)
+    private async Task DisconnectAsync(WebSocketCloseStatus status, string description, bool invalidateSession,
+        CancellationToken cancellationToken = default)
     {
         if (invalidateSession)
         {

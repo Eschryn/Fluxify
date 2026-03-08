@@ -1,6 +1,5 @@
 using System.IO.Pipelines;
 using System.Net.WebSockets;
-using System.Text.Json;
 
 namespace Fluxify.Gateway.WebSockets;
 
@@ -61,10 +60,6 @@ public sealed class WebSocketClient<TProtocol, TFrame>(
             await Task.WhenAll(receiveTask, parseTask);
 
             return parseTask.Result;
-        }
-        catch (JsonException)
-        {
-            return null;
         }
         finally
         {
