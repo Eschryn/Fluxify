@@ -46,7 +46,7 @@ public class TextCommandDispatcher
                 }
                 else if (currentTreeNode.DefaultCommand is { } cmd)
                 {
-                    await cmd(commandContext);
+                    await cmd(commandContext).ConfigureAwait(false);
                     break;
                 }
                 else

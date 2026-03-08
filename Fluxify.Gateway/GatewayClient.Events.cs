@@ -399,7 +399,7 @@ public sealed partial class GatewayClient
                 
                 using (_logger.BeginScope(packetType))
                 {
-                    handlerContainer.CallHandlersAsync(packetData);
+                    Task.Run(async () => await handlerContainer.CallHandlersAsync(packetData));
                 }
             }
             else
