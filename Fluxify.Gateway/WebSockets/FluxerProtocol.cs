@@ -4,12 +4,14 @@ using System.Text.Json.Serialization.Metadata;
 using Fluxify.Core;
 using Fluxify.Dto.Json;
 using Fluxify.Gateway.Model;
+using Microsoft.Extensions.Logging;
 
 namespace Fluxify.Gateway.WebSockets;
 
-public sealed class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSocketProtocol<GatewayPayload>
+public sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSocketProtocol<GatewayPayload>
 {
-    private JsonSerializerOptions SerializerOptions { get; } = new()
+    private readonly ILogger _logger = fluxerConfig.LoggerFactory.CreateLogger<FluxerProtocol>();
+    private readonly JsonSerializerOptions _serializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         TypeInfoResolver = JsonTypeInfoResolver.Combine(
@@ -22,7 +24,13 @@ public sealed class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSocketProtoc
     {
         try
         {
-            return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader, SerializerOptions, cancellationToken);
+            return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader, _serializerOptions,
+                cancellationToken);
+        }
+        catch (JsonException e)
+        {
+            Log.LogDeserializeError(_logger, e);
+            return null;
         }
         finally
         {
@@ -32,8 +40,14 @@ public sealed class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSocketProtoc
 
     public async Task SerializeAsync(PipeWriter pipeWriter, GatewayPayload frame, CancellationToken cancellationToken = default)
     {
-        await JsonSerializer.SerializeAsync(pipeWriter, frame, SerializerOptions, cancellationToken);
+        await JsonSerializer.SerializeAsync(pipeWriter, frame, _serializerOptions, cancellationToken);
         await pipeWriter.FlushAsync(cancellationToken);
         await pipeWriter.CompleteAsync();
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(0, LogLevel.Error, "Error while deserializing payload:")]
+        public static partial void LogDeserializeError(ILogger logger, Exception e);
     }
 }
