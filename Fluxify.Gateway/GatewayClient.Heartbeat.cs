@@ -37,6 +37,8 @@ public sealed partial class GatewayClient
         var heartbeatInterval = TimeSpan.FromMilliseconds(data.HeartbeatInterval);
         var initialHeartbeatJitter = Random.Shared.NextDouble();
         var firstHeartbeatOffset = heartbeatInterval * initialHeartbeatJitter;
+        
+        Log.HelloReceived(_logger, heartbeatInterval);
 
         _currentHeartbeatInterval = heartbeatInterval;
         _lastServerHeartbeatEvent = TimeProvider.System.GetTimestamp();

@@ -60,8 +60,8 @@ public sealed partial class GatewayClient
         [LoggerMessage(15, LogLevel.Trace, "Server acknowledged heartbeat.")]
         public static partial void ServerAcknowledgedHeartbeat(ILogger logger);
 
-        [LoggerMessage(16, LogLevel.Trace, "Received hello from server. {payload}")]
-        public static partial void HelloReceived(ILogger logger, object? payload);
+        [LoggerMessage(16, LogLevel.Trace, "Received hello from server. Server requested {heartbeat:c} heartbeat interval.")]
+        public static partial void HelloReceived(ILogger logger, TimeSpan heartbeat);
         
         [LoggerMessage(17, LogLevel.Warning, "Server did not respond to heartbeat.")]
         public static partial void ServerDidNotRespond(ILogger logger);

@@ -137,7 +137,6 @@ public sealed partial class GatewayClient
                 HandleDispatch(payload.Type!, payload.Data!);
                 break;
             case GatewayOpCode.Hello:
-                Log.HelloReceived(_logger, payload.Data);
                 InitializeClientHeartbeat(payload.Data!);
                 await LoginAsync(cancellationToken);
                 break;
