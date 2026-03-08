@@ -107,7 +107,7 @@ public sealed partial class GatewayClient
                     or (WebSocketCloseStatus)4012) // INVALID_API_VERSION
                 {
                     Log.GatewayConnectionClosedPermanently(_logger, e, e.CloseStatus, e.CloseStatusDescription);
-                    throw;
+                    Environment.Exit((int)e.CloseStatus);
                 }
 
                 Log.GatewayConnectionClosed(_logger, e.CloseStatus, e.CloseStatusDescription);
