@@ -1,25 +1,8 @@
 using System.Text.Json.Serialization;
-using Fluxify.Core;
 
-namespace Fluxify.Dto;
+namespace Fluxify.Dto.Common;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum ConnectionType
-{
-    Bsky,
-    Domain 
-}
-
-public record ConnectionResponse(
-    Snowflake Id,
-    string Name,
-    int SortOrder,
-    ConnectionType Type,
-    bool Verified,
-    int VisibilityFlags // TODO: What is this?
-    );
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<Locale>))]
 public enum Locale
 {
     [JsonStringEnumMemberName("ar")]
@@ -92,24 +75,4 @@ public enum Locale
     ChineseChina,
     [JsonStringEnumMemberName("zh-TW")]
     ChineseTaiwan,
-}
-
-public enum RenderSpoilers
-{
-    Always = 0,
-    OnClick = 1,
-    WhenModerator = 2
-}
-
-public enum TimeFormatTypes
-{
-    Automatic = 0,
-    H12 = 1,
-    H24 = 2
-}
-
-public enum InviteType
-{
-    Guild = 0,
-    GroupDm = 1
 }

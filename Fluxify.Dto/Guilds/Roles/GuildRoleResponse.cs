@@ -11,7 +11,7 @@ namespace Fluxify.Dto.Guilds.Roles;
 public record GuildRoleResponse(
     int Color,
     bool Hoist,
-    long HoistPosition,
+    long? HoistPosition,
     Snowflake Id,
     bool Mentionable,
     string Name,
