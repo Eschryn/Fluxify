@@ -2,6 +2,8 @@
 .NET library for building applications that interact with fluxer
 
 ## Getting Started
+See `Example.cs` for a simple starting point
+
 ### Building a Bot
 Start with the `Fluxify.Bot` package.
 ```csharp
