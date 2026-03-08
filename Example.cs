@@ -1,3 +1,4 @@
+#!/usr/bin/env dotnet
 #:project ./Fluxify.Bot/Fluxify.Bot.csproj
 #:package Microsoft.Extensions.Logging.Console@10.0.3
 
