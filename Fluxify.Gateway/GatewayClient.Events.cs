@@ -396,10 +396,6 @@ public sealed partial class GatewayClient
             if (_eventHandlers.TryGetValue(packetType, out var handlerContainer))
             {
                 Log.EventReceived(_logger, packetType);
-                if (packetType == GatewayEvent.Ready)
-                {
-                    
-                }
                 
                 using (_logger.BeginScope(packetType))
                 {
