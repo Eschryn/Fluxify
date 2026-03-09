@@ -9,6 +9,5 @@ public record ChannelCreateLinkRequest(
     string? Url
 ) : ChannelCreateRequest(
     Name,
-    ChannelType.LinkChannel,
     ParentId,
     PermissionOverwrites);

@@ -65,10 +65,10 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.GuildBanAdd, Data<GatewayBanData>() }, // untested
             { GatewayEvent.GuildBanRemove, Data<GatewayBanData>() }, // untested
 
-            { GatewayEvent.ChannelCreate, Data<Channel>() }, // untested
-            { GatewayEvent.ChannelUpdate, Data<Channel>() }, // untested
+            { GatewayEvent.ChannelCreate, Data<ChannelResponse>() }, // untested
+            { GatewayEvent.ChannelUpdate, Data<ChannelResponse>() }, // untested
             { GatewayEvent.ChannelUpdateBulk, Data<GatewayBulkChannelUpdate>() }, // untested
-            { GatewayEvent.ChannelDelete, Data<Channel>() }, // untested
+            { GatewayEvent.ChannelDelete, Data<ChannelResponse>() }, // untested
             { GatewayEvent.ChannelPinsUpdate, Data<GatewayChannelPinsUpdate>() }, // untested
             { GatewayEvent.ChannelPinsAck, Data<GatewayChannelPinsAck>() }, // untested
             { GatewayEvent.ChannelRecipientAdd, Data<GatewayGroupChange>() }, // untested

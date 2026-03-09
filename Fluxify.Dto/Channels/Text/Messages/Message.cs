@@ -7,7 +7,7 @@ namespace Fluxify.Dto.Channels.Text.Messages;
 
 public record Message(
     MessageAttachmentResponse[]? Attachments,
-    User Author,
+    UserResponse Author,
     MessageCallResponse? Call,
     Snowflake ChannelId,
     string Content,
@@ -17,7 +17,7 @@ public record Message(
     Snowflake Id,
     bool MentionEveryone,
     Snowflake[] MentionRoles,
-    User[]? Mentions,
+    UserResponse[]? Mentions,
     MessageReferenceResponse? MessageReference,
     MessageSnapshotResponse[]? MessageSnapshots,
     string? Nonce,

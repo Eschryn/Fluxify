@@ -5,6 +5,5 @@ public record ChannelCreateCategoryRequest(
     ChannelPermissionOverwrite[]? PermissionOverwrites
 ) : ChannelCreateRequest(
     Name,
-    ChannelType.Category,
     null,
     PermissionOverwrites);

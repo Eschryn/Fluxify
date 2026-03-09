@@ -10,6 +10,5 @@ public record ChannelCreateVoiceRequest(
     int? UserLimit
 ) : ChannelCreateRequest(
     Name,
-    ChannelType.VoiceChannel,
     ParentId,
     PermissionOverwrites);

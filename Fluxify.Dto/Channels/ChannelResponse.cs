@@ -4,7 +4,7 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels;
 
-public record Channel(
+public record ChannelResponse(
     int? Bitrate,
     Snowflake? GuildId,
     [property: JsonPropertyName("icon")] string? IconHash,
@@ -19,10 +19,10 @@ public record Channel(
     ChannelPermissionOverwrite[] Overwrites,
     int? Position,
     int? RateLimitPerUser,
-    User[]? Recipients,
+    UserResponse[]? Recipients,
     Snowflake? RtcRegion,
     string? Topic,
-    int Type,
+    ChannelType Type,
     string? Url,
     int? UserLimit
 );

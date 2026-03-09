@@ -10,6 +10,5 @@ public record ChannelCreateTextRequest(
     string? Topic
 ) : ChannelCreateRequest(
     Name,
-    ChannelType.TextChannel,
     ParentId,
     PermissionOverwrites);

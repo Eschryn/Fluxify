@@ -1,17 +1,13 @@
 using Fluxify.Core;
+using Fluxify.Dto.Channels.LinkChannel;
 
 namespace Fluxify.Dto.Channels.Text;
 
 public record ChannelUpdateTextRequest(
-    string? Icon,
-    string? Name,
-    Dictionary<string, string?> Nicks,
-    bool? Nsfw,
-    Snowflake? OwnerId,
-    Snowflake? ParentId,
-    ChannelPermissionOverwrite[] PermissionOverwrites,
-    int? RateLimitPerUser,
-    string? Topic,
-    string? Url,
-    ChannelType Type = ChannelType.TextChannel
-);
+    string? Name = null,
+    bool? Nsfw = null,
+    Snowflake? ParentId = null,
+    ChannelPermissionOverwrite[]? PermissionOverwrites = null,
+    int? RateLimitPerUser = null,
+    string? Topic = null
+) : ChannelUpdateRequest;
