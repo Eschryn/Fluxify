@@ -36,7 +36,7 @@ public sealed partial class GatewayClient
         [LoggerMessage(3, LogLevel.Information, "Connected to gateway!")]
         public static partial void Connected(ILogger logger);
 
-        [LoggerMessage(1, LogLevel.Debug, "Caught exception from user code:")]
+        [LoggerMessage(1, LogLevel.Error, "Caught exception from user code:")]
         public static partial void UserCodeException(ILogger logger, Exception exception);
         
         [LoggerMessage(18, LogLevel.Error, "Exception in core gateway payload processing code:")]

@@ -391,29 +391,19 @@ public sealed partial class GatewayClient
 
     private void HandleDispatch(string packetType, object packetData)
     {
-        try
+        if (_eventHandlers.TryGetValue(packetType, out var handlerContainer))
         {
-            if (_eventHandlers.TryGetValue(packetType, out var handlerContainer))
+            Log.EventReceived(_logger, packetType);
+
+            Task.Run(async () =>
             {
-                Log.EventReceived(_logger, packetType);
-                
-                using (_logger.BeginScope(packetType))
-                {
-                    Task.Run(async () => await handlerContainer.CallHandlersAsync(packetData));
-                }
-            }
-            else
-            {
-                Log.UnhandledEvent(_logger, packetType);
-            }
+                using var _ = _logger.BeginScope(packetType);
+                await handlerContainer.CallHandlersAsync(packetData);
+            }).ContinueWith(t => Log.UserCodeException(_logger, t.Exception!), TaskContinuationOptions.OnlyOnFaulted);
         }
-        catch (DispatchException e)
+        else
         {
-            Log.DispatchException(_logger, e);
-        }
-        catch (Exception e)
-        {
-            Log.UserCodeException(_logger, e);
+            Log.UnhandledEvent(_logger, packetType);
         }
     }
 }
