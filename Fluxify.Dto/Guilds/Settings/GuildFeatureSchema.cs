@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Guilds.Settings;
 
-[JsonConverter(typeof(JsonStringEnumConverter<GuildFeatureSchema>))]
+[JsonConverter(typeof(JsonUpperCaseStringEnumConverter<GuildFeatureSchema>))]
 public enum GuildFeatureSchema
 {
     AnimatedIcon,

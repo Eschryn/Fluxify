@@ -8,7 +8,7 @@ namespace Fluxify.Gateway.Model.Dto;
 
 public record GatewayMessageCreate(
     MessageAttachmentResponse[]? Attachments,
-    User Author,
+    UserResponse Author,
     MessageCallResponse? Call,
     Snowflake ChannelId,
     string Content,
@@ -18,7 +18,7 @@ public record GatewayMessageCreate(
     Snowflake Id,
     bool MentionEveryone,
     Snowflake[] MentionRoles,
-    User[]? Mentions,
+    UserResponse[]? Mentions,
     MessageReferenceResponse? MessageReference,
     MessageSnapshotResponse[]? MessageSnapshots,
     string? Nonce,

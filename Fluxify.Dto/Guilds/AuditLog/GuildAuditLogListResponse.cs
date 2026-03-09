@@ -4,6 +4,6 @@ namespace Fluxify.Dto.Guilds.AuditLog;
 
 public record GuildAuditLogListResponse(
     GuildAuditLogEntryResponse[] Entries,
-    User[] User,
+    UserResponse[] User,
     AuditLogWebhookResponse[] Webhooks
 );

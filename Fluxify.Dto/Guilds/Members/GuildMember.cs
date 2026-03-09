@@ -14,5 +14,5 @@ public record GuildMember(
     string? Nick,
     GuildMemberProfileFlags ProfileFlags,
     Snowflake[] Roles,
-    User User
+    UserResponse User
 );

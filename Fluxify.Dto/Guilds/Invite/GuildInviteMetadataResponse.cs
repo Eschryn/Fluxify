@@ -10,7 +10,7 @@ public record GuildInviteMetadataResponse(
     DateTimeOffset CreatedAt,
     DateTimeOffset? ExpiresAt,
     GuildInviteMetadataResponseGuild Guild,
-    User Inviter,
+    UserResponse Inviter,
     int MaxAge,
     int MaxUses,
     int MemberCount,

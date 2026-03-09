@@ -8,4 +8,4 @@ public record GuildBanResponse(
     DateTimeOffset ExpiresAt,
     Snowflake ModeratorId,
     string? Reason,
-    User User);
+    UserResponse User);

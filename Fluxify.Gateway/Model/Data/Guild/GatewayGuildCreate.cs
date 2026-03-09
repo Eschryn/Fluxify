@@ -4,7 +4,7 @@ using Fluxify.Dto.Guilds.Members;
 namespace Fluxify.Gateway.Model.Dto;
 
 public record GatewayGuildCreate(
-    Channel[] Channels,
+    ChannelResponse[] Channels,
     GuildMember[] Members,
     Presence[] Presences,
     VoiceStateResponse[] VoiceStates,

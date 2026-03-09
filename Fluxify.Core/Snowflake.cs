@@ -62,7 +62,7 @@ public readonly struct Snowflake(ulong value) : IConvertible,
     public static bool operator !=(Snowflake left, Snowflake right) => !(left == right);
     public static bool operator >(Snowflake left, Snowflake right) => !(left == right);
     public static bool operator <(Snowflake left, Snowflake right) => !(left == right);
-    public static explicit operator Snowflake(ulong u64) => new(u64);
+    public static implicit operator Snowflake(ulong u64) => new(u64);
     public static explicit operator ulong(Snowflake s) => s._value;
     public static Snowflake Parse(string s, IFormatProvider? provider) => new(ulong.Parse(s, provider));
 
