@@ -16,6 +16,7 @@ public sealed partial class GatewayClient
     private int? _lastSequence;
     private string? _sessionId;
     private BotTokenCredentials? _credentials;
+    private CancellationTokenSource? _connectionTokenSource;
 
     public ConnectionState ConnectionState
     {
@@ -59,12 +60,12 @@ public sealed partial class GatewayClient
         };
         ConnectionStateChanged += state =>
         {
+            Log.ConnectionStateChanged(_logger, state);
+            
             if (ConnectionState is ConnectionState.Disconnected or ConnectionState.Reconnecting)
             {
-                StopHeartbeat();
+                _connectionTokenSource?.Cancel();
             }
-
-            Log.ConnectionStateChanged(_logger, state);
         };
     }
 
@@ -88,14 +89,19 @@ public sealed partial class GatewayClient
         {
             try
             {
+                using var connectionTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                var connectionCancellationToken = connectionTokenSource.Token;
+                _connectionTokenSource = connectionTokenSource;
+
                 // TODO: receive gateway uri from api
-                await _client.ConnectAsync(new Uri("wss://gateway.fluxer.app/?v=1&encoding=json"), cancellationToken);
+                await _client.ConnectAsync(new Uri("wss://gateway.fluxer.app/?v=1&encoding=json"),
+                    connectionCancellationToken);
 
                 while (ConnectionState != ConnectionState.Disconnected)
                 {
-                    var payload = await _client.ReceiveAsync(cancellationToken);
+                    var payload = await _client.ReceiveAsync(connectionCancellationToken);
 
-                    await HandlePayloadAsync(payload, cancellationToken);
+                    await HandlePayloadAsync(payload, connectionCancellationToken);
                 }
             }
             catch (GatewayCloseException e)
@@ -116,9 +122,14 @@ public sealed partial class GatewayClient
             {
                 Log.WebSocketException(_logger, e);
             }
-            catch (Exception e) // other exception happened during gateway payload processing - its probably not recoverable
-            { 
+            catch (Exception e)
+            {
+                // other exception happened during gateway payload processing - its probably not recoverable
                 Log.GatewayPayloadException(_logger, e);
+            }
+            finally
+            {
+                _connectionTokenSource = null;   
             }
 
             StopHeartbeat();
@@ -176,10 +187,6 @@ public sealed partial class GatewayClient
 
     private async Task LoginAsync(CancellationToken cancellationToken)
     {
-        using var timeoutTokenSource = new CancellationTokenSource(_config.SendTimeout);
-        using var linkedTokenSource =
-            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutTokenSource.Token);
-
         ConnectionState = ConnectionState.Authenticating;
 
         var payload = _sessionId switch
@@ -200,7 +207,7 @@ public sealed partial class GatewayClient
                 ))
         };
 
-        await _client.SendAsync(payload, linkedTokenSource.Token);
+        await _client.SendAsync(payload, cancellationToken);
     }
 
     private async Task DisconnectAsync(WebSocketCloseStatus status, string description, bool invalidateSession,

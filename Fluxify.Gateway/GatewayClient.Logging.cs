@@ -65,5 +65,8 @@ public sealed partial class GatewayClient
         
         [LoggerMessage(17, LogLevel.Warning, "Server did not respond to heartbeat.")]
         public static partial void ServerDidNotRespond(ILogger logger);
+        
+        [LoggerMessage(19, LogLevel.Warning, "The connection was cancelled. This was probably due to a disconnect")]
+        public static partial void ConnectionCancelled(ILogger logger);
     }
 }
