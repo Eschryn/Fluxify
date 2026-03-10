@@ -22,9 +22,21 @@ public sealed class WebSocketClient<TProtocol, TFrame>(
 
     private WebSocketClientConfig Config { get; } = config;
 
-    public async Task ConnectAsync(Uri uri, CancellationToken cancellationToken) => await _clientWebSocket.ConnectAsync(uri, cancellationToken);
+    public async Task ConnectAsync(Uri uri, CancellationToken cancellationToken) =>
+        await _clientWebSocket.ConnectAsync(uri, cancellationToken);
 
-    public async Task DisconnectAsync(WebSocketCloseStatus status, string description, CancellationToken cancellationToken) => await _clientWebSocket.CloseAsync(status, description, cancellationToken);
+    public async Task DisconnectAsync(WebSocketCloseStatus status, string description,
+        CancellationToken cancellationToken)
+    {
+        if (_clientWebSocket.State is not (WebSocketState.Aborted or WebSocketState.Closed))
+        {
+            await _clientWebSocket.CloseAsync(status, description, cancellationToken);
+        }
+        else
+        {
+            _clientWebSocket.Dispose();
+        }
+    }
 
     public void ResetSocket()
     {

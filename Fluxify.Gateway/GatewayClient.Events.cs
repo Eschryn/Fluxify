@@ -395,6 +395,9 @@ public sealed partial class GatewayClient
         {
             Log.EventReceived(_logger, packetType);
 
+            // I don't think we need to cancel event handlers??
+            // they don't really depend on the connection state of the gateway.
+            // and if we add gateway send functions that need it to be connected, we probably should queue them up anyway
             Task.Run(async () =>
             {
                 using var _ = _logger.BeginScope(packetType);
