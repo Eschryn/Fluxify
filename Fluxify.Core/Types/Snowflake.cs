@@ -89,13 +89,5 @@ public readonly struct Snowflake(ulong value) : IConvertible,
         return false;
     }
 
-    private static readonly int ProcessId = Environment.ProcessId;
-    private static short ProcessCounter = 0;
-    public static Snowflake Create(byte workerId = 0)
-    {
-        var timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - 1420070400000;
-        var increment = (ulong)ProcessCounter++;
-        
-        return new Snowflake((timestamp << 22) | ((ulong)workerId << 17) | ((ulong)(ProcessId & 0x1F) << 12) | increment);
-    }
+    public static Snowflake Create() => SnowflakeGenerator.Default.Create();
 }
