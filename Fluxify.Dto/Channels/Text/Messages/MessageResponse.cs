@@ -5,7 +5,7 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
 
-public record Message(
+public record MessageResponse(
     MessageAttachmentResponse[]? Attachments,
     UserResponse Author,
     MessageCallResponse? Call,

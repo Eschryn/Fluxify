@@ -31,6 +31,6 @@ public record GatewayMessageCreate(
     MessageType Type,
     Snowflake? WebhookId,
     int ChannelType
-) : Message(Attachments, Author, Call, ChannelId, Content, EditedTimestamp, Embeds, Flags, Id, MentionEveryone,
+) : MessageResponse(Attachments, Author, Call, ChannelId, Content, EditedTimestamp, Embeds, Flags, Id, MentionEveryone,
     MentionRoles, Mentions, MessageReference, MessageSnapshots, Nonce, Pinned, Reactions, ReferredMessage, Stickers,
     Timestamp, Tts, Type, WebhookId);

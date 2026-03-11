@@ -36,7 +36,7 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.UserGuildSettingsUpdate, Data<UserGuildSettings>() }, // untested
             { GatewayEvent.UserNoteUpdate, Data<GatewayUserNoteUpdate>() }, // untested
             { GatewayEvent.RecentMentionDelete, Data<GatewayMessageIdResponse>() }, // untested
-            { GatewayEvent.SavedMessageCreate, Data<Message>() }, // untested
+            { GatewayEvent.SavedMessageCreate, Data<MessageResponse>() }, // untested
             { GatewayEvent.SavedMessageDelete, Data<GatewayMessageIdResponse>() }, // untested
 
             { GatewayEvent.FavoriteMemeCreate, Data<FavoriteMemeResponse>() }, // untested
@@ -75,7 +75,7 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.ChannelRecipientRemove, Data<GatewayGroupChange>() }, // untested
 
             { GatewayEvent.MessageCreate, Data<GatewayMessageCreate>() },
-            { GatewayEvent.MessageUpdate, Data<Message>() },
+            { GatewayEvent.MessageUpdate, Data<MessageResponse>() },
             { GatewayEvent.MessageDelete, Data<GatewayMessageDelete>() }, // untested
             { GatewayEvent.MessageDeleteBulk, Data<GatewayMessageDeleteBulk>() }, // untested
             { GatewayEvent.MessageReactionAdd, Data<GatewayReaction>() }, // untested
