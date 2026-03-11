@@ -22,7 +22,7 @@ public class Bot
 
     public async Task RunAsync()
     {
-        var dispatcher = Commands.BuildDispatcher(prefix, config.ServiceProvider);
+        var dispatcher = Commands.BuildDispatcher(_prefix, _config.ServiceProvider);
         Gateway.MessageCreate += dispatcher.DispatchAsync;
         await Gateway.RunAsync(_config.Credentials);
     }
