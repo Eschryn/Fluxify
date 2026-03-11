@@ -5,15 +5,25 @@ using Fluxify.Gateway;
 
 namespace Fluxify.Bot;
 
-public class Bot(string prefix, FluxerConfig config)
+public class Bot
 {
-    public CommandCollection Commands { get; } = new();
-    public GatewayClient Gateway { get; } = new(config);
+    private readonly string _prefix;
+    private readonly FluxerConfig _config;
 
-    public async Task RunAsync(BotTokenCredentials credentials)
+    public Bot(string prefix, FluxerConfig config)
+    {
+        _prefix = prefix;
+        _config = config;
+        Gateway = new GatewayClient(config);
+    }
+
+    public CommandCollection Commands { get; } = new();
+    public GatewayClient Gateway { get; }
+
+    public async Task RunAsync()
     {
         var dispatcher = Commands.BuildDispatcher(prefix, config.ServiceProvider);
         Gateway.MessageCreate += dispatcher.DispatchAsync;
-        await Gateway.RunAsync(credentials);
+        await Gateway.RunAsync(_config.Credentials);
     }
 }
