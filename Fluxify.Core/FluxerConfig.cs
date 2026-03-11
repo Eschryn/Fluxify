@@ -6,14 +6,42 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Fluxify.Core;
 
-public class FluxerConfig(ILoggerFactory? loggerFactory = null, IServiceProvider? serviceProvider = null)
+public class FluxerConfig
 {
+    public FluxerConfig(ILoggerFactory? loggerFactory = null, IServiceProvider? serviceProvider = null)
+    {
+        LoggerFactory = loggerFactory ?? serviceProvider?.GetService<ILoggerFactory>() ?? new NullLoggerFactory();
+        ServiceProvider = serviceProvider ?? new BasicProvider(this);
+    }
+
     private const int ApiVersion  = 1;
     private const int GatewayVersion = 1;
     private static readonly CompositeFormat VersionPathFormat = CompositeFormat.Parse("v{0}/");
     public Uri InstanceUri { get; init; } = new("https://api.fluxer.app/");
-    public ILoggerFactory LoggerFactory { get; init; } = loggerFactory ?? serviceProvider?.GetService<ILoggerFactory>() ?? new NullLoggerFactory();
-    public IServiceProvider ServiceProvider { get; init; } = serviceProvider ?? new DummyProvider();
+    public ILoggerFactory LoggerFactory { get; init; }
+    public IServiceProvider ServiceProvider { get; set; }
+    public Func<FluxerConfig, HttpClient>? HttpClientFactory { get; set; } = DefaultHttpClientFactory;
+
+    private static HttpClient DefaultHttpClientFactory(FluxerConfig cfg)
+    {
+        var socketsHttpHandler = new SocketsHttpHandler()
+        {
+            UseCookies = false,
+            AllowAutoRedirect = false,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(15)
+        };
+
+        return new HttpClient(socketsHttpHandler)
+        {
+            BaseAddress = cfg.GetApiBaseUri(),
+            DefaultRequestHeaders =
+            {
+                { "Token", $"Bearer {cfg.Credentials.Token}" }
+            }
+        };
+    }
+
+    public BotTokenCredentials Credentials { get; set; }
 
     public Uri GetApiBaseUri() => 
         new(InstanceUri, string.Format(CultureInfo.InvariantCulture, VersionPathFormat, ApiVersion));
