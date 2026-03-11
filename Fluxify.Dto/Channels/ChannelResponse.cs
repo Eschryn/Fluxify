@@ -16,7 +16,7 @@ public record ChannelResponse(
     bool? Nsfw,
     Snowflake? OwnerId,
     Snowflake? ParentId,
-    ChannelPermissionOverwrite[] Overwrites,
+    ChannelPermissionOverwrite[]? Overwrites,
     int? Position,
     int? RateLimitPerUser,
     UserResponse[]? Recipients,
