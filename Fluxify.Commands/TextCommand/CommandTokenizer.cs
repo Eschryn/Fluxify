@@ -1,8 +1,7 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace Fluxify.Commands;
+namespace Fluxify.Commands.TextCommand;
 
 public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
 {
@@ -85,7 +84,10 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ReadOnlyMemory<char> NextNoSpace(out Range range) => Next(Delimiters, out range);
+    public ReadOnlyMemory<char> NextNoSpace(out Range range)
+    {
+        return Next(Delimiters, out range);
+    }
 
     private ReadOnlyMemory<char> Next(SearchValues<char> delimiters, out Range range)
     {

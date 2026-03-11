@@ -1,4 +1,4 @@
-﻿namespace Fluxify.Commands;
+﻿namespace Fluxify.Commands.Model;
 
 public record ModuleMeta(
     string Name,

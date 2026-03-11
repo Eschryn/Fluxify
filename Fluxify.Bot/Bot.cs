@@ -1,4 +1,5 @@
 ﻿using Fluxify.Commands;
+using Fluxify.Commands.CommandCollection;
 using Fluxify.Core;
 using Fluxify.Gateway;
 
