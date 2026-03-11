@@ -1,8 +1,10 @@
-using Fluxify.Core;
+using Fluxify.Commands.CommandCollection;
+using Fluxify.Commands.Exceptions;
+using Fluxify.Commands.Model;
 using Fluxify.Dto.Channels.Text.Messages;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Fluxify.Commands;
+namespace Fluxify.Commands.TextCommand;
 
 public class TextCommandDispatcher
 {
@@ -11,7 +13,7 @@ public class TextCommandDispatcher
     private readonly CommandTreeNode _rootTreeNode;
     private readonly List<RegistrationEntry> _registrationEntries;
 
-    private TextCommandDispatcher(string prefix,
+    internal TextCommandDispatcher(string prefix,
         IServiceProvider serviceProvider,
         CommandTreeNode rootTreeNode,
         List<RegistrationEntry> registrationEntries)
@@ -23,7 +25,7 @@ public class TextCommandDispatcher
     }
 
     // TODO: Replace MessageResponseSchema with own Message model
-    public async Task DispatchAsync(Message message)
+    public async Task DispatchAsync(MessageResponse message)
     {
         if (!message.Content.StartsWith(_prefix) && message.Author.Bot != true)
         {
@@ -40,6 +42,8 @@ public class TextCommandDispatcher
 
             try
             {
+                CheckPreconditions(commandContext, currentTreeNode);
+
                 if (currentTreeNode.Commands.TryGetValue(command.ToString(), out var nextTreeNode))
                 {
                     currentTreeNode = nextTreeNode;
@@ -51,20 +55,41 @@ public class TextCommandDispatcher
                 }
                 else
                 {
-                    throw new Exception("Command not found");
+                    throw new CommandNotFoundException("Command not found");
                 }
             }
-            finally
+            catch (CommandException e)
             {
-                commandContext.Tokenizer.ConsumeNext();
+                if (e.Response is not null)
+                {
+                    commandContext.ReplyAsync(e.Response);
+                }
+
+                throw; // rethrow
             }
+
+            commandContext.Tokenizer.ConsumeNext();
         }
     }
 
-    public static TextCommandDispatcher FromCommandCollection(string prefix, CommandCollection collection, IServiceProvider? serviceProvider = null)
+    private void CheckPreconditions(CommandContext commandContext, CommandTreeNode currentTreeNode)
     {
-        serviceProvider ??= new DummyProvider();
-        return new TextCommandDispatcher(
-            prefix, serviceProvider, CommandTreeNode.FromEntries(collection.RegistrationEntries), collection.RegistrationEntries);
+        foreach (var p in currentTreeNode.Preconditions)
+        {
+            if (commandContext.PreconditionsFulfilled.Contains(p.Name))
+            {
+                continue;
+            }
+
+            var result = p.Execute(commandContext);
+            if (result.IsSuccess)
+            {
+                commandContext.PreconditionsFulfilled.Add(p.Name);
+            }
+            else
+            {
+                throw new CommandException("Precondition failed", result.Message);
+            }
+        }
     }
 }
