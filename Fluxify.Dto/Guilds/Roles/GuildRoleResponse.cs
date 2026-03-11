@@ -15,7 +15,7 @@ public record GuildRoleResponse(
     Snowflake Id,
     bool Mentionable,
     string Name,
-    ulong Permissions,
+    Permissions Permissions,
     long Position,
     string? UnicodeEmoji
 );

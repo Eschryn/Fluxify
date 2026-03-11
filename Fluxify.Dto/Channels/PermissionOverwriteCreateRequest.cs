@@ -1,7 +1,9 @@
+using Fluxify.Core.Types;
+
 namespace Fluxify.Dto.Channels;
 
 record PermissionOverwriteCreateRequest(
-    ulong? Allow,
-    ulong? Deny,
+    Permissions? Allow,
+    Permissions? Deny,
     PermissionOverwriteType Type
 );

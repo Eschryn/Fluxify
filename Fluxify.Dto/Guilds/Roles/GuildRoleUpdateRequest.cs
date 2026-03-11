@@ -1,3 +1,5 @@
+using Fluxify.Core.Types;
+
 namespace Fluxify.Dto.Guilds.Roles;
 
 public record GuildRoleUpdateRequest(
@@ -6,5 +8,5 @@ public record GuildRoleUpdateRequest(
     long? HoistPosition,
     bool? Mentionable,
     string? Name,
-    ulong? Permissions
+    Permissions? Permissions
 );

@@ -25,7 +25,7 @@ public record GuildResponse(
     string Name,
     NsfwLevel NsfwLevel,
     Snowflake OwnerId,
-    ulong? Permissions,
+    Permissions? Permissions,
     Snowflake? RulesChannelId,
     [property: JsonPropertyName("splash")] string? SplashHash,
     SplashCardAlignment SplashCardAlignment,
