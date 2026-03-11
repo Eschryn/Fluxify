@@ -9,7 +9,6 @@ namespace Fluxify.Commands.Model;
 [RequiresDynamicCode("Generates IL at runtime. Try to use CommandDelegate directly when runtime code generation is not possible")]
 public static class CommandDelegateFactory
 {
-    private static readonly PropertyInfo ContextCommandTokenizerPropertyInfo = typeof(CommandContext).GetProperty(nameof(CommandContext.Tokenizer))!;
     private static readonly PropertyInfo ContextServicesPropertyInfo = typeof(CommandContext).GetProperty(nameof(CommandContext.Services))!;
     private static readonly MethodInfo? GetServiceMethodInfo = typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService));
 
@@ -51,7 +50,6 @@ public static class CommandDelegateFactory
         new Dictionary<Type, Func<ParameterExpression, Expression>>()
         {
             { typeof(CommandContext), ctx => ctx },
-            { typeof(CommandTokenizer), ctx => Expression.MakeMemberAccess(ctx, ContextCommandTokenizerPropertyInfo) },
             { typeof(IServiceProvider), ctx => Expression.MakeMemberAccess(ctx, ContextServicesPropertyInfo) },
         }.ToFrozenDictionary();
 

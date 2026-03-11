@@ -27,7 +27,7 @@ public class TextCommandDispatcher
     // TODO: Replace MessageResponseSchema with own Message model
     public async Task DispatchAsync(MessageResponse message)
     {
-        if (!message.Content.StartsWith(_prefix) && message.Author.Bot != true)
+        if (!message.Content.StartsWith(_prefix) || message.Author.Bot == true)
         {
             return;
         }
