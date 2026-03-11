@@ -1,5 +1,5 @@
-using Fluxify.Core;
+using Fluxify.Core.Types;
 
-namespace Fluxify.Gateway.Model.Dto;
+namespace Fluxify.Gateway.Model.Data;
 
 public record GatewayInviteDelete(string Code, Snowflake? ChannelId, Snowflake? GuildId);

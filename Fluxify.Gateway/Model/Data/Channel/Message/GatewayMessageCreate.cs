@@ -1,10 +1,10 @@
-using Fluxify.Core;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
 using Fluxify.Dto.Users;
 
-namespace Fluxify.Gateway.Model.Dto;
+namespace Fluxify.Gateway.Model.Data.Channel.Message;
 
 public record GatewayMessageCreate(
     MessageAttachmentResponse[]? Attachments,

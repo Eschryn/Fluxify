@@ -1,4 +1,4 @@
-using Fluxify.Core;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
 
 namespace Fluxify.Dto.Users;

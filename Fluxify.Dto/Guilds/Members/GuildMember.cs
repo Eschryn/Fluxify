@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Fluxify.Core;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Guilds.Members;

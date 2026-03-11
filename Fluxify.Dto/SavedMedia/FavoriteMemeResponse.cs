@@ -1,5 +1,5 @@
 using System.Net.Mime;
-using Fluxify.Core;
+using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.SavedMedia;
 

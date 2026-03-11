@@ -1,4 +1,4 @@
-namespace Fluxify.Gateway.Model.Dto;
+namespace Fluxify.Gateway.Model.Data.User;
 
 public record GatewayAuthSessionChange(
     string OldAuthSessionIdHash,

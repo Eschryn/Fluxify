@@ -1,4 +1,3 @@
-using Fluxify.Core;
 using Fluxify.Dto.Channels.LinkChannel;
 
 namespace Fluxify.Dto.Channels.Category;

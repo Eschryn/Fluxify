@@ -1,4 +1,4 @@
-using Fluxify.Core;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Voice;
 using Fluxify.Dto.SavedMedia;
@@ -6,7 +6,9 @@ using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.GuildSettings;
 using Fluxify.Dto.Users.Relationships;
 using Fluxify.Dto.Users.Settings;
-using Fluxify.Gateway.Model.Dto;
+using Fluxify.Gateway.Model.Data.Channel;
+using Fluxify.Gateway.Model.Data.Guild;
+using Fluxify.Gateway.Model.Data.User;
 
 namespace Fluxify.Gateway.Model.Data;
 

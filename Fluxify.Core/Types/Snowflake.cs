@@ -1,10 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Fluxify.Core;
+namespace Fluxify.Core.Types;
 
 [Serializable]
 [JsonConverter(typeof(SnowflakeConverter))]

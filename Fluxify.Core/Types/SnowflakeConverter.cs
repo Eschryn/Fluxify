@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Fluxify.Core;
+namespace Fluxify.Core.Types;
 
 public class SnowflakeConverter : JsonConverter<Snowflake>
 {

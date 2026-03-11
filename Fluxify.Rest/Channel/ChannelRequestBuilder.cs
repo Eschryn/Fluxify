@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text;
-using Fluxify.Core;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.LinkChannel;
 
@@ -12,6 +12,8 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     private static readonly CultureInfo FormatProvider = CultureInfo.InvariantCulture;
     private static readonly CompositeFormat GetUrl = CompositeFormat.Parse("channels/{0}");
     private static string Uri(CompositeFormat format, Snowflake id) => string.Format(FormatProvider, format, id);
+
+    public MessagesRequestBuilder Messages => new(client, id);
 
     public async Task<ChannelResponse?> GetAsync(CancellationToken cancellationToken = default)
         => await client.GetFromJsonAsync<ChannelResponse>(Uri(GetUrl, id),

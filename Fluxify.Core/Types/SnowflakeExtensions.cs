@@ -1,4 +1,4 @@
-namespace Fluxify.Core;
+namespace Fluxify.Core.Types;
 
 public static class SnowflakeExtensions
 {
