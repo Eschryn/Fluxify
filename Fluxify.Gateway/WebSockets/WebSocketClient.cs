@@ -41,6 +41,14 @@ public sealed class WebSocketClient<TProtocol, TFrame>(
     public void ResetSocket()
     {
         _clientWebSocket.Dispose();
+        
+        _sendPipe.Writer.Complete();
+        _sendPipe.Reader.Complete();
+        _sendPipe.Reset();
+        _receivePipe.Writer.Complete();
+        _receivePipe.Reader.Complete();
+        _receivePipe.Reset();
+        
         _clientWebSocket = new ClientWebSocket();
     }
 
@@ -54,10 +62,11 @@ public sealed class WebSocketClient<TProtocol, TFrame>(
             var sendTask = SendPipeContent(WebSocketMessageType.Text, cancellationToken);
 
             await Task.WhenAll(serializeTask, sendTask);
+            
+            _sendPipe.Reset();
         }
         finally
         {
-            _sendPipe.Reset();
             _sendSemaphore.Release();
         }
     }
