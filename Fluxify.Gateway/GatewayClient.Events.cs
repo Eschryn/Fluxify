@@ -79,7 +79,7 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.RecentMentionDelete, value!);
     }
 
-    public event Func<Message, Task>? SavedMessageCreate
+    public event Func<MessageResponse, Task>? SavedMessageCreate
     {
         add => InsertHandler(GatewayEvent.SavedMessageCreate, value!);
         remove => RemoveHandler(GatewayEvent.SavedMessageCreate, value!);
@@ -259,7 +259,7 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.MessageCreate, value!);
     }
 
-    public event Func<Message, Task>? MessageUpdate
+    public event Func<MessageResponse, Task>? MessageUpdate
     {
         add => InsertHandler(GatewayEvent.MessageUpdate, value!);
         remove => RemoveHandler(GatewayEvent.MessageUpdate, value!);

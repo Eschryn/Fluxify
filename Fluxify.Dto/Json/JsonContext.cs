@@ -25,7 +25,7 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(ChannelResponse))]
 [JsonSerializable(typeof(Relationship))]
 [JsonSerializable(typeof(UserSettings))]
-[JsonSerializable(typeof(Message))]
+[JsonSerializable(typeof(MessageResponse))]
 [JsonSerializable(typeof(ChannelCreateRequest))]
 [JsonSerializable(typeof(ChannelUpdateRequest))]
 public partial class DtoJsonContext : JsonSerializerContext;

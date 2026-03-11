@@ -7,7 +7,7 @@ namespace Fluxify.Dto.Users.ScheduledMessages;
 
 public record ScheduledMessageResponseSchemaPayload(
     ScheduledMessageAllowedMentionsSchema? AllowedMentions,
-    Message[]? Attachments,
+    MessageResponse[]? Attachments,
     string? Content,
     MessageEmbedResponse[]? Embeds,
     Snowflake? FavoriteMemeId,

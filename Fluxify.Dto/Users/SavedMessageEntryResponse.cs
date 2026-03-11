@@ -6,7 +6,7 @@ namespace Fluxify.Dto.Users;
 public record SavedMessageEntryResponse(
     Snowflake ChannelId,
     Snowflake Id,
-    Message? Message,
+    MessageResponse? Message,
     Snowflake MessageId,
     SavedMessageAvailabilityStatus Status
 );
