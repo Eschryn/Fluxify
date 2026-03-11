@@ -1,4 +1,4 @@
-using Fluxify.Core;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.AuditLog;
 using Fluxify.Dto.Guilds.Invite;
 

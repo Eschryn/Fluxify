@@ -1,4 +1,4 @@
-using Fluxify.Core;
+using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
 

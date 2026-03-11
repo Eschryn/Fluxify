@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using Fluxify.Core;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
@@ -11,8 +12,12 @@ using Fluxify.Dto.Users.Relationships;
 using Fluxify.Dto.Users.Settings;
 using Fluxify.Gateway.Model.Data;
 using Fluxify.Gateway.Model.Data.Channel;
+using Fluxify.Gateway.Model.Data.Channel.Message;
+using Fluxify.Gateway.Model.Data.Channel.Reaction;
 using Fluxify.Gateway.Model.Data.Guild;
-using Fluxify.Gateway.Model.Dto;
+using Fluxify.Gateway.Model.Data.Guild.Roles;
+using Fluxify.Gateway.Model.Data.User;
+using Fluxify.Gateway.Model.Data.Voice;
 
 namespace Fluxify.Gateway.Model;
 

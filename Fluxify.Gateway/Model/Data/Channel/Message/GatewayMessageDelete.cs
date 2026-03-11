@@ -1,6 +1,6 @@
-using Fluxify.Core;
+using Fluxify.Core.Types;
 
-namespace Fluxify.Gateway.Model.Dto;
+namespace Fluxify.Gateway.Model.Data.Channel.Message;
 
 public record GatewayMessageDelete(
     Snowflake Id,

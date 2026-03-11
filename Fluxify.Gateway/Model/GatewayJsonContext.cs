@@ -1,8 +1,12 @@
 using System.Text.Json.Serialization;
 using Fluxify.Gateway.Model.Data;
 using Fluxify.Gateway.Model.Data.Channel;
+using Fluxify.Gateway.Model.Data.Channel.Message;
+using Fluxify.Gateway.Model.Data.Channel.Reaction;
 using Fluxify.Gateway.Model.Data.Guild;
-using Fluxify.Gateway.Model.Dto;
+using Fluxify.Gateway.Model.Data.Guild.Roles;
+using Fluxify.Gateway.Model.Data.User;
+using Fluxify.Gateway.Model.Data.Voice;
 
 namespace Fluxify.Gateway.Model;
 

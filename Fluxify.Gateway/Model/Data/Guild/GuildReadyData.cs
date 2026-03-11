@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using Fluxify.Core;
+using Fluxify.Core.Types;
 
-namespace Fluxify.Gateway.Model.Dto;
+namespace Fluxify.Gateway.Model.Data.Guild;
 
 public record GuildReadyData(
     Snowflake Id,
