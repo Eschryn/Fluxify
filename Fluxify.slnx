@@ -4,4 +4,5 @@
   <Project Path="Fluxify.Core\Fluxify.Core.csproj" />
   <Project Path="Fluxify.Dto\Fluxify.Dto.csproj" />
   <Project Path="Fluxify.Gateway\Fluxify.Gateway.csproj" />
+  <Project Path="Fluxify.Rest\Fluxify.Rest.csproj" />
 </Solution>
