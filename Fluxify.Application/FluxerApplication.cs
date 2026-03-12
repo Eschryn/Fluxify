@@ -14,8 +14,8 @@ public partial class FluxerApplication
     private readonly MessageMapper _messageMapper;
     private readonly ChannelMapper _channelMapper;
     
-    protected GatewayClient Gateway { get; }
-    protected RestClient Rest { get; }
+    public GatewayClient Gateway { get; }
+    private RestClient Rest { get; }
     
     public FluxerApplication(FluxerConfig config)
     {
