@@ -1,16 +1,19 @@
+using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Model.Messages;
 using Fluxify.Commands.TextCommand;
-using Fluxify.Dto.Channels.Text.Messages;
 
 namespace Fluxify.Commands;
 
-public class CommandContext(string prefix, MessageResponse message, IServiceProvider services)
+public class CommandContext(string prefix, Message message, IServiceProvider services)
 {
-    public MessageResponse Message { get; } = message;
+    public Message Message { get; } = message;
     public IServiceProvider Services { get; } = services;
     internal CommandTokenizer Tokenizer { get; } = CommandTokenizer.WithoutPrefix(prefix, message.Content);
     internal HashSet<string> PreconditionsFulfilled { get; set; } = [];
 
-    public void ReplyAsync(string message)
+    public Task ReplyAsync(MessageDto message) => Message.ReplyAsync(message);
+    public Task ReplyAsync(string message) => Message.ReplyAsync(new MessageDto()
     {
-    }
+        Content = message
+    });
 }

@@ -6,4 +6,5 @@ public record PreconditionResult(
 )
 {
     public static PreconditionResult Success { get; } = new PreconditionResult(true, null);
+    public static PreconditionResult Fail(string reason) => new PreconditionResult(false, reason);
 }
