@@ -1,4 +1,5 @@
 using Fluxify.Core.Types;
+using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
@@ -30,7 +31,7 @@ public record GatewayMessageCreate(
     bool? Tts,
     MessageType Type,
     Snowflake? WebhookId,
-    int ChannelType
+    ChannelType ChannelType
 ) : MessageResponse(Attachments, Author, Call, ChannelId, Content, EditedTimestamp, Embeds, Flags, Id, MentionEveryone,
     MentionRoles, Mentions, MessageReference, MessageSnapshots, Nonce, Pinned, Reactions, ReferredMessage, Stickers,
     Timestamp, Tts, Type, WebhookId);

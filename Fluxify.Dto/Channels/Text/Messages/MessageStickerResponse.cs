@@ -2,4 +2,4 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
 
-public record MessageStickerResponse(bool Animated, Snowflake Id, string Name);
+public record MessageStickerResponse(bool Animated, Snowflake? Id, string Name);
