@@ -6,6 +6,7 @@
 // you need to provide the FLUXIFY_BOT_TOKEN variable with the bot token
 
 using Fluxify.Bot;
+using Fluxify.Commands;
 using Fluxify.Commands.CommandCollection;
 using Fluxify.Core;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,6 @@ var config = new FluxerConfig(loggerFactory)
 
 var bot = new Bot("f!", config);
 
-bot.Commands.Command("ping", () => Console.WriteLine("pong"));
+bot.Commands.Command("ping", (CommandContext ctx) => ctx.ReplyAsync("Pong!"));
 
 await bot.RunAsync();
