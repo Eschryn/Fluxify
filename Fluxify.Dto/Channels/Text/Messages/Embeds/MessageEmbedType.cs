@@ -5,8 +5,10 @@ namespace Fluxify.Dto.Channels.Text.Messages.Embeds;
 [JsonConverter(typeof(JsonStringEnumConverter<MessageEmbedType>))]
 public enum MessageEmbedType
 {
+    Rich,
     Image,
     Video,
-    Sound,
-    Article
+    Gifv,
+    Article,
+    Link
 }

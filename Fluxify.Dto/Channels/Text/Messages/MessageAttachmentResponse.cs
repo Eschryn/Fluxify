@@ -17,7 +17,7 @@ public record MessageAttachmentResponse(
     int? Duration,
     bool? Expired,
     DateTimeOffset? ExpiresAt,
-    string FileName,
+    string Filename,
     MessageAttachmentFlags Flags,
     int? Height,
     bool? Nsfw,
