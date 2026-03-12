@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
-using Fluxify.Dto.Channels.LinkChannel;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Members;

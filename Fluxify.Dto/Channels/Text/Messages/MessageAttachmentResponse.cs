@@ -1,5 +1,3 @@
-using System.Net.Mime;
-
 namespace Fluxify.Dto.Channels.Text.Messages;
 
 /// <summary>
