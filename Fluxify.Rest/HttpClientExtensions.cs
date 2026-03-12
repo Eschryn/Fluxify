@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Fluxify.Dto;
 using Fluxify.Dto.Uploads;
 using Fluxify.Rest.Model;
 
