@@ -21,6 +21,5 @@ public class RestClient(FluxerConfig config)
         TypeInfoResolver = JsonTypeInfoResolver.Combine(DtoJsonContext.Default, RestResponsesContext.Default)
     };
     
-    public GuildsRequestBuilder Guilds => new(_httpClient);
     public ChannelsRequestBuilder Channels => new(_httpClient);
 }
