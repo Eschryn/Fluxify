@@ -4,5 +4,5 @@ namespace Fluxify.Dto.Uploads;
 
 public abstract record FileUpload(
     string FileName,
-    ContentType ContentType,
+    string ContentType,
     int SendId);

@@ -2,5 +2,5 @@ using System.Net.Mime;
 
 namespace Fluxify.Dto.Uploads;
 
-public record ArrayFileUpload(byte[] Data, string FileName, ContentType ContentType, int SendId) 
+public record ArrayFileUpload(byte[] Data, string FileName, string ContentType, int SendId) 
     : FileUpload(FileName, ContentType, SendId);
