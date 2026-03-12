@@ -9,7 +9,7 @@ Start with the `Fluxify.Bot` package.
 ```csharp
 var bot = new Bot("!", new FluxerConfig())
 
-bot.Commands.Command("ping", () => Console.WriteLine("pong!"));
+bot.Commands.Command("ping", (CommandContext ctx) => ctx.ReplyAsync("Pong!"));
 
 await bot.RunAsync(new BotTokenCredentials("..."));
 ```
