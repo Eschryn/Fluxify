@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
+      <ProjectReference Include="..\Fluxify.Application\Fluxify.Application.csproj" />
       <ProjectReference Include="..\Fluxify.Dto\Fluxify.Dto.csproj" />
     </ItemGroup>
 </Project>

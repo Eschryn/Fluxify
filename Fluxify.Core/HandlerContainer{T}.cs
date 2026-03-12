@@ -6,9 +6,9 @@ public sealed class HandlerContainer<T> : IHandlerContainer
     public void InsertDelegate(Func<T, Task> handler) => _handlers.Add(handler);
     public void RemoveDelegate(Func<T, Task> handler) => _handlers.Remove(handler);
 
-    public async Task CallHandlersAsync(object eventPayload)
+    public async Task CallHandlersAsync(object eventPayload) => await CallHandlersAsync((T)eventPayload);
+    public async Task CallHandlersAsync(T payload)
     {
-        var payload = (T)eventPayload;
         var tasks = _handlers.Select(h => h.Invoke(payload)); 
         await Task.WhenAll(tasks).ConfigureAwait(false);
     }

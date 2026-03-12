@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Fluxify.Application/Fluxify.Application.csproj" />
   <Project Path="Fluxify.Bot\Fluxify.Bot.csproj" />
   <Project Path="Fluxify.Commands\Fluxify.Commands.csproj" />
   <Project Path="Fluxify.Core\Fluxify.Core.csproj" />

@@ -1,3 +1,6 @@
+using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Model.Messages;
+using Fluxify.Application.Entities.Messages;
 using Fluxify.Commands.CommandCollection;
 using Fluxify.Commands.Exceptions;
 using Fluxify.Commands.Model;
@@ -9,23 +12,26 @@ namespace Fluxify.Commands.TextCommand;
 public class TextCommandDispatcher
 {
     private readonly string _prefix;
+    private readonly Func<CommandException, MessageDto> _commandExceptionFormatter;
     private readonly IServiceProvider _serviceProvider;
     private readonly CommandTreeNode _rootTreeNode;
     private readonly List<RegistrationEntry> _registrationEntries;
 
-    internal TextCommandDispatcher(string prefix,
+    internal TextCommandDispatcher(
+        string prefix,
+        Func<CommandException, MessageDto> commandExceptionFormatter,
         IServiceProvider serviceProvider,
         CommandTreeNode rootTreeNode,
         List<RegistrationEntry> registrationEntries)
     {
         _prefix = prefix;
+        _commandExceptionFormatter = commandExceptionFormatter;
         _serviceProvider = serviceProvider;
         _rootTreeNode = rootTreeNode;
         _registrationEntries = registrationEntries;
     }
 
-    // TODO: Replace MessageResponseSchema with own Message model
-    public async Task DispatchAsync(MessageResponse message)
+    public async Task DispatchAsync(Message message)
     {
         if (!message.Content.StartsWith(_prefix) || message.Author.Bot == true)
         {
@@ -62,10 +68,10 @@ public class TextCommandDispatcher
             {
                 if (e.Response is not null)
                 {
-                    commandContext.ReplyAsync(e.Response);
+                    await commandContext.ReplyAsync(_commandExceptionFormatter(e));
                 }
 
-                throw; // rethrow
+                break;
             }
 
             commandContext.Tokenizer.ConsumeNext();

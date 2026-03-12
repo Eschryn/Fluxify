@@ -1,3 +1,6 @@
+using Fluxify.Application.Model.Messages;
+using Fluxify.Application.Model.Messages.Embeds;
+using Fluxify.Commands.Exceptions;
 using Fluxify.Commands.Model;
 using Fluxify.Commands.TextCommand;
 
@@ -5,6 +8,18 @@ namespace Fluxify.Commands.CommandCollection;
 
 public class CommandCollection : ICommandCollection
 {
+    private Func<CommandException, MessageDto> _commandExceptionFormatter 
+        = (e) => new MessageDto
+        {
+            Embeds = [
+                new Embed()
+                {
+                    Type = EmbedType.Rich,
+                    Title = "⚠️Error",
+                    Description = e.Response
+                }
+            ]
+        };
     private List<RegistrationEntry> RegistrationEntries { get; set; } = [];
     private Dictionary<string, Precondition> Preconditions { get; set; } = [];
 
@@ -32,6 +47,7 @@ public class CommandCollection : ICommandCollection
     {
         return new TextCommandDispatcher(
             prefix,
+            _commandExceptionFormatter,
             serviceProvider,
             CommandTreeNode.FromEntries(RegistrationEntries, Preconditions.Values.ToArray()),
             RegistrationEntries);

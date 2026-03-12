@@ -1,29 +1,31 @@
-﻿using Fluxify.Commands;
+﻿using Fluxify.Application;
+using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Messages;
 using Fluxify.Commands.CommandCollection;
+using Fluxify.Commands.TextCommand;
 using Fluxify.Core;
-using Fluxify.Gateway;
+using Fluxify.Core.Types;
 
 namespace Fluxify.Bot;
 
-public class Bot
+public class Bot(string prefix, FluxerConfig config) : FluxerApplication(config)
 {
-    private readonly string _prefix;
-    private readonly FluxerConfig _config;
+    public CommandCollection Commands { get; } = new();
+    private TextCommandDispatcher Dispatcher { get; set; } = null!;
+    
+    public Task<IChannel> GetChannelAsync(Snowflake id) => Channels.GetAsync(id);
 
-    public Bot(string prefix, FluxerConfig config)
+    public override async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        _prefix = prefix;
-        _config = config;
-        Gateway = new GatewayClient(config);
+        Dispatcher = Commands.BuildDispatcher(prefix, Config.ServiceProvider);
+        
+        MessageReceived += OnMessageReceived;
+        
+        await base.RunAsync(cancellationToken);
     }
 
-    public CommandCollection Commands { get; } = new();
-    public GatewayClient Gateway { get; }
-
-    public async Task RunAsync()
+    private async Task OnMessageReceived(Message message)
     {
-        var dispatcher = Commands.BuildDispatcher(_prefix, _config.ServiceProvider);
-        Gateway.MessageCreate += dispatcher.DispatchAsync;
-        await Gateway.RunAsync(_config.Credentials);
+        await Dispatcher.DispatchAsync(message);
     }
 }

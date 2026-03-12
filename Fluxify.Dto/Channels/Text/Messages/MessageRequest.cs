@@ -12,6 +12,5 @@ public record MessageRequest(
     MessageReferenceResponse? MessageReference = null,
     string? Nonce = null,
     Snowflake[]? Stickers = null,
-    bool? Tts = null,
-    Snowflake? WebhookId = null
+    bool? Tts = null
 ) : MultipartDto(Files);
