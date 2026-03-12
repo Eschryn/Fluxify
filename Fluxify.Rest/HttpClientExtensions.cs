@@ -52,7 +52,7 @@ internal static class HttpClientExtensions
                     Name = string.Format(CultureInfo.InvariantCulture, FileFormat, attachment.SendId),
                     FileName = attachment.FileName
                 };
-                partContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType.ToString());
+                partContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
                 
                 content.Add(partContent);
             }

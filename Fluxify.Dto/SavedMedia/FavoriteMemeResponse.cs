@@ -7,7 +7,7 @@ public record FavoriteMemeResponse(
     string? AltText,
     Snowflake? AttachmentId,
     string? ContentHash,
-    ContentType ContentType,
+    string ContentType,
     double? Duration,
     string Filename,
     int? Height,

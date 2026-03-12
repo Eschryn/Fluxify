@@ -12,7 +12,7 @@ namespace Fluxify.Dto.Channels.Text.Messages;
 /// <param name="Placeholder">Base64 encoded placeholder image</param>
 public record MessageAttachmentResponse(
     string? ContentHash,
-    ContentType? ContentType,
+    string? ContentType,
     string? Description,
     int? Duration,
     bool? Expired,
