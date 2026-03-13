@@ -19,25 +19,25 @@ internal static class HttpClientExtensions
             HttpMethod method,
             string url,
             TRequest request,
-            JsonSerializerOptions options,
             CancellationToken cancellationToken = default)
             where TRequest : MultipartDto
             where TResult : class
         {
             if (request.Files is not { Length: > 0 })
             {
-                return await client.JsonRequestAsync<TRequest, TResult>(method, url, request, options, null, cancellationToken);
+                return await client.JsonRequestAsync<TRequest, TResult>(method, url, request, reason: null,
+                    cancellationToken: cancellationToken);
             }
 
             var content = new MultipartFormDataContent();
-            var jsonContent = JsonContent.Create(request, options: options);
+            var jsonContent = JsonContent.Create(request, options: RestClient.DefaultJsonOptions);
             jsonContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
             {
                 Name = "payload_json"
             };
-            
+
             content.Add(jsonContent);
-            
+
             foreach (var attachment in request.Files)
             {
                 var partContent = attachment switch
@@ -52,45 +52,22 @@ internal static class HttpClientExtensions
                     FileName = attachment.FileName
                 };
                 partContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
-                
+
                 content.Add(partContent);
             }
-            
+
             using var httpRequestMessage = new HttpRequestMessage(method, url);
-            httpRequestMessage.Version = client.DefaultRequestVersion;
-            httpRequestMessage.VersionPolicy = client.DefaultVersionPolicy;
-            httpRequestMessage.Content = content;
+            using var httpResponseMessage = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken);
 
-            using var httpResponseMessage = await client.SendAsync(httpRequestMessage,
-                HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                return await httpResponseMessage
-                    .Content
-                    .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: options);
-            }
-
-            var errorResponse = await httpResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>(
-                options: options,
-                cancellationToken: cancellationToken
-            );
-
-            if (httpResponseMessage.StatusCode != HttpStatusCode.TooManyRequests)
-            {
-                throw new RestApiException(errorResponse!.Code, errorResponse.Message, errorResponse.Errors!);
-            }
-            else
-            {
-                throw new RatelimitException(errorResponse!.Code, errorResponse.Message, errorResponse.RetryAfter!.Value, errorResponse.Global!.Value);
-            }
+            return await httpResponseMessage
+                .Content
+                .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: RestClient.DefaultJsonOptions);
         }
 
         public async Task<TResult?> JsonRequestAsync<TRequest, TResult>(
             HttpMethod method,
             string url,
             TRequest request,
-            JsonSerializerOptions options,
             string? reason = null,
             CancellationToken cancellationToken = default
         )
@@ -98,37 +75,98 @@ internal static class HttpClientExtensions
             where TResult : class
         {
             using var httpRequestMessage = new HttpRequestMessage(method, url);
+            httpRequestMessage.Content = JsonContent.Create(request, options: options);
+
+            using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
+            return await response
+                .Content
+                .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: RestClient.DefaultJsonOptions);
+        }
+
+        public async Task JsonRequestAsync<TRequest>(
+            HttpMethod method,
+            string url,
+            TRequest request,
+            string? reason = null,
+            CancellationToken cancellationToken = default
+        )
+            where TRequest : notnull
+        {
+            using var httpRequestMessage = new HttpRequestMessage(method, url);
+            httpRequestMessage.Content = JsonContent.Create(request, options: RestClient.DefaultJsonOptions);
+
+            using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
+        }
+
+        public async Task<TResult?> JsonRequestAsync<TResult>(
+            HttpMethod method,
+            string url,
+            string? reason = null,
+            CancellationToken cancellationToken = default
+        )
+            where TResult : class
+        {
+            using var httpRequestMessage = new HttpRequestMessage(method, url);
+            using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
+            return await response
+                .Content
+                .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: RestClient.DefaultJsonOptions);
+        }
+        
+        public async Task RequestAsync(
+            HttpMethod method,
+            string url,
+            string? reason = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            using var httpRequestMessage = new HttpRequestMessage(method, url);
+            await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
+        }
+
+        private async Task<HttpResponseMessage> SendFluxerRequestAsync(
+            HttpRequestMessage httpRequestMessage,
+            CancellationToken cancellationToken = default,
+            string? reason = null
+        )
+        {
             httpRequestMessage.Version = client.DefaultRequestVersion;
             httpRequestMessage.VersionPolicy = client.DefaultVersionPolicy;
-            httpRequestMessage.Content = JsonContent.Create(request, options: options);
 
             if (reason is not null)
             {
                 httpRequestMessage.Headers.Add("X-Audit-Log-Reason", reason);
             }
 
-            using var httpResponseMessage = await client.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead,
+            var httpResponseMessage = await client.SendAsync(httpRequestMessage,
+                HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken);
 
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return await httpResponseMessage
-                    .Content
-                    .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: options);
+                return httpResponseMessage;
             }
 
-            var errorResponse = await httpResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>(
-                options: options,
-                cancellationToken: cancellationToken
-            );
+            try
+            {
+                var errorResponse = await httpResponseMessage.Content.ReadFromJsonAsync<ErrorResponse>(
+                    options: RestClient.DefaultJsonOptions,
+                    cancellationToken: cancellationToken
+                );
 
-            if (httpResponseMessage.StatusCode != HttpStatusCode.TooManyRequests)
-            {
-                throw new RestApiException(errorResponse!.Code, errorResponse.Message, errorResponse.Errors!);
+                if (httpResponseMessage.StatusCode != HttpStatusCode.TooManyRequests)
+                {
+                    throw new RestApiException(errorResponse!.Code, errorResponse.Message, errorResponse.Errors!);
+                }
+                else
+                {
+                    throw new RatelimitException(errorResponse!.Code, errorResponse.Message,
+                        errorResponse.RetryAfter!.Value, errorResponse.Global!.Value);
+                }
             }
-            else
+            finally
             {
-                throw new RatelimitException(errorResponse!.Code, errorResponse.Message, errorResponse.RetryAfter!.Value, errorResponse.Global!.Value);
+                httpResponseMessage.Dispose();
             }
         }
     }
