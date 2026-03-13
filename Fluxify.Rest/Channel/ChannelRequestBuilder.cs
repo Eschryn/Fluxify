@@ -1,9 +1,7 @@
 using System.Globalization;
-using System.Net.Http.Json;
 using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
-using Fluxify.Dto.Channels.LinkChannel;
 
 namespace Fluxify.Rest.Channel;
 
@@ -14,19 +12,24 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     private static string Uri(CompositeFormat format, Snowflake id) => string.Format(FormatProvider, format, id);
 
     public MessagesRequestBuilder Messages => new(client, id);
-
+    public CallRequestBuilder Call => new(client, id);
+    
     public async Task<ChannelResponse?> GetAsync(CancellationToken cancellationToken = default)
-        => await client.GetFromJsonAsync<ChannelResponse>(Uri(GetUrl, id),
-            RestClient.DefaultJsonOptions, cancellationToken);
+        => await client.JsonRequestAsync<ChannelResponse>(
+            HttpMethod.Get,
+            Uri(GetUrl, id),
+            cancellationToken: cancellationToken);
 
-    public async Task<ChannelResponse?> PatchAsync(ChannelUpdateRequest request)
-    {
-        var response = await client.PatchAsJsonAsync(Uri(GetUrl, id), request,
-            RestClient.DefaultJsonOptions);
-        return await response.EnsureSuccessStatusCode()
-            .Content
-            .ReadFromJsonAsync<ChannelResponse>();
-    }
+    public async Task<ChannelResponse?> UpdateAsync(
+        ChannelUpdateRequest request, 
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        await client.JsonRequestAsync<ChannelUpdateRequest, ChannelResponse>(
+            HttpMethod.Patch, 
+            Uri(GetUrl, id), request, 
+            reason: reason, 
+            cancellationToken: cancellationToken);
 
     public async Task<bool> DeleteAsync(bool silent)
     {
