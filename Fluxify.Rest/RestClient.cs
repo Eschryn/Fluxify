@@ -18,7 +18,7 @@ public class RestClient(FluxerConfig config)
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        TypeInfoResolver = JsonTypeInfoResolver.Combine(DtoJsonContext.Default, RestResponsesContext.Default)
+        TypeInfoResolver = JsonTypeInfoResolver.Combine(DtoJsonContext.Default, RestDtoContext.Default)
     };
     
     public ChannelsRequestBuilder Channels => new(_httpClient);
