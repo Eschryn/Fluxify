@@ -1,10 +1,11 @@
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.State;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text;
 using Fluxify.Rest;
 
-namespace Fluxify.Application.State;
+namespace Fluxify.Application.Repositories;
 
 public class ChannelRepository(RestClient client, ChannelMapper mapper)
 {
@@ -29,12 +30,20 @@ public class ChannelRepository(RestClient client, ChannelMapper mapper)
             ? await mapper.FromDtoAsync(channel) 
             : throw new Exception($"Couldn't get channel with id {id}");
 
+    public async Task<IChannel?> CreateAsync(Snowflake guildId)
+    {
+        var channelAsync = await client.Guilds[guildId].CreateChannelAsync(new ChannelCreateTextRequest("", null, null, null, null));
+        if (channelAsync is null) return null;
+
+        var entity = await mapper.FromDtoAsync(channelAsync);
+        OnChange?.Invoke(entity, ChangeType.Create);
+        return _cache.UpdateOrCreate(entity);
+    }
+
     public async Task DeleteAsync(Snowflake id, bool silent = false)
     {
-        if (await client.Channels[id].DeleteAsync(silent))
-        {
-            _cache.Remove(id);   
-        }
+        await client.Channels[id].DeleteAsync(silent);
+        _cache.Remove(id);
     }
     
     internal void Reset() => _cache.Clear();
