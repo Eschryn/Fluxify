@@ -66,7 +66,7 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.UserSettingsUpdate, value!);
     }
 
-    public event Func<UserGuildSettings, Task>? UserGuildSettingsUpdate
+    public event Func<UserGuildSettingsResponse, Task>? UserGuildSettingsUpdate
     {
         add => InsertHandler(GatewayEvent.UserGuildSettingsUpdate, value!);
         remove => RemoveHandler(GatewayEvent.UserGuildSettingsUpdate, value!);
@@ -330,13 +330,13 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.InviteDelete, value!);
     }
 
-    public event Func<Relationship, Task>? RelationshipAdd
+    public event Func<RelationshipResponse, Task>? RelationshipAdd
     {
         add => InsertHandler(GatewayEvent.RelationshipAdd, value!);
         remove => RemoveHandler(GatewayEvent.RelationshipAdd, value!);
     }
 
-    public event Func<Relationship, Task>? RelationshipUpdate
+    public event Func<RelationshipResponse, Task>? RelationshipUpdate
     {
         add => InsertHandler(GatewayEvent.RelationshipUpdate, value!);
         remove => RemoveHandler(GatewayEvent.RelationshipUpdate, value!);

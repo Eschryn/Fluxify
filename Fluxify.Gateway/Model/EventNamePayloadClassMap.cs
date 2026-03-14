@@ -96,8 +96,8 @@ internal static class EventNamePayloadClassMap
             // { GatewayEvent.InviteCreate, Null }, // untested TODO: Add proper payload
             { GatewayEvent.InviteDelete, Data<GatewayInviteDelete>() }, // untested
 
-            { GatewayEvent.RelationshipAdd, Data<Relationship>() }, // untested
-            { GatewayEvent.RelationshipUpdate, Data<Relationship>() }, // untested
+            { GatewayEvent.RelationshipAdd, Data<RelationshipResponse>() }, // untested
+            { GatewayEvent.RelationshipUpdate, Data<RelationshipResponse>() }, // untested
             { GatewayEvent.RelationshipRemove, Data<GatewayRelationshipId>() }, // untested
 
             { GatewayEvent.VoiceStateUpdate, Data<VoiceStateResponse>() }, // untested

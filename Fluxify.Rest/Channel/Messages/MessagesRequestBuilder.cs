@@ -17,8 +17,8 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
     private static string Uri(CompositeFormat format, Snowflake id) => string.Format(FormatProvider, format, id);
 
     public MessageRequestBuilder this[Snowflake messageId] => new(client, channelId, messageId);
-    
-    public PinsRequestBuilder Pins => new(client, channelId);
+
+    public PinsRequestBuilder Pins { get; } = new(client, channelId);
     
     public async Task<MessageResponse?> SendMessageAsync(CreateMessageRequest createRequest,
         CancellationToken cancellationToken = default)

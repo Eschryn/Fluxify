@@ -1,16 +1,12 @@
-using Fluxify.Core.Types;
-
 namespace Fluxify.Dto.Users.GuildSettings;
 
-public record UserGuildSettingsResponse(
+public record UserGuildSettingsRequest(
     Dictionary<string, UserGuildSettingsResponseChannelOverridesAdditionalProperties> ChannelOverrides,
-    Snowflake? GuildId,
     bool HideMutedChannels,
     UserNotificationSettings MessageNotifications,
     bool MobilePush,
     UserGuildSettingsResponseMuteConfig? MuteConfig,
     bool Muted,
     bool SuppressEveryone,
-    bool SuppressRoles,
-    int Version
+    bool SuppressRoles
 );

@@ -16,8 +16,8 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     private static readonly CompositeFormat TypingUrl = CompositeFormat.Parse("channels/{0}/typing");
     private static string Uri(CompositeFormat format, Snowflake id) => string.Format(FormatProvider, format, id);
 
-    public MessagesRequestBuilder Messages => new(client, id);
-    public CallRequestBuilder Call => new(client, id);
+    public MessagesRequestBuilder Messages { get; } = new(client, id);
+    public CallRequestBuilder Call { get; } = new(client, id);
     
     public async Task<ChannelResponse?> GetAsync(CancellationToken cancellationToken = default)
         => await client.JsonRequestAsync<ChannelResponse>(
@@ -40,7 +40,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         => await client.RequestAsync(
             HttpMethod.Delete,
             Uri(GetUrl, id) + new QueryBuilder()
-                .AddQuery("silent", silent.HasValue ? (silent.Value ? "true" : "false") : null),
+                .AddQuery("silent", silent?.ToString().ToLowerInvariant()),
             cancellationToken: cancellationToken
         );
 
@@ -75,7 +75,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         => await client.RequestAsync(
             HttpMethod.Delete,
             string.Format(FormatProvider, RecipientUrl, id, userId) + new QueryBuilder()
-                .AddQuery("silent", silent.HasValue ? (silent.Value ? "true" : "false") : null),
+                .AddQuery("silent", silent?.ToString().ToLowerInvariant()),
             cancellationToken: cancellationToken
         );
 
