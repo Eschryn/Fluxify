@@ -36,7 +36,7 @@ public class FluxerConfig
             BaseAddress = cfg.GetApiBaseUri(),
             DefaultRequestHeaders =
             {
-                { "Authorization", $"Bot {cfg.Credentials.Token}" }
+                { "Authorization", cfg.Credentials.GetAuthorizationHeaderValue() }
             }
         };
     }
