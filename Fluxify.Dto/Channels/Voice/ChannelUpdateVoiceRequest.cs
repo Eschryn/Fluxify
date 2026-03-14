@@ -8,6 +8,5 @@ public record ChannelUpdateVoiceRequest(
     Snowflake? ParentId,
     ChannelPermissionOverwrite[] PermissionOverwrites,
     Snowflake? RtcRegion,
-    int? UserLimit,
-    ChannelType Type = ChannelType.VoiceChannel
-);
+    int? UserLimit
+) : ChannelUpdateRequest;

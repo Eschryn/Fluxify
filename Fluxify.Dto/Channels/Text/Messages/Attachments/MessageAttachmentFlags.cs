@@ -1,4 +1,4 @@
-namespace Fluxify.Dto.Channels.Text.Messages;
+namespace Fluxify.Dto.Channels.Text.Messages.Attachments;
 
 [Flags]
 public enum MessageAttachmentFlags : uint

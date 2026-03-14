@@ -17,4 +17,20 @@ public record MessageEmbedResponse(
     MessageEmbedType Type,
     string? Url,
     EmbedMediaResponse? Video
+) : MessageEmbedChildResponse(
+    Audio,
+    Author, 
+    Color,
+    Description,
+    Fields,
+    Footer,
+    Image,
+    Nsfw,
+    Provider,
+    Thumbnail,
+    Timestamp,
+    Title,
+    Type,
+    Url,
+    Video
 );

@@ -1,9 +1,8 @@
 namespace Fluxify.Commands.Exceptions;
 
 public class CommandException(
-    string message,
-    string? response
-) : Exception(message)
+    string response
+) : Exception(response)
 {
     public string? Response { get; } = response;
 }

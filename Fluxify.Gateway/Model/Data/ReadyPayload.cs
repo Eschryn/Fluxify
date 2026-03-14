@@ -24,7 +24,7 @@ public record ReadyPayload(
     GuildReadyData[] Guilds,
     ChannelResponse[] PrivateChannels,
     Relationship[] Relationships,
-    UserResponse[] Users,
+    UserPartialResponse[] Users,
     Presence[] Presences,
     GatewaySession[] Sessions,
     UserSettings? UserSettings,

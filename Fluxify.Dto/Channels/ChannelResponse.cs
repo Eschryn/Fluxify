@@ -19,7 +19,7 @@ public record ChannelResponse(
     ChannelPermissionOverwrite[]? Overwrites,
     int? Position,
     int? RateLimitPerUser,
-    UserResponse[]? Recipients,
+    UserPartialResponse[]? Recipients,
     Snowflake? RtcRegion,
     string? Topic,
     ChannelType Type,

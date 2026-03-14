@@ -15,7 +15,7 @@ public partial class FluxerApplication
     private readonly ChannelMapper _channelMapper;
     
     public GatewayClient Gateway { get; }
-    private RestClient Rest { get; }
+    public RestClient Rest { get; }
     
     public FluxerApplication(FluxerConfig config)
     {

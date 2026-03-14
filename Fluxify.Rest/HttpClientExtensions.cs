@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 using Fluxify.Dto.Uploads;
 using Fluxify.Rest.Model;
 
@@ -57,6 +56,8 @@ internal static class HttpClientExtensions
             }
 
             using var httpRequestMessage = new HttpRequestMessage(method, url);
+            httpRequestMessage.Content = content;
+            
             using var httpResponseMessage = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken);
 
             return await httpResponseMessage
@@ -75,7 +76,7 @@ internal static class HttpClientExtensions
             where TResult : class
         {
             using var httpRequestMessage = new HttpRequestMessage(method, url);
-            httpRequestMessage.Content = JsonContent.Create(request, options: options);
+            httpRequestMessage.Content = JsonContent.Create(request, options: RestClient.DefaultJsonOptions);
 
             using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
             return await response

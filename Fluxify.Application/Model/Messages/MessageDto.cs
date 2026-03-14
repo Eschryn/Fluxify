@@ -1,25 +1,21 @@
-using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Uploads;
 
 namespace Fluxify.Application.Model.Messages;
 
 public class MessageDto
 {
-    public string Content { get; set; }
-
-    public AttachmentDto[]? Attachments { get; init; }
-    public FileUpload[]? Files { get; init; }
-    public Embed[]? Embeds { get; set; }
-    public Reaction[]? Reactions { get; init; }
-    public Sticker[]? Stickers { get; init; }
-    public string? Nonce { get; init; }
+    public string? Content { get; set; }
+    public List<Attachment>? Attachments { get; set; }
+    public List<Embed>? Embeds { get; set; }
+    public AllowedMentions? AllowedMentions { get; set; }
     public MessageReference? MessageReference { get; set; }
-
-    public MessageFlags Flags { get; set; }
-    public MessageType Type { get; init; }
-
-    public bool IsPinned { get; init; }
-    public bool IsTTS { get; init; }
+    public MessageFlags? Flags { get; set; }
+    public string? Nonce { get; init; }
+    public Snowflake? FavoriteMemeId { get; set; }
+    public List<Snowflake>? Stickers { get; set; }
+    public bool Tts { get; set; }
+    public List<FileUpload>? Files { get; set; }
 }

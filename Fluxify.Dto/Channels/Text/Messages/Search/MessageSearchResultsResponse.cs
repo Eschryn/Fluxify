@@ -2,7 +2,7 @@ namespace Fluxify.Dto.Channels.Text.Messages.Search;
 
 public record MessageSearchResultsResponse(
     int HitsPerPage,
-    MessageBaseResponseSchema[] Messages,
+    MessageBaseResponse[] Messages,
     int Page,
     int Total
 );

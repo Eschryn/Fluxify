@@ -1,9 +1,9 @@
 using System.Text.Json.Serialization;
 
-namespace Fluxify.Dto.Channels.Text.Messages.Scheduled;
+namespace Fluxify.Dto.Channels.Text.Messages;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum ScheduledMessageAllowedMentionsSchemaParse
+public enum AllowedMentionsSchemaParse
 {
     Users,
     Roles,

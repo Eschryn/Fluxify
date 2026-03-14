@@ -1,13 +1,16 @@
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
+using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
 using Fluxify.Dto.Channels.Text.Messages.Scheduled;
+using Fluxify.Dto.Uploads;
 
 namespace Fluxify.Dto.Users.ScheduledMessages;
 
 public record ScheduledMessageResponseSchemaPayload(
-    ScheduledMessageAllowedMentionsSchema? AllowedMentions,
-    MessageResponse[]? Attachments,
+    AllowedMentionsSchema? AllowedMentions,
+    MessageAttachmentResponse[]? Attachments,
+    FileUpload[]? Files,
     string? Content,
     MessageEmbedResponse[]? Embeds,
     Snowflake? FavoriteMemeId,
@@ -17,4 +20,4 @@ public record ScheduledMessageResponseSchemaPayload(
     Snowflake[]? StickerIds,
     MessageStickerResponse[]? Stickers,
     bool? Tts
-);
+) : MultipartDto(Files);

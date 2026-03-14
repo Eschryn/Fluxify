@@ -61,7 +61,7 @@ public class TextCommandDispatcher
                 }
                 else
                 {
-                    throw new CommandNotFoundException("Command not found");
+                    throw new CommandNotFoundException();
                 }
             }
             catch (CommandException e)
@@ -94,7 +94,7 @@ public class TextCommandDispatcher
             }
             else
             {
-                throw new CommandException("Precondition failed", result.Message);
+                throw new CommandException(result.Message ?? "Precondition failed");
             }
         }
     }

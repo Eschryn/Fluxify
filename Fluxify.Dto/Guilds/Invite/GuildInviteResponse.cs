@@ -9,7 +9,7 @@ public record GuildInviteResponse(
     string Code,
     DateTimeOffset CreatedAt,
     GuildInviteMetadataResponseGuild Guild,
-    UserResponse? Inviter,
+    UserPartialResponse? Inviter,
     int MemberCount,
     int PresenceCount,
     bool Temporary,

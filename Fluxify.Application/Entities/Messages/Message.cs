@@ -19,7 +19,6 @@ public class Message : IEntity
     public required TextChannel Channel { get; init; }
     public Attachment[]? Attachments { get; init; }
     public Embed[]? Embeds { get; set; }
-    //public Mention[] Mentions { get; init; }
     public bool MentionsEveryone { get; init; }
     public Reaction[]? Reactions { get; init; }
     public Sticker[]? Stickers { get; init; }
@@ -33,12 +32,12 @@ public class Message : IEntity
     public MessageType Type { get; init; }
 
     public bool IsPinned { get; init; }
-    public bool IsTTS { get; init; }
+    public bool? HasTts { get; init; }
 
     // MessageCallResponse? Call, this is only relevant for group dms
 
     //this is all references
-    // MessageReferenceResponse? MessageReference,
+    MessageReference MessageReference { get; init; }
     //MessageSnapshotResponse[]? MessageSnapshots, // forwarded
     // MessageBaseResponseSchema? ReferredMessage, // replied to
 

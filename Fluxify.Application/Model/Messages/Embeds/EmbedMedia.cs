@@ -1,15 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Fluxify.Application.Model.Messages.Embeds;
 
-public class EmbedMedia
+public sealed class EmbedMedia
 {
-    public string? ContentHash { get; set; }
-    public string? ContentType { get; set; }
+    public string? ContentHash { get; internal set; }
+    public string? ContentType { get; internal set; }
     public string? Description { get; set; }
-    public int? Duration { get; set; }
-    public EmbedMediaFlags Flags { get; set; }
-    public int? Height { get; set; }
-    public int? Width { get; set; }
-    public string? Placeholder { get; set; }
-    public required string Url { get; set; }
-    public string? ProxyUrl { get; set; }
+    public int? Duration { get; internal set; }
+    public EmbedMediaFlags Flags { get; internal set; }
+    public int? Height { get; internal set; }
+    public int? Width { get; internal set; }
+    public string? Placeholder { get; internal set; }
+    public required string Url { get; init; }
+    public string? ProxyUrl { get; internal set; }
 }
