@@ -1,7 +1,7 @@
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Repositories;
 using Fluxify.Application.Services;
-using Fluxify.Application.State;
 using Fluxify.Core;
 using Fluxify.Gateway;
 using Fluxify.Rest;
