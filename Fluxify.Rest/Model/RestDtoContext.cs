@@ -11,16 +11,4 @@ namespace Fluxify.Rest.Model;
 
 [JsonSourceGenerationOptions]
 [JsonSerializable(typeof(ErrorResponse))]
-[JsonSerializable(typeof(UpdateCallRegionRequest))]
-[JsonSerializable(typeof(RingRequest))]
-[JsonSerializable(typeof(UserPartialResponse[]))]
-[JsonSerializable(typeof(MessageResponse[]))]
-[JsonSerializable(typeof(ScheduleMessageResponseSchema))]
-[JsonSerializable(typeof(ScheduledMessageResponseSchemaPayload))]
-[JsonSerializable(typeof(ChannelPinsResponse))]
-[JsonSerializable(typeof(CallEligibilityResponse))]
-[JsonSerializable(typeof(UpdateCallRegionRequest))]
-[JsonSerializable(typeof(RingRequest))]
-[JsonSerializable(typeof(ChannelPermissionOverwrite))]
-[JsonSerializable(typeof(RtcRegion[]))]
 public partial class RestDtoContext : JsonSerializerContext;

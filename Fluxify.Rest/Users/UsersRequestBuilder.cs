@@ -103,9 +103,9 @@ public class MeRequestBuilder(HttpClient client)
         cancellationToken: cancellationToken
     );
 
-    public async Task<GiftCodeMetadataResponse?> ListGiftsAsync(
+    public async Task<GiftCodeMetadataResponse[]?> ListGiftsAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GiftCodeMetadataResponse>(
+    ) => await client.JsonRequestAsync<GiftCodeMetadataResponse[]>(
         HttpMethod.Get,
         GiftsUrl,
         cancellationToken: cancellationToken

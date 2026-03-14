@@ -1,14 +1,27 @@
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
+using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages;
+using Fluxify.Dto.Channels.Text.Messages.Pin;
+using Fluxify.Dto.Channels.Voice;
+using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
+using Fluxify.Dto.Users.DataHarvest;
 using Fluxify.Dto.Users.GuildSettings;
+using Fluxify.Dto.Users.Push;
 using Fluxify.Dto.Users.Relationships;
+using Fluxify.Dto.Users.ScheduledMessages;
 using Fluxify.Dto.Users.Settings;
+using Fluxify.Dto.Users.Settings.EmailChange;
+using Fluxify.Dto.Users.Settings.PasswordChange;
+using Fluxify.Dto.Users.Settings.PhoneChange;
+using Fluxify.Dto.Users.Settings.Security;
+using Fluxify.Dto.Users.Settings.Security.Mfa;
+using Fluxify.Dto.Users.Settings.Security.Webauth;
 
 namespace Fluxify.Dto.Json;
 
@@ -30,4 +43,80 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(UpdateMessageRequest))]
 [JsonSerializable(typeof(ChannelCreateRequest))]
 [JsonSerializable(typeof(ChannelUpdateRequest))]
+[JsonSerializable(typeof(UpdateCallRegionRequest))]
+[JsonSerializable(typeof(RingRequest))]
+[JsonSerializable(typeof(UserPartialResponse[]))]
+[JsonSerializable(typeof(MessageResponse[]))]
+[JsonSerializable(typeof(ScheduleMessageResponseSchema))]
+[JsonSerializable(typeof(ScheduledMessageResponseSchemaPayload))]
+[JsonSerializable(typeof(ChannelPinsResponse))]
+[JsonSerializable(typeof(CallEligibilityResponse))]
+[JsonSerializable(typeof(UpdateCallRegionRequest))]
+[JsonSerializable(typeof(RingRequest))]
+[JsonSerializable(typeof(ChannelPermissionOverwrite))]
+[JsonSerializable(typeof(RtcRegion[]))]
+[JsonSerializable(typeof(EmailChangeRequestNewResponse))]
+[JsonSerializable(typeof(EmailChangeBouncedRequestNewRequest))]
+[JsonSerializable(typeof(EmailChangeTicketRequest))]
+[JsonSerializable(typeof(EmailChangeBouncedRequestVerifyNewRequest))]
+[JsonSerializable(typeof(UserPrivate))]
+[JsonSerializable(typeof(EmailChangeRequestNewResponse))]
+[JsonSerializable(typeof(EmailChangeRequestNewRequest))]
+[JsonSerializable(typeof(EmailChangeStartResponse))]
+[JsonSerializable(typeof(EmailTokenResponse))]
+[JsonSerializable(typeof(EmailChangeVerifyNewRequest))]
+[JsonSerializable(typeof(EmailChangeVerifyOriginalResponse))]
+[JsonSerializable(typeof(EmailChangeVerifyOriginalRequest))]
+[JsonSerializable(typeof(HarvestCreationResponseSchema))]
+[JsonSerializable(typeof(HarvestStatusResponseSchema))]
+[JsonSerializable(typeof(HarvestDownloadUrlResponse))]
+[JsonSerializable(typeof(MfaBackupCodesResponse))]
+[JsonSerializable(typeof(MfaBackupCodesRequest))]
+[JsonSerializable(typeof(SudoVerificationSchema))]
+[JsonSerializable(typeof(DisableTotpRequest))]
+[JsonSerializable(typeof(EnableMfaTotpRequest))]
+[JsonSerializable(typeof(WebAuthnCredentialsResponse))]
+[JsonSerializable(typeof(WebAuthnRegisterRequest))]
+[JsonSerializable(typeof(WebAuthnChallengeResponse))]
+[JsonSerializable(typeof(WebAuthnCredentialUpdateRequest))]
+[JsonSerializable(typeof(UserNoteResponse))]
+[JsonSerializable(typeof(UserNoteUpdateRequest))]
+[JsonSerializable(typeof(Dictionary<Snowflake, string>))]
+[JsonSerializable(typeof(PasswordChangeCompleteRequest))]
+[JsonSerializable(typeof(PasswordChangeTicketRequest))]
+[JsonSerializable(typeof(PasswordChangeStartResponse))]
+[JsonSerializable(typeof(PasswordChangeVerifyResponse))]
+[JsonSerializable(typeof(PasswordChangeVerifyRequest))]
+[JsonSerializable(typeof(PhoneAddRequest))]
+[JsonSerializable(typeof(PhoneSendVerificationRequest))]
+[JsonSerializable(typeof(PhoneVerifyResponse))]
+[JsonSerializable(typeof(PhoneVerifyRequest))]
+[JsonSerializable(typeof(CreatePrivateChannelRequest))]
+[JsonSerializable(typeof(Dictionary<Snowflake, MessageResponse>))]
+[JsonSerializable(typeof(PushSubscribeResponse))]
+[JsonSerializable(typeof(PushSubscribeRequest))]
+[JsonSerializable(typeof(PushSubscriptionListResponse))]
+[JsonSerializable(typeof(SuccessResponse))]
+[JsonSerializable(typeof(RelationshipResponse))]
+[JsonSerializable(typeof(RelationshipTypePutRequest))]
+[JsonSerializable(typeof(RelationshipNicknameUpdateRequest))]
+[JsonSerializable(typeof(RelationshipResponse[]))]
+[JsonSerializable(typeof(FriendRequestByTagRequest))]
+[JsonSerializable(typeof(SavedMessageEntryResponse[]))]
+[JsonSerializable(typeof(SaveMessageRequest))]
+[JsonSerializable(typeof(ScheduleMessageResponseSchema[]))]
+[JsonSerializable(typeof(UpdateScheduledMessageRequest))]
+[JsonSerializable(typeof(SudoMfaMethodsResponse))]
+[JsonSerializable(typeof(SudoMfaMethodsResponse))]
+[JsonSerializable(typeof(WebAuthnChallengeResponse))]
+[JsonSerializable(typeof(UserProfileFullResponse))]
+[JsonSerializable(typeof(UserPartialResponse))]
+[JsonSerializable(typeof(UserTagCheckResponse))]
+[JsonSerializable(typeof(UserTagCheckRequest))]
+[JsonSerializable(typeof(UserUpdateWithVerificationRequest))]
+[JsonSerializable(typeof(GiftCodeMetadataResponse[]))]
+[JsonSerializable(typeof(UserGuildSettingsResponse))]
+[JsonSerializable(typeof(MessageResponse[]))]
+[JsonSerializable(typeof(UserSettingsUpdateRequest))]
+
 public partial class DtoJsonContext : JsonSerializerContext;
