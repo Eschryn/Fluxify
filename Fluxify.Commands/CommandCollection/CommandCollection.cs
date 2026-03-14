@@ -1,3 +1,4 @@
+using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
 using Fluxify.Commands.Exceptions;
@@ -12,13 +13,16 @@ public class CommandCollection : ICommandCollection
         = (e) => new MessageDto
         {
             Embeds = [
-                new Embed()
+                new Embed
                 {
-                    Type = EmbedType.Rich,
                     Title = "⚠️Error",
                     Description = e.Response
                 }
-            ]
+            ],
+            AllowedMentions = new AllowedMentions
+            {
+                RepliedUser  = false
+            }
         };
     private List<RegistrationEntry> RegistrationEntries { get; set; } = [];
     private Dictionary<string, Precondition> Preconditions { get; set; } = [];
@@ -43,7 +47,7 @@ public class CommandCollection : ICommandCollection
         return this;
     }
 
-    public TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider? serviceProvider = null)
+    public TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider serviceProvider)
     {
         return new TextCommandDispatcher(
             prefix,

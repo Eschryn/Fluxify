@@ -1,32 +1,57 @@
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.GroupDm;
+using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
+using Fluxify.Dto.Channels.Text.Messages.Reactions;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
 
 public record MessageResponse(
-    MessageAttachmentResponse[]? Attachments,
-    UserResponse Author,
-    MessageCallResponse? Call,
-    Snowflake ChannelId,
-    string Content,
-    DateTimeOffset? EditedTimestamp,
-    MessageEmbedResponse[]? Embeds,
-    MessageFlags Flags,
     Snowflake Id,
+    Snowflake ChannelId,
+    UserPartialResponse Author,
+    Snowflake? WebhookId,
+    MessageType Type,
+    MessageFlags Flags,
+    string Content,
+    DateTimeOffset Timestamp,
+    DateTimeOffset? EditedTimestamp,
+    bool Pinned,
     bool MentionEveryone,
-    Snowflake[] MentionRoles,
-    UserResponse[]? Mentions,
+    bool? Tts,
+    UserPartialResponse[]? Mentions,
+    Snowflake[]? MentionRoles,
+    MessageEmbedResponse[]? Embeds,
+    MessageAttachmentResponse[]? Attachments,
+    MessageStickerResponse[]? Stickers,
+    MessageReactionResponse[]? Reactions,
     MessageReferenceResponse? MessageReference,
     MessageSnapshotResponse[]? MessageSnapshots,
     string? Nonce,
-    bool Pinned,
-    MessageReactionResponse[]? Reactions,
-    MessageBaseResponseSchema? ReferredMessage,
-    MessageStickerResponse[]? Stickers,
-    DateTimeOffset Timestamp,
-    bool? Tts,
-    MessageType Type,
-    Snowflake? WebhookId
+    MessageCallResponse? Call,
+    MessageBaseResponse? ReferencedMessage
+) : MessageBaseResponse(
+    Id,
+    ChannelId,
+    Author,
+    WebhookId,
+    Type,
+    Flags,
+    Content,
+    Timestamp,
+    EditedTimestamp,
+    Pinned,
+    MentionEveryone,
+    Tts,
+    Mentions,
+    MentionRoles,
+    Embeds,
+    Attachments,
+    Stickers,
+    Reactions,
+    MessageReference,
+    MessageSnapshots,
+    Nonce,
+    Call
 );

@@ -8,7 +8,7 @@ public record GroupDmInviteMetadataResponse(
     string Code,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ExpiresAt,
-    UserResponse? Inviter,
+    UserPartialResponse? Inviter,
     int MaxUses,
     int MemberCount,
     bool Temporary,

@@ -13,7 +13,7 @@ public record MessageEmbedChildResponse(
     EmbedMediaResponse? Thumbnail,
     DateTimeOffset? Timestamp,
     string? Title,
-    string Type,
+    MessageEmbedType Type,
     string? Url,
     EmbedMediaResponse? Video
 );

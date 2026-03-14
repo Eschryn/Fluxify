@@ -2,7 +2,7 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Users;
 
-public record UserResponse(
+public record UserPartialResponse(
     string? Avatar,
     int? AvatarColor,
     bool? Bot,

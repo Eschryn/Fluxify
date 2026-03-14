@@ -1,8 +1,8 @@
 namespace Fluxify.Application.Model.Messages.Embeds;
 
-public class EmbedField
+public sealed class EmbedField
 {
-    public string? Name { get; set; }
-    public string? Value { get; set; }
+    public required string Name { get; init; }
+    public required string Value { get; init; }
     public bool Inline { get; set; }
 }

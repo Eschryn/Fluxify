@@ -8,11 +8,11 @@ public record UserProfileFullResponse(
     ConnectionResponse[]? ConnectedAccounts,
     GuildMember? GuildMember,
     UserProfile? GuildMemberProfile,
-    UserResponse[]? Friends,
+    UserPartialResponse[]? Friends,
     MutualGuildResponse[]? MutualGuilds,
     int? PremiumLifetimeSequence,
     DateTimeOffset? PremiumSince,
     UserPremiumTypes? PremiumType,
-    UserResponse User,
+    UserPartialResponse UserPartial,
     UserProfile UserProfile
 );

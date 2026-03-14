@@ -1,5 +1,5 @@
 using Fluxify.Core.Types;
 
-namespace Fluxify.Rest.RequestDtos;
+namespace Fluxify.Dto.Channels.GroupDm;
 
 public record RingRequest(Snowflake[] Recipients);

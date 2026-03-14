@@ -1,4 +1,6 @@
-namespace Fluxify.Dto.Channels.Text.Messages;
+using Fluxify.Core.Types;
+
+namespace Fluxify.Dto.Channels.Text.Messages.Attachments;
 
 /// <summary>
 /// 
@@ -9,21 +11,22 @@ namespace Fluxify.Dto.Channels.Text.Messages;
 /// <param name="Duration">Duration in seconds</param>
 /// <param name="Placeholder">Base64 encoded placeholder image</param>
 public record MessageAttachmentResponse(
-    string? ContentHash,
-    string? ContentType,
-    string? Description,
-    int? Duration,
-    bool? Expired,
-    DateTimeOffset? ExpiresAt,
+    Snowflake Id,
     string Filename,
-    MessageAttachmentFlags Flags,
-    int? Height,
-    bool? Nsfw,
-    string? Placeholder,
-    string? ProxyUrl,
-    int Size,
     string? Title,
+    string? Description,
+    string? ContentType,
+    string? ContentHash,
+    int Size,
     string? Url,
+    string? ProxyUrl,
+    int? Width,
+    int? Height,
+    string? Placeholder,
+    MessageAttachmentFlags Flags,
+    bool? Nsfw,
+    int? Duration,
     string? Waveform,
-    int? Width
+    bool? Expired,
+    DateTimeOffset? ExpiresAt
 );

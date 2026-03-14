@@ -14,7 +14,7 @@ public sealed partial class GatewayClient
     private readonly WebSocketClient<FluxerProtocol, GatewayPayload> _client;
 
     private int? _lastSequence;
-    private string? _sessionId;
+    public string? SessionId { get; private set; }
     private BotTokenCredentials? _credentials;
     private CancellationTokenSource? _connectionTokenSource;
 
@@ -49,7 +49,7 @@ public sealed partial class GatewayClient
         // TODO: Maybe handle ready and resumed differently
         Ready += async r =>
         {
-            _sessionId = r.SessionId;
+            SessionId = r.SessionId;
             ConnectionState = ConnectionState.Connected;
             Log.Connected(_logger);
         };
@@ -189,13 +189,13 @@ public sealed partial class GatewayClient
     {
         ConnectionState = ConnectionState.Authenticating;
 
-        var payload = _sessionId switch
+        var payload = SessionId switch
         {
             not null => new GatewayPayload(
                 GatewayOpCode.Resume,
                 new ResumePayloadData(
                     Token: _credentials!.Token, // Should never be null
-                    SessionId: _sessionId,
+                    SessionId: SessionId,
                     LastSequence: _lastSequence)),
             null => new GatewayPayload(
                 Opcode: GatewayOpCode.Identify,
@@ -215,7 +215,7 @@ public sealed partial class GatewayClient
     {
         if (invalidateSession)
         {
-            _sessionId = null;
+            SessionId = null;
         }
 
         await _client.DisconnectAsync(status, description, cancellationToken);

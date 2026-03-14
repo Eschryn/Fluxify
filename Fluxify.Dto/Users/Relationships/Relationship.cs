@@ -7,5 +7,5 @@ public record Relationship(
     string? Nickname,
     DateTimeOffset? Since,
     RelationshipTypes Type,
-    UserResponse User
+    UserPartialResponse UserPartial
 );
