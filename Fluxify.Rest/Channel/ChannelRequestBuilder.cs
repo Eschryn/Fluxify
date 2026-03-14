@@ -36,11 +36,11 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
             reason: reason, 
             cancellationToken: cancellationToken);
 
-    public async Task DeleteAsync(bool silent = false, CancellationToken cancellationToken = default) 
+    public async Task DeleteAsync(bool? silent = null, CancellationToken cancellationToken = default) 
         => await client.RequestAsync(
             HttpMethod.Delete,
             Uri(GetUrl, id) + new QueryBuilder()
-                .AddOptional("silent", silent),
+                .AddQuery("silent", silent.HasValue ? (silent.Value ? "true" : "false") : null),
             cancellationToken: cancellationToken
         );
 
@@ -75,7 +75,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         => await client.RequestAsync(
             HttpMethod.Delete,
             string.Format(FormatProvider, RecipientUrl, id, userId) + new QueryBuilder()
-                .AddOptional("silent", silent.HasValue && silent.Value),
+                .AddQuery("silent", silent.HasValue ? (silent.Value ? "true" : "false") : null),
             cancellationToken: cancellationToken
         );
 
