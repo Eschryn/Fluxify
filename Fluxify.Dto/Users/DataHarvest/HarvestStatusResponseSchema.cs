@@ -11,7 +11,7 @@ public record HarvestStatusResponseSchema(
     DateTimeOffset? FailedAt,
     string? FileSize,
     Snowflake HarvestId,
-    double ProgressPercentage,
+    double ProgressPercent,
     string? ProgressStep,
     DateTimeOffset? StartedAt,
     HarvestStatusEnum Status

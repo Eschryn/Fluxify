@@ -3,6 +3,6 @@ using Fluxify.Core.Types;
 namespace Fluxify.Dto.Users;
 
 public record CreatePrivateChannelRequest(
-    Snowflake RecipientId,
-    Snowflake[] Recipients
+    Snowflake? RecipientId,
+    Snowflake[]? Recipients
 );

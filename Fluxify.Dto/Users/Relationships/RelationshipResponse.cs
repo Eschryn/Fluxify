@@ -2,7 +2,7 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Users.Relationships;
 
-public record Relationship(
+public record RelationshipResponse(
     Snowflake Id,
     string? Nickname,
     DateTimeOffset? Since,
