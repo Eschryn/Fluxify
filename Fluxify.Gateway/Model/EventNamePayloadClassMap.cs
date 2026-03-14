@@ -38,7 +38,7 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.UserUpdate, Data<UserPrivate>() }, // untested
             { GatewayEvent.UserPinnedDmsUpdate, Data<Snowflake[]>() }, // untested
             { GatewayEvent.UserSettingsUpdate, Data<UserSettings>() }, // untested
-            { GatewayEvent.UserGuildSettingsUpdate, Data<UserGuildSettings>() }, // untested
+            { GatewayEvent.UserGuildSettingsUpdate, Data<UserGuildSettingsResponse>() }, // untested
             { GatewayEvent.UserNoteUpdate, Data<GatewayUserNoteUpdate>() }, // untested
             { GatewayEvent.RecentMentionDelete, Data<GatewayMessageIdResponse>() }, // untested
             { GatewayEvent.SavedMessageCreate, Data<MessageResponse>() }, // untested
