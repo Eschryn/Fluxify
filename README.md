@@ -1,5 +1,8 @@
-# Fluxify
+# Fluxify 
 .NET library for building applications that interact with fluxer
+
+[![NuGet Version](https://img.shields.io/nuget/v/Fluxify.Bot?style=flat-square)](https://www.nuget.org/packages/Fluxify.Bot)
+[![GitHub License](https://img.shields.io/github/license/Eschryn/Fluxify?style=flat-square)](LICENSE)
 
 ## Getting Started
 See `Example.cs` for a simple starting point
