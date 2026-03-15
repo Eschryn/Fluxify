@@ -7,7 +7,14 @@ using Fluxify.Dto.Channels.Text.Messages.Pin;
 using Fluxify.Dto.Channels.Voice;
 using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds;
+using Fluxify.Dto.Guilds.AuditLog;
+using Fluxify.Dto.Guilds.Emoji;
+using Fluxify.Dto.Guilds.Invite;
 using Fluxify.Dto.Guilds.Members;
+using Fluxify.Dto.Guilds.Members.Search;
+using Fluxify.Dto.Guilds.Roles;
+using Fluxify.Dto.Guilds.Settings;
+using Fluxify.Dto.Guilds.Stickers;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.DataHarvest;
@@ -34,7 +41,7 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(UserGuildSettingsRequest))]
 [JsonSerializable(typeof(FavoriteMemeResponse))]
 [JsonSerializable(typeof(GuildResponse))]
-[JsonSerializable(typeof(GuildMember))]
+[JsonSerializable(typeof(GuildMemberResponse))]
 [JsonSerializable(typeof(ChannelResponse))]
 [JsonSerializable(typeof(RelationshipResponse))]
 [JsonSerializable(typeof(UserSettings))]
@@ -118,5 +125,34 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(UserGuildSettingsResponse))]
 [JsonSerializable(typeof(MessageResponse[]))]
 [JsonSerializable(typeof(UserSettingsUpdateRequest))]
-
+[JsonSerializable(typeof(GuildEmojiResponse))]
+[JsonSerializable(typeof(GuildEmojiCreateRequest))]
+[JsonSerializable(typeof(GuildEmojiBulkCreateRequest))]
+[JsonSerializable(typeof(GuildEmojiBulkCreateResponse))]
+[JsonSerializable(typeof(GuildUpdateRequest))]
+[JsonSerializable(typeof(GuildAuditLogListResponse))]
+[JsonSerializable(typeof(ChannelResponse[]))]
+[JsonSerializable(typeof(ChannelPositionUpdateRequest))]
+[JsonSerializable(typeof(GuildBanResponse))]
+[JsonSerializable(typeof(EnabledRequest))]
+[JsonSerializable(typeof(GuildTransferOwnershipRequest))]
+[JsonSerializable(typeof(GuildVanityUrlResponse))]
+[JsonSerializable(typeof(GuildVanityUrlUpdateRequest))]
+[JsonSerializable(typeof(GuildResponse[]))]
+[JsonSerializable(typeof(GuildMemberResponse))]
+[JsonSerializable(typeof(GuildMemberUpdateRequest))]
+[JsonSerializable(typeof(GuildMemberResponse[]))]
+[JsonSerializable(typeof(GuildMemberSearchResponse))]
+[JsonSerializable(typeof(GuildMemberSearchRequest))]
+[JsonSerializable(typeof(MyGuildMemberUpdateRequest))]
+[JsonSerializable(typeof(GuildRoleResponse[]))]
+[JsonSerializable(typeof(GuildRoleCreateRequest))]
+[JsonSerializable(typeof(GuildRolePositionItem))]
+[JsonSerializable(typeof(GuildRoleHoistPositionItem))]
+[JsonSerializable(typeof(GuildRoleUpdateRequest))]
+[JsonSerializable(typeof(GuildStickerResponse[]))]
+[JsonSerializable(typeof(GuildStickerResponse))]
+[JsonSerializable(typeof(GuildStickerCreateBulkResponse))]
+[JsonSerializable(typeof(GuildStickerBulkCreateRequest))]
+[JsonSerializable(typeof(GuildStickerUpdateRequest))]
 public partial class DtoJsonContext : JsonSerializerContext;

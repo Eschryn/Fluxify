@@ -11,5 +11,5 @@ public record GatewayReaction(
     Snowflake? GuildId,
     string? SessionId,
     GuildEmojiResponse Emoji,
-    GuildMember? Member
+    GuildMemberResponse? Member
 );

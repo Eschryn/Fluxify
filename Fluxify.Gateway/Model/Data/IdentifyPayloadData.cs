@@ -6,11 +6,13 @@ public record IdentifyPayloadData(
     string Token,
     Dictionary<string, string> Properties,
     List<string> IgnoredEvents, 
-    PresenceUpdatePacketData Presence
+    PresenceUpdate Presence
 );
 
-public record PresenceUpdatePacketData(
-    UserStatus Status
+public record PresenceUpdate(
+    UserStatus Status,
+    bool? Mobile = false,
+    bool? Afk = false
 );
 
 [JsonConverter(typeof(JsonStringEnumConverter<UserStatus>))]

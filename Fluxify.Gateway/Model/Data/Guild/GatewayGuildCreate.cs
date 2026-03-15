@@ -11,7 +11,7 @@ namespace Fluxify.Gateway.Model.Data.Guild;
 
 public record GatewayGuildCreate(
     ChannelResponse[] Channels,
-    GuildMember[] Members,
+    GuildMemberResponse[] Members,
     Presence[] Presences,
     VoiceStateResponse[] VoiceStates,
     DateTimeOffset JoinedAt,

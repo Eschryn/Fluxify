@@ -1,5 +1,6 @@
 using System.IO.Pipelines;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Fluxify.Core;
 using Fluxify.Dto.Json;
@@ -17,7 +18,8 @@ public sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSock
         TypeInfoResolver = JsonTypeInfoResolver.Combine(
             Model.GatewayJsonContext.Default,
             DtoJsonContext.Default
-        )
+        ),
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
     
     public async Task<GatewayPayload?> DeserializeAsync(PipeReader pipeReader, CancellationToken cancellationToken = default)

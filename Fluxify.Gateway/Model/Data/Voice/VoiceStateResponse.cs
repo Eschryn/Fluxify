@@ -9,7 +9,7 @@ public record VoiceStateResponse(
     Snowflake UserId,
     string? ConnectionId,
     string? SessionId,
-    GuildMember? Member,
+    GuildMemberResponse? Member,
     bool Mute,
     bool Deaf,
     bool SelfMute,
