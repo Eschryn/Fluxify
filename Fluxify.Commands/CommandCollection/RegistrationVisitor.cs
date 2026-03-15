@@ -31,5 +31,11 @@ internal class RegistrationVisitor(Precondition[] preconditions)
         };
     }
 
-    private static readonly FrozenDictionary<string, CommandTreeNode> Empty = FrozenDictionary.Create<string, CommandTreeNode>();
+    
+    private static readonly FrozenDictionary<string, CommandTreeNode> Empty 
+#if NET10_0_OR_GREATER
+        = FrozenDictionary.Create<string, CommandTreeNode>();
+#else
+        = new Dictionary<string, CommandTreeNode>().ToFrozenDictionary();
+#endif
 }
