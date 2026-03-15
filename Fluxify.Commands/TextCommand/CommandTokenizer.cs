@@ -14,7 +14,7 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
         "\u180E\u200B\u200C\u200D\u2060\uFEFF";
 
     private const string AllWhiteSpaceChars = WhiteSpaceChars + WhiteSpaceCharsNoBreak;
-    private const string DelimiterChars = "#:<>@";
+    private const string DelimiterChars = "#:<>@&!";
 
     private (ReadOnlyMemory<char> value, Range range)? _cached;
     private int _offset = offset;
@@ -89,9 +89,11 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
         return Next(Delimiters, out range);
     }
 
-    private ReadOnlyMemory<char> Next(SearchValues<char> delimiters, out Range range)
+    public ReadOnlyMemory<char> Next(SearchValues<char> delimiters, out Range range)
     {
         var nextIndex = _input.Span.IndexOfAny(delimiters);
+        if (nextIndex == 0)
+            nextIndex = 1;
         try
         {
             if (nextIndex == -1)
