@@ -31,7 +31,7 @@ bot.Commands.Command("hug", async (CommandContext ctx) => {
                 .WithImage("https://gifprovider/image.gif")
             .Build());
 
-    await ctx.ReplyAsync(message);
+    await ctx.Message.Channel.SendMessageAsync(message);
 });
 
 await bot.RunAsync();
@@ -77,4 +77,9 @@ var gatewayConfig = new GatewayConfig
 var bot = new Bot(..., gatewayConfig);
 ...
 ```
-*TODO: BotHosting example once done*
+
+### Help I cannot find request X
+Currently not all REST functionality is exposed via the Entities.
+This means in cases you need functions not exposed in the higher level entities
+you should look into Bot.Rest. It currently implements all Guild and User endpoints and almost all Channel endpoints.
+If something is missing, feel free to create an issue or contribute.
