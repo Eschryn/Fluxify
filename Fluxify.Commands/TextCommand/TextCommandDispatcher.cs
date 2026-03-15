@@ -12,14 +12,14 @@ namespace Fluxify.Commands.TextCommand;
 public class TextCommandDispatcher
 {
     private readonly string _prefix;
-    private readonly Func<CommandException, MessageDto> _commandExceptionFormatter;
+    private readonly Func<CommandException, MessageDto?> _commandExceptionFormatter;
     private readonly IServiceProvider _serviceProvider;
     private readonly CommandTreeNode _rootTreeNode;
     private readonly List<RegistrationEntry> _registrationEntries;
 
     internal TextCommandDispatcher(
         string prefix,
-        Func<CommandException, MessageDto> commandExceptionFormatter,
+        Func<CommandException, MessageDto?> commandExceptionFormatter,
         IServiceProvider serviceProvider,
         CommandTreeNode rootTreeNode,
         List<RegistrationEntry> registrationEntries)
@@ -52,6 +52,7 @@ public class TextCommandDispatcher
 
                 if (currentTreeNode.Commands.TryGetValue(command.ToString(), out var nextTreeNode))
                 {
+                    commandContext.Tokenizer.ConsumeNext();
                     currentTreeNode = nextTreeNode;
                 }
                 else if (currentTreeNode.DefaultCommand is { } cmd)
@@ -66,15 +67,13 @@ public class TextCommandDispatcher
             }
             catch (CommandException e)
             {
-                if (e.Response is not null)
+                if (e.Response is not null && _commandExceptionFormatter(e) is {} messageDto)
                 {
-                    await commandContext.ReplyAsync(_commandExceptionFormatter(e));
+                    await commandContext.ReplyAsync(messageDto);
                 }
 
                 break;
             }
-
-            commandContext.Tokenizer.ConsumeNext();
         }
     }
 
