@@ -19,7 +19,8 @@ var cfg = new FluxerConfig
 
 var bot = new Bot("!", cfg)
 
-// the parameters to the command will be resolved from the configured service provider or (still in progress) from the command reader
+// the parameters to the command will be resolved from the configured service provider
+//   or (still in progress as of 0.1.0-preview) from the command reader
 bot.Commands.Command("ping", (CommandContext ctx) => ctx.ReplyAsync("Pong!"));
 
 bot.Commands.Command("hug", async (CommandContext ctx) => {
@@ -50,6 +51,30 @@ var cfg = new FluxerConfig
 ...
 ```
 ### Dependency Injection
-Example with `Microsoft.Extensions.DependencyInjection`:
+Configure your IServiceProvider using the `Services` option. A new service scope will be created per Command execution.
 
-*TODO*
+```csharp
+var cfg = new FluxerConfig
+{
+    ...
+    Services = ...
+};
+```
+
+### Bot Presence
+This is configured using the gateway configuration so you will have to pass another configuration to the bot class.
+
+```csharp
+var gatewayConfig = new GatewayConfig
+{
+    // IgnoredGatewayEvents = ...,
+    DefaultPresence = new PresenceUpdate(
+        Status: UserStatus.Online,
+        CustomStatus: new CustomStatus(
+            Text: "hello world!"))
+};
+
+var bot = new Bot(..., gatewayConfig);
+...
+```
+*TODO: BotHosting example once done*
