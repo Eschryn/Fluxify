@@ -9,20 +9,27 @@ namespace Fluxify.Commands.CommandCollection;
 
 public class CommandCollection : ICommandCollection
 {
-    private Func<CommandException, MessageDto> _commandExceptionFormatter 
-        = (e) => new MessageDto
+    private Func<CommandException, MessageDto?> _commandExceptionFormatter 
+        = e =>
         {
-            Embeds = [
-                new Embed
-                {
-                    Title = "⚠️Error",
-                    Description = e.Response
-                }
-            ],
-            AllowedMentions = new AllowedMentions
+            if (e is CommandNotFoundException)
+                return null;
+            
+            return new MessageDto
             {
-                RepliedUser  = false
-            }
+                Embeds =
+                [
+                    new Embed
+                    {
+                        Title = "⚠️Error",
+                        Description = e.Response
+                    }
+                ],
+                AllowedMentions = new AllowedMentions
+                {
+                    RepliedUser = false
+                }
+            };
         };
     private List<RegistrationEntry> RegistrationEntries { get; set; } = [];
     private Dictionary<string, Precondition> Preconditions { get; set; } = [];
