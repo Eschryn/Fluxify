@@ -40,8 +40,13 @@ public sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSock
     {
         try
         {
+#if NET10_0_OR_GREATER
             return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader, _serializerOptions,
                 cancellationToken);
+#else
+            return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader.AsStream(), _serializerOptions,
+                cancellationToken);
+#endif
         }
         catch (JsonException e)
         {
