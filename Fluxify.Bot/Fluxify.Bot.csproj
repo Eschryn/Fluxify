@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-      <ProjectReference Include="..\Fluxify.Application\Fluxify.Application.csproj" />
-      <ProjectReference Include="..\Fluxify.Commands\Fluxify.Commands.csproj" IncludeAssets="All" />
-      <ProjectReference Include="..\Fluxify.Core\Fluxify.Core.csproj" IncludeAssets="All" />
-      <ProjectReference Include="..\Fluxify.Gateway\Fluxify.Gateway.csproj" IncludeAssets="All" />
+      <ProjectReference Include="..\Fluxify.Application\Fluxify.Application.csproj"  />
+      <ProjectReference Include="..\Fluxify.Commands\Fluxify.Commands.csproj" />
+      <ProjectReference Include="..\Fluxify.Core\Fluxify.Core.csproj" />
+      <ProjectReference Include="..\Fluxify.Gateway\Fluxify.Gateway.csproj" />
       <ProjectReference Include="..\Fluxify.Rest\Fluxify.Rest.csproj" />
     </ItemGroup>
 
