@@ -25,6 +25,7 @@ public class RestClient
         Guilds = new GuildsRequestBuilder(_httpClient);
         Users = new UsersRequestBuilder(_httpClient);
         Channels = new ChannelsRequestBuilder(_httpClient);
+        Gateway = new GatewayRequestBuilder(_httpClient);
     }
 
     internal static JsonSerializerOptions DefaultJsonOptions { get; } = new()
@@ -34,6 +35,7 @@ public class RestClient
         TypeInfoResolver = JsonTypeInfoResolver.Combine(DtoJsonContext.Default, RestDtoContext.Default)
     };
     
+    public GatewayRequestBuilder Gateway { get; }
     public UsersRequestBuilder Users { get; }
     public GuildsRequestBuilder Guilds { get; }
     public ChannelsRequestBuilder Channels { get; }

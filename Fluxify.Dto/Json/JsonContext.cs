@@ -6,6 +6,7 @@ using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Pin;
 using Fluxify.Dto.Channels.Voice;
 using Fluxify.Dto.Common;
+using Fluxify.Dto.Gateway;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.AuditLog;
 using Fluxify.Dto.Guilds.Emoji;
@@ -155,4 +156,5 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(GuildStickerCreateBulkResponse))]
 [JsonSerializable(typeof(GuildStickerBulkCreateRequest))]
 [JsonSerializable(typeof(GuildStickerUpdateRequest))]
+[JsonSerializable(typeof(GatewayBotResponse))]
 public partial class DtoJsonContext : JsonSerializerContext;

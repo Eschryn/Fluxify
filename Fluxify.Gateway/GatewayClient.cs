@@ -15,8 +15,9 @@ public sealed partial class GatewayClient
 
     private int? _lastSequence;
     public string? SessionId { get; private set; }
-    private BotTokenCredentials? _credentials;
+    private BotTokenCredentials _credentials;
     private CancellationTokenSource? _connectionTokenSource;
+    private Uri _endpoint;
 
     public ConnectionState ConnectionState
     {
@@ -38,7 +39,7 @@ public sealed partial class GatewayClient
 
     public GatewayClient(GatewayConfig config, FluxerConfig fluxerConfig, ILogger logger)
     {
-        _credentials = null;
+        _credentials = fluxerConfig.Credentials;
         _logger = logger;
         _client = new WebSocketClient<FluxerProtocol, GatewayPayload>(
             new FluxerProtocol(fluxerConfig),
@@ -69,15 +70,18 @@ public sealed partial class GatewayClient
         };
     }
 
-    public async Task RunAsync(BotTokenCredentials credentials, CancellationToken cancellationToken = default)
+    public async Task RunAsync(Uri endpoint, CancellationToken cancellationToken = default)
     {
-        if (!credentials.Validate())
+        if (!_credentials.Validate())
         {
             return;
         }
 
-        _credentials = credentials;
-
+        _endpoint = new UriBuilder(endpoint)
+        {
+            Query = "v=1&encoding=json"
+        }.Uri;
+        
         await LoopAsync(cancellationToken);
     }
 
@@ -93,9 +97,7 @@ public sealed partial class GatewayClient
                 var connectionCancellationToken = connectionTokenSource.Token;
                 _connectionTokenSource = connectionTokenSource;
 
-                // TODO: receive gateway uri from api
-                await _client.ConnectAsync(new Uri("wss://gateway.fluxer.app/?v=1&encoding=json"),
-                    connectionCancellationToken);
+                await _client.ConnectAsync(_endpoint, connectionCancellationToken);
 
                 while (ConnectionState != ConnectionState.Disconnected)
                 {
