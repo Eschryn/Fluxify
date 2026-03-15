@@ -4,4 +4,25 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <Authors>Eschryn</Authors>
+        <PackageTags>fluxer;bot;library;dotnet</PackageTags>
+        <Description>Fluxify is a .NET Library for building chat bots for the fluxer platform.</Description>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        
+        <!-- Repository -->
+        <RepositoryUrl>https://github.com/Eschryn/Fluxify</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+
+        <IncludeSource>true</IncludeSource>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>

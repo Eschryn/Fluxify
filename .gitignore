@@ -3,3 +3,4 @@ obj
 *.user
 .idea
 .DS_Store
+.env

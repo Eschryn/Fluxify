@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Fluxify/">
+    <File Path="Directory.Build.props" />
+  </Folder>
   <Project Path="Fluxify.Application/Fluxify.Application.csproj" />
   <Project Path="Fluxify.Bot\Fluxify.Bot.csproj" />
   <Project Path="Fluxify.Commands\Fluxify.Commands.csproj" />
