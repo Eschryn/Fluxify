@@ -34,7 +34,13 @@ public partial class FluxerApplication
 
     public virtual async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        await Gateway.RunAsync(Config.Credentials, cancellationToken);
+        var gatewayBotResponse = await Rest.Gateway.GetGatewayBotAsync(cancellationToken);
+        if (gatewayBotResponse == null)
+        {
+            throw new Exception("Could not get gateway information.");
+        }
+        
+        await Gateway.RunAsync(new Uri(gatewayBotResponse.Url), cancellationToken);
     } 
     
     public ChannelRepository Channels { get; }
