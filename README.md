@@ -23,7 +23,8 @@ var bot = new Bot("!", cfg)
 //   or (still in progress as of 0.1.0-preview) from the command reader
 bot.Commands.Command("ping", (CommandContext ctx) => ctx.ReplyAsync("Pong!"));
 
-bot.Commands.Command("hug", async (CommandContext ctx) => {
+bot.Commands.Command("hug", async (CommandContext ctx) =>
+{
     var userMention = ctx.Reader.GetNext<Mentionable.Member>();
 
     var message = new MessageBuilder($"<@{userMention.Id}> you have been hugged!")
@@ -35,6 +36,22 @@ bot.Commands.Command("hug", async (CommandContext ctx) => {
 });
 
 await bot.RunAsync();
+```
+
+### Preconditions
+```
+var botOwnerPrecondition = new Precondition(
+    "bot-owner",
+    "User needs to be the bot owner"
+    static ctx => ctx.Message.Author.Id == 27842764872883298 
+        ? PreconditionResult.Success
+        : PreconditionResult.Fail("Youre not the bot owner!"));
+
+bot.Module("secret", m =>
+    {
+        m.Command("isCool", (CommandContext ctx) => ctx.ReplyAsync("Yes you are cool!"))
+    }, botOwnerPrecondition)
+    .Command("open-pod-bay-doors", (CommandContext ctx) => ctx.ReplyAsync("I'm sorry dave I'm afraid I can't do that"), botOwnerPrecondition);
 ```
 
 ### Logging (Simple)
