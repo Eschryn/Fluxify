@@ -51,7 +51,11 @@ bot.Module("secret", m =>
     {
         m.Command("isCool", (CommandContext ctx) => ctx.ReplyAsync("Yes you are cool!"))
     }, botOwnerPrecondition)
-    .Command("open-pod-bay-doors", (CommandContext ctx) => ctx.ReplyAsync("I'm sorry dave I'm afraid I can't do that"), botOwnerPrecondition);
+    .Command(
+        "open-pod-bay-doors",
+        (CommandContext ctx) => ctx.ReplyAsync("I'm sorry dave I'm afraid I can't do that"),
+        botOwnerPrecondition
+    );
 ```
 
 ### Logging (Simple)
