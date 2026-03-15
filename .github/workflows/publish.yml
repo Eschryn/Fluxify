@@ -21,9 +21,9 @@ jobs:
       run: dotnet build --no-restore -c Release -p:Version=${{github.ref_name}}
     - name: Pack
       run: >
-        dotnet pack --no-build -c Release -o ./nuGetPackages `
-          -p:RepositoryCommit=${{github.sha}} `
-          -p:RepositoryBranch=main `
+        dotnet pack --no-build -c Release -o ./nuGetPackages \
+          -p:RepositoryCommit=${{github.sha}} \
+          -p:RepositoryBranch=main \
           -p:Version=${{github.ref_name}}
     - name: NuGet Login
       uses: NuGet/login@v1
