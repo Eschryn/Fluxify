@@ -59,6 +59,18 @@ public class CommandReader(CommandTokenizer tokenizer)
                     
                     var emojiId = tokenizer.Next(out _).Span;
                     return new Mentionable.Emoji(name.ToString(), ulong.Parse(emojiId));
+                case "t":
+                    if (snowflakeStr.Span is not ":")
+                        throw new FormatException();
+                    
+                    var dateTimeStr = tokenizer.Next(out _).Span;
+                    var dateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(dateTimeStr));
+
+                    if (tokenizer.Next(out _).Span is not ":")
+                        return new Mentionable.DateTime(dateTime, "R");
+                    
+                    var format = tokenizer.Next(out _).Span;
+                    return new Mentionable.DateTime(dateTime, format.ToString());
                 default:
                     throw new FormatException();
             }
