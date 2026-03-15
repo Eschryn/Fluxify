@@ -17,10 +17,10 @@ public partial class FluxerApplication
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
     
-    public FluxerApplication(FluxerConfig config)
+    public FluxerApplication(FluxerConfig config, GatewayConfig? gatewayConfig = null)
     {
         Config = config;
-        Gateway = new GatewayClient(config);
+        Gateway = new GatewayClient(config, gatewayConfig);
         Rest = new RestClient(config);
 
         _messageMapper = new MessageMapper(this);

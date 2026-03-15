@@ -5,10 +5,11 @@ using Fluxify.Commands.CommandCollection;
 using Fluxify.Commands.TextCommand;
 using Fluxify.Core;
 using Fluxify.Core.Types;
+using Fluxify.Gateway;
 
 namespace Fluxify.Bot;
 
-public class Bot(string prefix, FluxerConfig config) : FluxerApplication(config)
+public class Bot(string prefix, FluxerConfig config, GatewayConfig? gatewayConfig = null) : FluxerApplication(config, gatewayConfig)
 {
     public CommandCollection Commands { get; } = new();
     private TextCommandDispatcher Dispatcher { get; set; } = null!;

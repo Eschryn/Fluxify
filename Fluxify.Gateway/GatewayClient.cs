@@ -185,6 +185,12 @@ public sealed partial class GatewayClient
         }
     }
 
+    public async Task UpdatePresenceAsync(PresenceUpdate data, CancellationToken cancellationToken = default) 
+        => await _client.SendAsync(new GatewayPayload(GatewayOpCode.PresenceUpdate, data), cancellationToken);
+
+    //public async Task UpdateVoiceStateAsync(VoiceStateUpdate data, CancellationToken cancellationToken = default)
+    //    => await _client.SendAsync(new GatewayPayload(GatewayOpCode.VoiceStateUpdate, data), cancellationToken);
+    
     private async Task LoginAsync(CancellationToken cancellationToken)
     {
         ConnectionState = ConnectionState.Authenticating;
@@ -202,8 +208,8 @@ public sealed partial class GatewayClient
                 new IdentifyPayloadData(
                     Token: _credentials!.Token,
                     Properties: _config.DeviceProperties,
-                    [],
-                    new PresenceUpdate(UserStatus.Online)
+                    _config.IgnoredGatewayEvents,
+                    _config.DefaultPresence
                 ))
         };
 
