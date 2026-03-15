@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Buffers;
 using Fluxify.Commands.Exceptions;
 using Fluxify.Core.Types;
 
@@ -20,15 +19,71 @@ namespace Fluxify.Commands.TextCommand;
 
 public class CommandReader(CommandTokenizer tokenizer)
 {
-    public T GetNext<T>() where T : Mentionable
+    public T GetNext<T>()
     {
         var next = GetNext(true);
+        if (next is ReadOnlyMemory<char> memory)
+        {
+            return (T)ParseMemory(memory, typeof(T));
+        }
+        
         if (next is T value)
             return value;
         
         throw new CommandException($"Invalid arguments provided. Expected: {typeof(T).Name}, got {next.GetType().Name}.");
     }
-    
+
+    private object ParseMemory(ReadOnlyMemory<char> memory, Type type)
+    {
+        try
+        {
+            if (type == typeof(int))
+                return int.Parse(memory.Span);
+            if (type == typeof(uint))
+                return uint.Parse(memory.Span);
+            if (type == typeof(bool))
+                return bool.Parse(memory.Span);
+            if (type == typeof(sbyte))
+                return sbyte.Parse(memory.Span);
+            if (type == typeof(byte))
+                return byte.Parse(memory.Span);
+            if (type == typeof(short))
+                return short.Parse(memory.Span);
+            if (type == typeof(ushort))
+                return ushort.Parse(memory.Span);
+            if (type == typeof(long))
+                return long.Parse(memory.Span);
+            if (type == typeof(ulong))
+                return ulong.Parse(memory.Span);
+            if (type == typeof(char))
+                return memory.Span[0];
+            if (type == typeof(decimal))
+                return decimal.Parse(memory.Span);
+            if (type == typeof(float))
+                return float.Parse(memory.Span);
+            if (type == typeof(double))
+                return double.Parse(memory.Span);
+            if (type == typeof(nint))
+                return nint.Parse(memory.Span);
+            if (type == typeof(nuint))
+                return nuint.Parse(memory.Span);
+            if (type == typeof(nint))
+                return nint.Parse(memory.Span);
+            if (type == typeof(string))
+                return memory.ToString();
+            if (type == typeof(char[]))
+                return memory.ToArray();
+            if (type == typeof(ReadOnlyMemory<char>))
+                return memory;
+        }
+        catch (FormatException e)
+        {
+            throw new CommandException($"Invalid argument provided. Malformed {type.Name}.");
+        }
+        
+        throw new NotSupportedException();
+    }
+
     public string GetNextString() => GetNext(true).ToString() ?? throw new CommandException("Invalid arguments provided.");
     
     public object GetNext(bool ignoreSpace = false)
@@ -39,7 +94,7 @@ public class CommandReader(CommandTokenizer tokenizer)
             case "<":
                 return ParseMention();
             default: 
-                return token.ToString();
+                return token;
         }
     }
 
