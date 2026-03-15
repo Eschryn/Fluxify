@@ -1,6 +1,6 @@
 namespace Fluxify.Dto.Guilds.Stickers;
 
-record GuildStickerUpdateRequest(
+public record GuildStickerUpdateRequest(
     string? Description,
     string? Name,
     string[]? Tags

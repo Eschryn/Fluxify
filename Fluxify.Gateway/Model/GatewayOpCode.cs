@@ -15,6 +15,9 @@ public enum GatewayOpCode
     /// Sent by the client to authenticate in the gateway
     /// </summary>
     Identify = 2,
+    /// <summary>
+    /// Sent by the client to update the presence status
+    /// </summary>
     PresenceUpdate = 3,
     VoiceStateUpdate = 4,
     VoiceServerPing = 5,

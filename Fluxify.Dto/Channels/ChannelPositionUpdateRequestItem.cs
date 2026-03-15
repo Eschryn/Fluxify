@@ -2,10 +2,10 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Channels;
 
-record ChannelPositionUpdateRequestItem(
+public record ChannelPositionUpdateRequest(
     Snowflake Id,
     bool? LockPermissions,
     Snowflake? ParentId,
-    long? Position,
+    long Position,
     Snowflake? PrecedingSiblingId
 );

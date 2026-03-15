@@ -11,5 +11,5 @@ public record GatewayTypingStart(
     [property: JsonConverter(typeof(JsonEpochTimeConverter))] 
     DateTimeOffset Timestamp,
     Snowflake? GuildId,
-    GuildMember? Member
+    GuildMemberResponse? Member
 );

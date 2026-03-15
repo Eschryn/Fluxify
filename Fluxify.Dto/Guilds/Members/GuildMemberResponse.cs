@@ -4,7 +4,7 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Guilds.Members;
 
-public record GuildMember(
+public record GuildMemberResponse(
     int? AccentColor,
     [property: JsonPropertyName("avatar")] string? AvatarHash,
     [property: JsonPropertyName("banner")] string? BannerHash,

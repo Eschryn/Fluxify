@@ -5,6 +5,7 @@ using System.Text.Json.Serialization.Metadata;
 using Fluxify.Core;
 using Fluxify.Dto.Json;
 using Fluxify.Rest.Channel;
+using Fluxify.Rest.Guilds;
 using Fluxify.Rest.Model;
 using Fluxify.Rest.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public class RestClient
         _config = config;
         _httpClient = config.ServiceProvider.GetRequiredService<HttpClient>();
 
+        Guilds = new GuildsRequestBuilder(_httpClient);
         Users = new UsersRequestBuilder(_httpClient);
         Channels = new ChannelsRequestBuilder(_httpClient);
     }
@@ -33,5 +35,6 @@ public class RestClient
     };
     
     public UsersRequestBuilder Users { get; }
+    public GuildsRequestBuilder Guilds { get; }
     public ChannelsRequestBuilder Channels { get; }
 }

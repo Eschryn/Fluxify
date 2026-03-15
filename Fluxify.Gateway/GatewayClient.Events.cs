@@ -144,13 +144,13 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.GuildDelete, value!);
     }
 
-    public event Func<GuildMember, Task>? GuildMemberAdd
+    public event Func<GuildMemberResponse, Task>? GuildMemberAdd
     {
         add => InsertHandler(GatewayEvent.GuildMemberAdd, value!);
         remove => RemoveHandler(GatewayEvent.GuildMemberAdd, value!);
     }
 
-    public event Func<GuildMember, Task>? GuildMemberUpdate
+    public event Func<GuildMemberResponse, Task>? GuildMemberUpdate
     {
         add => InsertHandler(GatewayEvent.GuildMemberUpdate, value!);
         remove => RemoveHandler(GatewayEvent.GuildMemberUpdate, value!);

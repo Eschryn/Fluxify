@@ -6,7 +6,7 @@ namespace Fluxify.Dto.Users;
 
 public record UserProfileFullResponse(
     ConnectionResponse[]? ConnectedAccounts,
-    GuildMember? GuildMember,
+    GuildMemberResponse? GuildMember,
     UserProfile? GuildMemberProfile,
     UserPartialResponse[]? Friends,
     MutualGuildResponse[]? MutualGuilds,

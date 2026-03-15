@@ -203,7 +203,7 @@ public sealed partial class GatewayClient
                     Token: _credentials!.Token,
                     Properties: _config.DeviceProperties,
                     [],
-                    new PresenceUpdatePacketData(UserStatus.Online)
+                    new PresenceUpdate(UserStatus.Online)
                 ))
         };
 
