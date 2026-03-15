@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Users.ScheduledMessages;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<ScheduledMessageStatus>))]
 public enum ScheduledMessageStatus
 {
     Pending,

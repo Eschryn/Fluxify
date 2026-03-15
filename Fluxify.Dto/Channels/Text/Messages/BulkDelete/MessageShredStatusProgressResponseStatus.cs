@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<MessageShredStatusProgressResponseStatus>))]
 public enum MessageShredStatusProgressResponseStatus
 {
     InProgress,
