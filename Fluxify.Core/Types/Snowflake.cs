@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -41,7 +42,7 @@ public readonly struct Snowflake(ulong value) : IConvertible,
     public string ToString(string? format, IFormatProvider? formatProvider) => _value.ToString(format, formatProvider);
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
         IFormatProvider? provider) => _value.TryFormat(destination, out charsWritten, format, provider);
-    public override string ToString() => $"{_value} [{DateTimeOffset.FromUnixTimeMilliseconds(this.UnixEpochMs):g}, {this.WorkerId}, {this.InternalProcessId}, {this.ScopedId}]";
+    public override string ToString() => _value.ToString();
     public int CompareTo(object? obj) => obj is Snowflake other ? CompareTo(other) : throw new ArgumentException("obj must be Snowflake");
 
     public bool TryFormat(
