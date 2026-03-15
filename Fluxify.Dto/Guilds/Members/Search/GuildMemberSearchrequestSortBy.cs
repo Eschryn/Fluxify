@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Guilds.Members.Search;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<GuildMemberSearchrequestSortBy>))]
 public enum GuildMemberSearchrequestSortBy
 {
     JoinedAt,

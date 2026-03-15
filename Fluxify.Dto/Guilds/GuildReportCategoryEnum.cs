@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Guilds;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<GuildReportCategoryEnum>))]
 public enum GuildReportCategoryEnum
 {
     Harassment,
