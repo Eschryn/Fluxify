@@ -20,7 +20,6 @@ using Fluxify.Commands.TextCommand;
 
 namespace Fluxify.Commands.Model;
 
-[RequiresDynamicCode("Generates IL at runtime. Try to use CommandDelegate directly when runtime code generation is not possible")]
 public static class CommandDelegateFactory
 {
     private static readonly PropertyInfo ContextServicesPropertyInfo = typeof(CommandContext).GetProperty(nameof(CommandContext.Services))!;
