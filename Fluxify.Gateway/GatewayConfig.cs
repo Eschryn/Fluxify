@@ -1,3 +1,4 @@
+using Fluxify.Gateway.Model.Data;
 using Fluxify.Gateway.WebSockets;
 
 namespace Fluxify.Gateway;
@@ -8,6 +9,7 @@ public class GatewayConfig
     public TimeSpan SendTimeout { get; set; } = TimeSpan.FromMinutes(30);
 
     public string[] IgnoredGatewayEvents { get; set; } = [];
+    public PresenceUpdate DefaultPresence { get; set; } = new(UserStatus.Online);
     
     // decide if we maybe want to restore a session from a file
     // public string SessionFile { get; set; } = "last_session";

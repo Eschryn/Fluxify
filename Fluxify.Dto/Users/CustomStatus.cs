@@ -3,8 +3,8 @@ using Fluxify.Core.Types;
 namespace Fluxify.Dto.Users;
 
 public record CustomStatus(
-    Snowflake? EmojiId,
-    string? EmojiName,
-    DateTimeOffset? ExpiresAt,
-    string? Text
+    Snowflake? EmojiId = null,
+    string? EmojiName = null,
+    DateTimeOffset? ExpiresAt = null,
+    string? Text = null
 );
