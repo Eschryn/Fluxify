@@ -1,5 +1,5 @@
 #!/usr/bin/env dotnet
-#:package Fluxify.Bot@0.1.0-preview
+#:package Fluxify.Bot@0.1.0-preview1
 #:package Microsoft.Extensions.Logging.Console@10.0.3
 
 // This is a Single file app -> run with `dotnet run Example.cs`
