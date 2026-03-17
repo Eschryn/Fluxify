@@ -18,6 +18,7 @@ using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
+using Fluxify.Dto.Guilds.AuditLog;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
@@ -119,7 +120,9 @@ internal static class EventNamePayloadClassMap
 
             { GatewayEvent.CallCreate, Data<GatewayCallSchema>() }, // untested
             { GatewayEvent.CallUpdate, Data<GatewayCallSchema>() }, // untested
-            { GatewayEvent.CallDelete, Data<GatewayChannelId>() } // untested
+            { GatewayEvent.CallDelete, Data<GatewayChannelId>() }, // untested
+            
+            { GatewayEvent.GuildAuditLogEntryCreate, Data<GuildAuditLogEntryResponse>() } // untested
         };
 
         TypeTable = sourceTable.ToFrozenDictionary(k => k.Key, v => v.Value.Item1);

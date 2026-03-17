@@ -14,10 +14,6 @@
 
 namespace Fluxify.Dto.Guilds.AuditLog;
 
-
-
-// GUILDS ARE DONE!!
-
 /// <summary>
 /// Represents a change in an audit log entry
 /// </summary>

@@ -19,6 +19,7 @@ using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
+using Fluxify.Dto.Guilds.AuditLog;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
@@ -139,7 +140,13 @@ public sealed partial class GatewayClient
         add => InsertHandler(GatewayEvent.PresenceUpdate, value!);
         remove => RemoveHandler(GatewayEvent.PresenceUpdate, value!);
     }
-
+    
+    public event Func<GuildAuditLogEntryResponse, Task>? GuildAuditLogEntryCreate
+    {
+        add => InsertHandler(GatewayEvent.GuildAuditLogEntryCreate, value!);
+        remove => RemoveHandler(GatewayEvent.GuildAuditLogEntryCreate, value!);
+    }
+    
     public event Func<GatewayGuildCreate, Task>? GuildCreate
     {
         add => InsertHandler(GatewayEvent.GuildCreate, value!);
