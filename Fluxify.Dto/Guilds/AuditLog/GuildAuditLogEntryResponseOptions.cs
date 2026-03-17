@@ -29,6 +29,6 @@ public record GuildAuditLogEntryResponseOptions(
     Snowflake? MessageId,
     string? RoleName,
     bool? Temporary,
-    int? Type,
+    string? Type,
     int? Uses
 );
