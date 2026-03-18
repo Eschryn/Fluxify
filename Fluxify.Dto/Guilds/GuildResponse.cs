@@ -25,7 +25,7 @@ public record GuildResponse(
     int? BannerHeight,
     int? BannerWidth,
     DefaultMessageNotifications DefaultMessageNotifications,
-    GuildOperations DisabledOperations,
+    /*GuildOperations*/ long DisabledOperations, // the enum doesnt match the api
     [property: JsonPropertyName("embed_splash")]
     string? EmbedSplashHash,
     int? EmbedSplashHeight,
