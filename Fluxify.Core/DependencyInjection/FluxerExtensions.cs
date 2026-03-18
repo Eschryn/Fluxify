@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class FluxerExtensions
 {
-    public static IServiceCollection AddFluxerCore(this IServiceCollection services, Func<IServiceProvider, FluxerConfig> configure)
+    public static IServiceCollection AddFluxifyCore(this IServiceCollection services, Func<IServiceProvider, FluxerConfig> configure)
     {
         services.TryAddScoped<FluxerConfig>(sp =>
         {
