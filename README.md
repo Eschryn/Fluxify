@@ -109,6 +109,62 @@ var bot = new Bot(..., gatewayConfig);
 ...
 ```
 
+### ASP.NET Core
+To use Fluxify with ASP.NET Core register the core providers and RestClient in the dependency injection container.
+Additionally you need the `Fluxify.AspNetCore.Authentication` for the `AddFluxer` authentication option.
+Example setup for a webapp:
+```cs
+builder.Services.AddFluxifyCore(sp => new FluxerConfig
+{
+    CredentialProvider = sp.GetRequiredService<IAccessTokenProvider>().GetAuthenticationTokenAsync 
+})
+
+builder.Services.AddScoped<RestClient>();
+
+builder.Services
+    .AddAuthentication(o =>
+    {
+        o.DefaultScheme = FluxerAuthenticationDefaults.AuthenticationScheme;
+        o.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddFluxer(o =>
+    {
+        o.ClientId = builder.Configuration["Fluxer:ClientId"]!;
+        o.ClientSecret = builder.Configuration["Fluxer:ClientSecret"]!;
+
+        // o.Scope.Add("guilds") etc..
+
+        o.SaveTokens = true;
+    })  
+    .AddCookie();
+```
+Then configure your secret and client id using the user secrets CLI or Visual Studio / Rider.
+```
+$ dotnet user-secrets init
+$ dotnet user-secrets set "Fluxer:ClientId" "<Client ID here>"
+$ dotnet user-secrets set "Fluxer:ClientSecret" "<Client ID here>"
+```
+Clear the entries from the history file.
+You could then just use the RestClient as service using dependency injection.
+```razor
+@page "/"
+@using Fluxify.Dto.OAuth2
+@using Fluxify.Rest
+@using Microsoft.AspNetCore.Authorization
+@inject RestClient FluxerClient
+@attribute [Authorize]
+
+Welcome @(Me?.User.Username)
+
+@code {
+    [PersistentState]
+    public OAuth2MeResponse? Me { get; set; }
+
+    protected override async Task OnInitializedAsync() 
+        => Me = await FluxerClient.OAuth2.MeAsync();
+}
+```
+
 ### Help I cannot find request X
 Currently not all REST functionality is exposed via the Entities.
 This means in cases you need functions not exposed in the higher level entities
