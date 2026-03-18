@@ -24,7 +24,11 @@ using Fluxify.Gateway.Model.Data.Voice;
 
 namespace Fluxify.Gateway.Model;
 
-[JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower)]
+[JsonSourceGenerationOptions(
+    WriteIndented = true,
+    NumberHandling = JsonNumberHandling.AllowReadingFromString,
+    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower
+)]
 [JsonSerializable(typeof(GatewayPayload))]
 [JsonSerializable(typeof(IdentifyPayloadData))]
 [JsonSerializable(typeof(HelloPayloadData))]
@@ -64,4 +68,5 @@ namespace Fluxify.Gateway.Model;
 [JsonSerializable(typeof(GatewaySession[]))]
 [JsonSerializable(typeof(object))]
 [JsonSerializable(typeof(bool))]
+[JsonSerializable(typeof(UpdateVoiceState))]
 public partial class GatewayJsonContext : JsonSerializerContext;

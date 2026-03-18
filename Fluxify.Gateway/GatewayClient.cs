@@ -17,6 +17,7 @@ using Fluxify.Core;
 using Fluxify.Core.Credentials;
 using Fluxify.Gateway.Model;
 using Fluxify.Gateway.Model.Data;
+using Fluxify.Gateway.Model.Data.Voice;
 using Fluxify.Gateway.WebSockets;
 using Microsoft.Extensions.Logging;
 
@@ -209,8 +210,8 @@ public sealed partial class GatewayClient
     public async Task UpdatePresenceAsync(PresenceUpdate data, CancellationToken cancellationToken = default) 
         => await _client.SendAsync(new GatewayPayload(GatewayOpCode.PresenceUpdate, data), cancellationToken);
 
-    //public async Task UpdateVoiceStateAsync(VoiceStateUpdate data, CancellationToken cancellationToken = default)
-    //    => await _client.SendAsync(new GatewayPayload(GatewayOpCode.VoiceStateUpdate, data), cancellationToken);
+    public async Task UpdateVoiceStateAsync(UpdateVoiceState data, CancellationToken cancellationToken = default)
+        => await _client.SendAsync(new GatewayPayload(GatewayOpCode.VoiceStateUpdate, data), cancellationToken);
     
     private async Task LoginAsync(CancellationToken cancellationToken)
     {
