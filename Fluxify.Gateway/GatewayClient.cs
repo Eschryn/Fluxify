@@ -14,6 +14,7 @@
 
 using System.Net.WebSockets;
 using Fluxify.Core;
+using Fluxify.Core.Credentials;
 using Fluxify.Gateway.Model;
 using Fluxify.Gateway.Model.Data;
 using Fluxify.Gateway.WebSockets;
@@ -29,9 +30,8 @@ public sealed partial class GatewayClient
 
     private int? _lastSequence;
     public string? SessionId { get; private set; }
-    private BotTokenCredentials _credentials;
+    private readonly ITokenCredentials _credentials;
     private CancellationTokenSource? _connectionTokenSource;
-    private Uri _endpoint;
 
     public ConnectionState ConnectionState
     {
@@ -86,20 +86,25 @@ public sealed partial class GatewayClient
 
     public async Task RunAsync(Uri endpoint, CancellationToken cancellationToken = default)
     {
+        if (ConnectionState is not ConnectionState.Connecting)
+        {
+            throw new InvalidOperationException("GatewayClient is already running.");
+        }
+        
         if (!_credentials.Validate())
         {
             return;
         }
 
-        _endpoint = new UriBuilder(endpoint)
+        endpoint = new UriBuilder(endpoint)
         {
             Query = "v=1&encoding=json"
         }.Uri;
         
-        await LoopAsync(cancellationToken);
+        await LoopAsync(endpoint, cancellationToken);
     }
 
-    private async Task LoopAsync(CancellationToken cancellationToken)
+    private async Task LoopAsync(Uri instanceEndpoint, CancellationToken cancellationToken)
     {
         ConnectionState = ConnectionState.Connecting;
 
@@ -111,7 +116,7 @@ public sealed partial class GatewayClient
                 var connectionCancellationToken = connectionTokenSource.Token;
                 _connectionTokenSource = connectionTokenSource;
 
-                await _client.ConnectAsync(_endpoint, connectionCancellationToken);
+                await _client.ConnectAsync(instanceEndpoint, connectionCancellationToken);
 
                 while (ConnectionState != ConnectionState.Disconnected)
                 {
