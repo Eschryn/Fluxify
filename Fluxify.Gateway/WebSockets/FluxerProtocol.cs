@@ -29,6 +29,7 @@ public sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSock
     private readonly JsonSerializerOptions _serializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
         TypeInfoResolver = JsonTypeInfoResolver.Combine(
             Model.GatewayJsonContext.Default,
             DtoJsonContext.Default
