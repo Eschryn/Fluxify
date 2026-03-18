@@ -4,6 +4,17 @@
 [![NuGet Version](https://img.shields.io/nuget/v/Fluxify.Bot?style=flat-square)](https://www.nuget.org/packages/Fluxify.Bot)
 [![GitHub License](https://img.shields.io/github/license/Eschryn/Fluxify?style=flat-square)](LICENSE)
 
+<!-- TOC -->
+* [Fluxify](#fluxify-)
+  * [Getting Started](#getting-started)
+    * [Building a Bot](#building-a-bot)
+    * [Preconditions](#preconditions)
+    * [Logging (Simple)](#logging-simple)
+    * [Dependency Injection](#dependency-injection)
+    * [Bot Presence](#bot-presence)
+    * [Help I cannot find request X](#help-i-cannot-find-request-x)
+<!-- TOC -->
+
 ## Getting Started
 See `Example.cs` for a simple starting point
 
@@ -59,8 +70,7 @@ bot.Module("secret", m =>
 ```
 
 ### Logging (Simple)
-Fluxify does not privide any logging by itself, to use logging use any logging package that supports the `ILoggerFactory` interface
-Using `FluxerConfig` provide a `ILoggerFactory`.
+Fluxify does not provide any logging by itself. To use logging use any logging package that supports the `ILoggerFactory` interface.
 
 Example with `Microsoft.Extensions.Logging.Console`:
 ```csharp
