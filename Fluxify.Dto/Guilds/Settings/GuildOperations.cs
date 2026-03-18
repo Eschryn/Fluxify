@@ -15,7 +15,7 @@
 namespace Fluxify.Dto.Guilds.Settings;
 
 [Flags]
-public enum GuildOperations : uint
+public enum GuildOperations : ulong
 {
     PushNotification = 1,
     EveryoneMentions = 2,

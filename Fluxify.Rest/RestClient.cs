@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -21,6 +22,7 @@ using Fluxify.Dto.Json;
 using Fluxify.Rest.Channel;
 using Fluxify.Rest.Guilds;
 using Fluxify.Rest.Model;
+using Fluxify.Rest.OAuth2;
 using Fluxify.Rest.Users;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,6 +42,7 @@ public class RestClient
         Users = new UsersRequestBuilder(_httpClient);
         Channels = new ChannelsRequestBuilder(_httpClient);
         Gateway = new GatewayRequestBuilder(_httpClient);
+        OAuth2 = new OAuth2RequestBuilder(_httpClient);
     }
 
     internal static JsonSerializerOptions DefaultJsonOptions { get; } = new()
@@ -53,4 +56,5 @@ public class RestClient
     public UsersRequestBuilder Users { get; }
     public GuildsRequestBuilder Guilds { get; }
     public ChannelsRequestBuilder Channels { get; }
+    public OAuth2RequestBuilder OAuth2 { get; }
 }
