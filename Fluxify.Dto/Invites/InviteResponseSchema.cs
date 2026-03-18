@@ -12,28 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
+using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Common;
-using Fluxify.Dto.Invites;
+using Fluxify.Dto.Guilds.Invite;
+using Fluxify.Dto.Packs;
 using Fluxify.Dto.Users;
 
-namespace Fluxify.Dto.Channels.GroupDm;
+namespace Fluxify.Dto.Invites;
 
-public record GroupDmInviteMetadataResponse(
-    ChannelPartialResponse Channel,
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+[JsonDerivedType(typeof(GuildInviteResponse), (int)InviteType.Guild)]
+[JsonDerivedType(typeof(GroupDmInviteResponse), (int)InviteType.GroupDm)]
+[JsonDerivedType(typeof(PackInviteResponse), (int)InviteType.EmojiPackInvite)]
+[JsonDerivedType(typeof(PackInviteResponse), (int)InviteType.StickerPackInvite)]
+public record InviteResponseSchema(
     string Code,
-    DateTimeOffset CreatedAt,
-    DateTimeOffset? ExpiresAt,
     UserPartialResponse? Inviter,
-    int MaxUses,
-    int MemberCount,
-    bool Temporary,
-    int Uses
-) : InviteMetadataResponseSchema(
-    Code,
-    CreatedAt,
-    ExpiresAt,
-    Inviter,
-    MaxUses,
-    Temporary,
-    Uses
+    bool Temporary
 );

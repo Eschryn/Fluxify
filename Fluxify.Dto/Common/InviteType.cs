@@ -17,5 +17,7 @@ namespace Fluxify.Dto.Common;
 public enum InviteType
 {
     Guild = 0,
-    GroupDm = 1
+    GroupDm = 1,
+    EmojiPackInvite = 2,
+    StickerPackInvite = 3,
 }

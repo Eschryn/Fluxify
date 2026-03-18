@@ -12,28 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Dto.Common;
-using Fluxify.Dto.Invites;
-using Fluxify.Dto.Users;
+namespace Fluxify.Dto.Channels;
 
-namespace Fluxify.Dto.Channels.GroupDm;
-
-public record GroupDmInviteMetadataResponse(
-    ChannelPartialResponse Channel,
-    string Code,
-    DateTimeOffset CreatedAt,
-    DateTimeOffset? ExpiresAt,
-    UserPartialResponse? Inviter,
-    int MaxUses,
-    int MemberCount,
-    bool Temporary,
-    int Uses
-) : InviteMetadataResponseSchema(
-    Code,
-    CreatedAt,
-    ExpiresAt,
-    Inviter,
-    MaxUses,
-    Temporary,
-    Uses
+public record ChannelInviteCreateRequest(
+    int? MaxAge,
+    int? MaxUses,
+    bool? Temporary,
+    bool? Unique
 );

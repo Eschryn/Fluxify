@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Dto.Common;
+using Fluxify.Dto.Invites;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels.GroupDm;
@@ -23,6 +24,9 @@ public record GroupDmInviteResponse(
     DateTimeOffset? ExpiresAt,
     UserPartialResponse? Inviter,
     int MemberCount,
-    bool Temporary,
-    InviteType Type
+    bool Temporary
+) : InviteResponseSchema(
+    Code,
+    Inviter,
+    Temporary
 );
