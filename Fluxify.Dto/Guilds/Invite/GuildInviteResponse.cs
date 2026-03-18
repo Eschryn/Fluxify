@@ -14,6 +14,7 @@
 
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Common;
+using Fluxify.Dto.Invites;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Guilds.Invite;
@@ -26,5 +27,9 @@ public record GuildInviteResponse(
     UserPartialResponse? Inviter,
     int MemberCount,
     int PresenceCount,
-    bool Temporary,
-    InviteType Type);
+    bool Temporary
+) : InviteResponseSchema(
+    Code,
+    Inviter,
+    Temporary
+);
