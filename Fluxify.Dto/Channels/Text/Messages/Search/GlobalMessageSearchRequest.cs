@@ -53,7 +53,8 @@ public sealed record GlobalMessageSearchRequest(
     MessageSearchScope? Scope,
     Snowflake? ContextChannelId,
     Snowflake? ContextGuildId,
-    Snowflake[]? ChannelIds
+    Snowflake[]? ChannelIds,
+    bool? Indexing
 ) : MessageSearchRequest(
     HitsPerPage,
     Page,
@@ -87,5 +88,6 @@ public sealed record GlobalMessageSearchRequest(
     SortField,
     SortOrder,
     IncludeNsfw,
-    Scope
+    Scope,
+    Indexing
 );
