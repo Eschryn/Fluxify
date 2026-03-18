@@ -20,5 +20,7 @@ public record PresenceUpdate(
     UserStatus Status,
     bool? Mobile = false,
     bool? Afk = false,
+    // can only be set on login
+    // https://github.com/fluxerapp/fluxer/blob/91ba0b096f6f39c717ebdadf48e39c394db21c8d/fluxer_gateway/src/gateway/gateway_handler.erl#L516
     CustomStatus? CustomStatus = null
 );
