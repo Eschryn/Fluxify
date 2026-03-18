@@ -23,28 +23,6 @@ namespace Fluxify.Commands.CommandCollection;
 
 public class CommandCollection : ICommandCollection
 {
-    private Func<CommandException, MessageDto?> _commandExceptionFormatter 
-        = e =>
-        {
-            if (e is CommandNotFoundException)
-                return null;
-            
-            return new MessageDto
-            {
-                Embeds =
-                [
-                    new Embed
-                    {
-                        Title = "⚠️Error",
-                        Description = e.Response
-                    }
-                ],
-                AllowedMentions = new AllowedMentions
-                {
-                    RepliedUser = false
-                }
-            };
-        };
     private List<RegistrationEntry> RegistrationEntries { get; set; } = [];
     private Dictionary<string, Precondition> Preconditions { get; set; } = [];
 
@@ -69,11 +47,12 @@ public class CommandCollection : ICommandCollection
     }
 
     public TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider serviceProvider)
+        => BuildDispatcher(new CommandConfiguration(prefix, serviceProvider));
+    
+    public TextCommandDispatcher BuildDispatcher(CommandConfiguration configuration)
     {
         return new TextCommandDispatcher(
-            prefix,
-            _commandExceptionFormatter,
-            serviceProvider,
+            configuration,
             CommandTreeNode.FromEntries(RegistrationEntries, Preconditions.Values.ToArray()),
             RegistrationEntries);
     }

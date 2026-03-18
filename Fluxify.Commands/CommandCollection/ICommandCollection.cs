@@ -21,6 +21,7 @@ public interface ICommandCollection
 {
     ICommandCollection Command(CommandMeta meta, CommandDelegate handler, string[]? preconditions = null);
     ICommandCollection Module(ModuleMeta meta, Action<ICommandCollection> configure, string[]? preconditions = null);
-    TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider? serviceProvider = null);
+    TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider serviceProvider);
     ICommandCollection Precondition(Precondition precondition);
+    TextCommandDispatcher BuildDispatcher(CommandConfiguration configuration);
 }
