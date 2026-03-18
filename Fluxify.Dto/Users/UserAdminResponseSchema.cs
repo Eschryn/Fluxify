@@ -14,13 +14,14 @@
 
 using Fluxify.Core.Types;
 using Fluxify.Dto.Admin;
+using Fluxify.Dto.Auth;
 
 namespace Fluxify.Dto.Users;
 
 public record UserAdminResponseSchema(
     int? AccentColor,
     string[] Acls,
-    UserAuthenticatorTypes[] AuthenticatorTypes,
+    AuthenticatorTypes[] AuthenticatorTypes,
     string? Avatar,
     string? Banner,
     string? Bio,

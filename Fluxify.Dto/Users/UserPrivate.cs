@@ -14,13 +14,14 @@
 
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Auth;
 
 namespace Fluxify.Dto.Users;
 
 public record UserPrivate(
     int? AccentColor,
     string[] Acls,
-    UserAuthenticatorTypes[] AuthenticatorTypes,
+    AuthenticatorTypes[] AuthenticatorTypes,
     [property: JsonPropertyName("avatar")] string? AvatarHash,
     int? AvatarColor,
     [property: JsonPropertyName("banner")] string? BannerHash,
