@@ -25,35 +25,29 @@ namespace Fluxify.Commands.TextCommand;
 
 public class TextCommandDispatcher
 {
-    private readonly string _prefix;
-    private readonly Func<CommandException, MessageDto?> _commandExceptionFormatter;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly CommandConfiguration _config;
     private readonly CommandTreeNode _rootTreeNode;
     private readonly List<RegistrationEntry> _registrationEntries;
 
     internal TextCommandDispatcher(
-        string prefix,
-        Func<CommandException, MessageDto?> commandExceptionFormatter,
-        IServiceProvider serviceProvider,
+        CommandConfiguration config,
         CommandTreeNode rootTreeNode,
         List<RegistrationEntry> registrationEntries)
     {
-        _prefix = prefix;
-        _commandExceptionFormatter = commandExceptionFormatter;
-        _serviceProvider = serviceProvider;
+        _config = config;
         _rootTreeNode = rootTreeNode;
         _registrationEntries = registrationEntries;
     }
 
     public async Task DispatchAsync(Message message)
     {
-        if (!message.Content.StartsWith(_prefix) || message.Author.Bot == true)
+        if (!_config.IsValidCommand(message))
         {
             return;
         }
 
-        using var scope = _serviceProvider.CreateScope();
-        var commandContext = new CommandContext(_prefix, message, scope.ServiceProvider);
+        using var scope = _config.ServiceProvider.CreateScope();
+        var commandContext = new CommandContext(_config.DefaultPrefix, message, scope.ServiceProvider);
         var currentTreeNode = _rootTreeNode;
 
         while (true)
@@ -81,10 +75,7 @@ public class TextCommandDispatcher
             }
             catch (CommandException e)
             {
-                if (e.Response is not null && _commandExceptionFormatter(e) is {} messageDto)
-                {
-                    await commandContext.ReplyAsync(messageDto);
-                }
+                _config.CommandExceptionHandler?.Invoke(commandContext, e);
 
                 break;
             }
