@@ -15,6 +15,7 @@
 using System.Globalization;
 using System.Text;
 using Fluxify.Core.Credentials;
+using Fluxify.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -33,9 +34,9 @@ public class FluxerConfig
     private const int GatewayVersion = 1;
     private static readonly CompositeFormat VersionPathFormat = CompositeFormat.Parse("v{0}/");
     public Uri InstanceUri { get; init; } = new("https://api.fluxer.app/");
-    public ILoggerFactory LoggerFactory { get; init; }
+    public ILoggerFactory LoggerFactory { get; set; }
     public IServiceProvider ServiceProvider { get; set; }
-    public Func<FluxerConfig, HttpClient>? HttpClientFactory { get; set; } = DefaultHttpClientFactory;
+    public Func<FluxerConfig, HttpClient> HttpClientFactory { get; set; } = DefaultHttpClientFactory;
 
     private static HttpClient DefaultHttpClientFactory(FluxerConfig cfg)
     {
@@ -46,17 +47,30 @@ public class FluxerConfig
             PooledConnectionLifetime = TimeSpan.FromMinutes(15)
         };
 
-        return new HttpClient(socketsHttpHandler)
+        if (cfg.Credentials is BotTokenCredentials botTokenCredentials)
         {
-            BaseAddress = cfg.GetApiBaseUri(),
-            DefaultRequestHeaders =
+            return new HttpClient(socketsHttpHandler)
             {
-                { "Authorization", cfg.Credentials.GetAuthorizationHeaderValue() }
-            }
-        };
+                BaseAddress = cfg.GetApiBaseUri(),
+                DefaultRequestHeaders =
+                {
+                    { "Authorization", cfg.Credentials.GetAuthorizationHeaderValue() }
+                }
+            };
+        }
+        else
+        {
+            var authenticationHeaderHandler = cfg.ServiceProvider.GetRequiredService<AuthenticationHeaderHandler>();
+            authenticationHeaderHandler.InnerHandler = socketsHttpHandler;
+            
+            return new HttpClient(authenticationHeaderHandler)
+            {
+                BaseAddress = cfg.GetApiBaseUri()
+            };
+        }
     }
 
-    public ITokenCredentials Credentials { get; set; }
+    public required ITokenCredentials Credentials { get; set; }
 
     public Uri GetApiBaseUri() => 
         new(InstanceUri, string.Format(CultureInfo.InvariantCulture, VersionPathFormat, ApiVersion));

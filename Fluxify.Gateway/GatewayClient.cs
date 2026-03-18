@@ -44,10 +44,10 @@ public sealed partial class GatewayClient
         }
     } = ConnectionState.Connecting;
 
-    public GatewayClient(FluxerConfig? config = null, GatewayConfig? gatewayConfig = null)
+    public GatewayClient(FluxerConfig config, GatewayConfig? gatewayConfig = null)
         : this(
             gatewayConfig ?? new GatewayConfig(),
-            config ??= new FluxerConfig(),
+            config,
             config.LoggerFactory.CreateLogger<GatewayClient>())
     {
     }

@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
+
 namespace Fluxify.Core.Types;
 
 [Flags]
+[JsonConverter(typeof(PermissionConverter))]
 public enum Permissions : ulong
 {
     CreateInstantInvite = 0x1,

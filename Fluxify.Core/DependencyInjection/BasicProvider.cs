@@ -15,7 +15,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Fluxify.Core;
+namespace Fluxify.Core.DependencyInjection;
 
 public class BasicProvider(FluxerConfig fluxerConfig) : IServiceProvider
 {
@@ -32,6 +32,10 @@ public class BasicProvider(FluxerConfig fluxerConfig) : IServiceProvider
         else if (serviceType == typeof(ILoggerFactory))
         {
             return fluxerConfig.LoggerFactory;
+        }
+        else if (serviceType == typeof(AuthenticationHeaderHandler))
+        {
+            return new AuthenticationHeaderHandler(fluxerConfig);
         }
 
         return null;

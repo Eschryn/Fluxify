@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Core.Credentials;
+namespace Fluxify.Core.Events;
 
-public class BearerTokenCredentials(string? token = null) : ITokenCredentials
+public interface IHandlerContainer
 {
-    private const string TypeConst = "Bearer";
-    public string Token { get; set; } = token ?? string.Empty;
-    public bool Validate()
-    {
-        return true;
-    }
-
-    public string GetAuthorizationHeaderValue() => $"{TypeConst} {Token}";
+    Task CallHandlersAsync(object eventPayload);
 }

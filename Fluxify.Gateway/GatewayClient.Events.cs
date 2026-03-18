@@ -14,7 +14,7 @@
 
 using System.Collections.Frozen;
 using System.Runtime.CompilerServices;
-using Fluxify.Core;
+using Fluxify.Core.Events;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
