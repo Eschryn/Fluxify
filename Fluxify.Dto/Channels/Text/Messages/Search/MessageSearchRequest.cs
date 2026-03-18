@@ -51,5 +51,6 @@ public record MessageSearchRequest(
     MessageSortField? SortField,
     MessageSortOrder? SortOrder,
     bool? IncludeNsfw,
-    MessageSearchScope? Scope
+    MessageSearchScope? Scope,
+    bool? Indexing
 );
