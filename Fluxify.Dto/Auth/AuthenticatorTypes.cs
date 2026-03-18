@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Dto.Users;
+namespace Fluxify.Dto.Auth;
 
-public enum UserAuthenticatorTypes
+public enum AuthenticatorTypes
 {
     Otp = 0,
     Sms = 1,

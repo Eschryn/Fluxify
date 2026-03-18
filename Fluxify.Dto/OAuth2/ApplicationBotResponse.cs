@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
-using Fluxify.Dto.Users;
+using Fluxify.Dto.Auth;
 
 namespace Fluxify.Dto.OAuth2;
 
