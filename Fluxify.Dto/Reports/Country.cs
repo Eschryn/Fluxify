@@ -1,0 +1,62 @@
+using System.Text.Json.Serialization;
+
+namespace Fluxify.Dto.Reports;
+
+[JsonConverter(typeof(JsonStringEnumConverter<Country>))]
+public enum Country
+{
+    [JsonStringEnumMemberName("AT")]
+    Austria,
+    [JsonStringEnumMemberName("BE")]
+    Belgium,
+    [JsonStringEnumMemberName("BG")]
+    Bulgaria,
+    [JsonStringEnumMemberName("HR")]
+    Croatia,
+    [JsonStringEnumMemberName("CY")]
+    Cyprus,
+    [JsonStringEnumMemberName("CZ")]
+    Czechia,
+    [JsonStringEnumMemberName("DK")]
+    Denmark,
+    [JsonStringEnumMemberName("EE")]
+    Estonia,
+    [JsonStringEnumMemberName("FI")]
+    Finland,
+    [JsonStringEnumMemberName("FR")]
+    France,
+    [JsonStringEnumMemberName("DE")]
+    Germany,
+    [JsonStringEnumMemberName("GR")]
+    Greece,
+    [JsonStringEnumMemberName("HU")]
+    Hungary,
+    [JsonStringEnumMemberName("IE")]
+    Ireland,
+    [JsonStringEnumMemberName("IT")]
+    Italy,
+    [JsonStringEnumMemberName("LV")]
+    Latvia,
+    [JsonStringEnumMemberName("LT")]
+    Lithuania,
+    [JsonStringEnumMemberName("LU")]
+    Luxembourg,
+    [JsonStringEnumMemberName("MT")]
+    Malta,
+    [JsonStringEnumMemberName("NL")]
+    Netherlands,
+    [JsonStringEnumMemberName("PL")]
+    Poland,
+    [JsonStringEnumMemberName("PT")]
+    Portugal,
+    [JsonStringEnumMemberName("RO")]
+    Romania,
+    [JsonStringEnumMemberName("SK")]
+    Slovakia,
+    [JsonStringEnumMemberName("SI")]
+    Slovenia,
+    [JsonStringEnumMemberName("ES")]
+    Spain,
+    [JsonStringEnumMemberName("SE")]
+    Sweden,
+}
