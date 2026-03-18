@@ -18,26 +18,30 @@ public class AuthenticationHeaderHandler(
     FluxerConfig config
 ) : DelegatingHandler
 {
-    protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        AddAuthorizationHeader(request);
+    private string? _cachedTokenValue;
+    
+    protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken) 
+        => throw new NotImplementedException();
 
-        return base.Send(request, cancellationToken);
-    }
-
-    private void AddAuthorizationHeader(HttpRequestMessage request)
+    private async Task AddAuthorizationHeader(HttpRequestMessage request)
     {
-        if (config.Credentials is { Token: { } token } credentials 
+        if (_cachedTokenValue is not null)
+        {
+            request.Headers.Add("Authorization", _cachedTokenValue);
+            return;
+        }
+        
+        if (await config.CredentialProvider() is { Token : { } token } credentials 
             && !string.IsNullOrEmpty(credentials.Token))
         {
-            request.Headers.Add("Authorization", credentials.GetAuthorizationHeaderValue());
+            request.Headers.Add("Authorization", _cachedTokenValue = credentials.GetAuthorizationHeaderValue());
         }
     }
 
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        AddAuthorizationHeader(request);
+        await AddAuthorizationHeader(request);
         
-        return base.SendAsync(request, cancellationToken);
+        return await base.SendAsync(request, cancellationToken);
     }
 }

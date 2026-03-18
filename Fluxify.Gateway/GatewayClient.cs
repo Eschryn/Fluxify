@@ -27,11 +27,12 @@ public sealed partial class GatewayClient
 {
     private readonly ILogger _logger;
     private readonly GatewayConfig _config;
+    private readonly FluxerConfig _fluxerConfig;
     private readonly WebSocketClient<FluxerProtocol, GatewayPayload> _client;
 
     private int? _lastSequence;
     public string? SessionId { get; private set; }
-    private readonly ITokenCredentials _credentials;
+    private ITokenCredentials _credentials = null!;
     private CancellationTokenSource? _connectionTokenSource;
 
     public ConnectionState ConnectionState
@@ -54,13 +55,13 @@ public sealed partial class GatewayClient
 
     public GatewayClient(GatewayConfig config, FluxerConfig fluxerConfig, ILogger logger)
     {
-        _credentials = fluxerConfig.Credentials;
         _logger = logger;
         _client = new WebSocketClient<FluxerProtocol, GatewayPayload>(
             new FluxerProtocol(fluxerConfig),
             config.WebSocketClientConfig
         );
         _config = config;
+        _fluxerConfig = fluxerConfig;
 
         // TODO: Maybe handle ready and resumed differently
         Ready += async r =>
@@ -92,6 +93,7 @@ public sealed partial class GatewayClient
             throw new InvalidOperationException("GatewayClient is already running.");
         }
         
+        _credentials = await _fluxerConfig.CredentialProvider(_fluxerConfig);
         if (!_credentials.Validate())
         {
             return;

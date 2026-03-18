@@ -46,31 +46,34 @@ public class FluxerConfig
             AllowAutoRedirect = false,
             PooledConnectionLifetime = TimeSpan.FromMinutes(15)
         };
-
-        if (cfg.Credentials is BotTokenCredentials botTokenCredentials)
-        {
-            return new HttpClient(socketsHttpHandler)
-            {
-                BaseAddress = cfg.GetApiBaseUri(),
-                DefaultRequestHeaders =
-                {
-                    { "Authorization", cfg.Credentials.GetAuthorizationHeaderValue() }
-                }
-            };
-        }
-        else
-        {
-            var authenticationHeaderHandler = cfg.ServiceProvider.GetRequiredService<AuthenticationHeaderHandler>();
-            authenticationHeaderHandler.InnerHandler = socketsHttpHandler;
+        
+        
+        var authenticationHeaderHandler = cfg.ServiceProvider.GetRequiredService<AuthenticationHeaderHandler>();
+        authenticationHeaderHandler.InnerHandler = socketsHttpHandler;
             
-            return new HttpClient(authenticationHeaderHandler)
-            {
-                BaseAddress = cfg.GetApiBaseUri()
-            };
-        }
+        return new HttpClient(authenticationHeaderHandler)
+        {
+            BaseAddress = cfg.GetApiBaseUri()
+        };
     }
 
-    public required ITokenCredentials Credentials { get; set; }
+    public Func<Task<ITokenCredentials>> CredentialProvider { get; set; } 
+        = () => Task.FromException<ITokenCredentials>(new InvalidOperationException("No credentials provider set."));
+
+    // todo: move to bot config and mark obsolete
+    public ITokenCredentials? Credentials
+    {
+        get;
+        set
+        {
+            field = value;
+            
+            if (value is not null)
+            {
+                CredentialProvider = () => Task.FromResult(value);
+            }
+        }
+    }
 
     public Uri GetApiBaseUri() => 
         new(InstanceUri, string.Format(CultureInfo.InvariantCulture, VersionPathFormat, ApiVersion));
