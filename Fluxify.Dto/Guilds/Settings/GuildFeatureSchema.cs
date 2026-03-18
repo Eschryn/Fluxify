@@ -32,12 +32,16 @@ public enum GuildFeatureSchema
     UnlimitedStickers,
     ExpressionPurgeAllowed,
     VanityUrl,
+    Discoverable,
+    Partnered,
     Verified,
     VipVoice,
+    UnavailableHidden,
     UnavailableForEveryone,
     UnavailableForEveryoneButStaff,
     Visionary,
     Operator,
     LargeGuildOverride,
     VeryLargeGuild,
+    RaidDetected
 }
