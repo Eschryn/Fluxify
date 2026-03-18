@@ -47,7 +47,9 @@ using Fluxify.Dto.Users.Settings.Security.Webauth;
 
 namespace Fluxify.Dto.Json;
 
-[JsonSourceGenerationOptions]
+[JsonSourceGenerationOptions(
+    NumberHandling = JsonNumberHandling.AllowReadingFromString
+)]
 [JsonSerializable(typeof(Snowflake))]
 [JsonSerializable(typeof(Snowflake[]))]
 [JsonSerializable(typeof(UserPrivate))]
