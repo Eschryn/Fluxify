@@ -69,30 +69,6 @@ bot.Module("secret", m =>
     );
 ```
 
-### Connecting to Voice
-Since Fluxify 0.1.1-preview you can already connect to voice channels. 
-At the moment you need another library for the LiveKit implementation and there isnt much infrastucture.
-But it's really simple nonetheless.
-For the example I used the `Livekit.Rtc.Dotnet` Package.
-```csharp
-var bot = new Bot("!", fluxerConfig);
-var activeVc = new ConcurrentDictionary<ulong, (Room)>();
-
-// !join <channel-mention> ex. !join #smalltalk
-bot.Commands.Command("join", async (CommandContext ctx) => 
-{
-    var channelMention = ctx.Reader.GetNext<Mentionable.Channel>();
-    var channel = await bot.Channels.GetAsync(channelMention.Id);
-
-    if (channel is not GuildVoiceChannel vc)
-    {
-        throw new CommandException($"{channelMention} is not a voice channel!");    
-    }
-    
-    var room = await
-})
-```
-
 ### Logging (Simple)
 Fluxify does not provide any logging by itself. To use logging use any logging package that supports the `ILoggerFactory` interface.
 
