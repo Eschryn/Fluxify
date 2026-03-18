@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Core.Credentials;
+namespace Fluxify.AspNetCore.Authentication;
 
-public class BearerTokenCredentials(string? token = null) : ITokenCredentials
+public class FluxerClaimTypes
 {
-    private const string TypeConst = "Bearer";
-    public string Token { get; set; } = token ?? string.Empty;
-    public bool Validate()
-    {
-        return true;
-    }
-
-    public string GetAuthorizationHeaderValue() => $"{TypeConst} {Token}";
+    public const string Discriminator = "https://api.fluxer.app/claims/discriminator";
+    public const string GlobalName = "https://api.fluxer.app/claims/global_name";
+    public const string AvatarHash = "https://api.fluxer.app/claims/avatar";
+    public const string Flags = "https://api.fluxer.app/claims/flags";
 }

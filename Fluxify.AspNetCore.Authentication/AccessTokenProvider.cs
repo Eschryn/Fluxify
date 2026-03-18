@@ -12,9 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Core;
+using Fluxify.Core.Credentials;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 
-public interface IHandlerContainer
+namespace Fluxify.AspNetCore.Authentication;
+
+
+internal class AccessTokenProvider(IHttpContextAccessor accessor) : IAccessTokenProvider
 {
-    Task CallHandlersAsync(object eventPayload);
+    public async Task<ITokenCredentials> GetAuthenticationTokenAsync()
+    {
+        var tokenAsync = await accessor.HttpContext!.GetTokenAsync("access_token");
+        
+        return new BearerTokenCredentials(tokenAsync);
+    }
 }
