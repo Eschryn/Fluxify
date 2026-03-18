@@ -1,4 +1,4 @@
-﻿// Copyright 2026 Fluxify Contributors
+// Copyright 2026 Fluxify Contributors
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Core;
+namespace Fluxify.Core.Credentials;
 
-public class BotTokenCredentials(string token)
+public interface ITokenCredentials
 {
-    public const string TypeConst = "Bot";
-    public string Token { get; } = token;
-    
-    public bool Validate()
-    {
-        return true;
-    }
-    
-    public string GetAuthorizationHeaderValue() => $"{TypeConst} {Token}";
+    string Token { get; }
+    bool Validate();
+    string GetAuthorizationHeaderValue();
 }

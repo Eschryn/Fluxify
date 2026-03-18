@@ -46,7 +46,7 @@ public record UserPrivate(
     bool PremiumBadgeMasked,
     bool PremiumBadgeSequenceHidden,
     bool PremiumBadgeTimestampHidden,
-    DateTimeOffset? PremiumBillingCycle,
+    string? PremiumBillingCycle,
     bool PremiumEnabledOverride,
     int? PremiumLifetimeSequence,
     bool PremiumPurchaseDisabled,

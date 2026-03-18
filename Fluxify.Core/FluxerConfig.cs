@@ -14,6 +14,7 @@
 
 using System.Globalization;
 using System.Text;
+using Fluxify.Core.Credentials;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -55,7 +56,7 @@ public class FluxerConfig
         };
     }
 
-    public BotTokenCredentials Credentials { get; set; }
+    public ITokenCredentials Credentials { get; set; }
 
     public Uri GetApiBaseUri() => 
         new(InstanceUri, string.Format(CultureInfo.InvariantCulture, VersionPathFormat, ApiVersion));
