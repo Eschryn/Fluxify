@@ -14,7 +14,7 @@
 
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
-using Fluxify.Core;
+using Fluxify.Core.Events;
 using Fluxify.Dto.Channels;
 using Fluxify.Gateway.Model.Data.Channel.Message;
 using Fluxify.Gateway.Model.Data.Guild;

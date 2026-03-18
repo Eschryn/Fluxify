@@ -93,7 +93,7 @@ public sealed partial class GatewayClient
             throw new InvalidOperationException("GatewayClient is already running.");
         }
         
-        _credentials = await _fluxerConfig.CredentialProvider(_fluxerConfig);
+        _credentials = await _fluxerConfig.CredentialProvider();
         if (!_credentials.Validate())
         {
             return;
