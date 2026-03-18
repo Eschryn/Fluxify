@@ -30,6 +30,7 @@ using Fluxify.Dto.Guilds.Members.Search;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Dto.Guilds.Settings;
 using Fluxify.Dto.Guilds.Stickers;
+using Fluxify.Dto.OAuth2;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.DataHarvest;
@@ -173,4 +174,16 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(GuildStickerBulkCreateRequest))]
 [JsonSerializable(typeof(GuildStickerUpdateRequest))]
 [JsonSerializable(typeof(GatewayBotResponse))]
+[JsonSerializable(typeof(OAuth2MeResponse))]
+[JsonSerializable(typeof(OAuth2AuthorizationResponse[]))]
+[JsonSerializable(typeof(ApplicationResponse))]
+[JsonSerializable(typeof(ApplicationsMeResponse[]))]
+[JsonSerializable(typeof(OAuth2MeResponseApplication[]))]
+[JsonSerializable(typeof(ApplicationResponse))]
+[JsonSerializable(typeof(ApplicationUpdateRequest))]
+[JsonSerializable(typeof(ApplicationCreateRequest))]
+[JsonSerializable(typeof(BotProfileResponse))]
+[JsonSerializable(typeof(BotProfileUpdateRequest))]
+[JsonSerializable(typeof(BotTokenResetResponse))]
+[JsonSerializable(typeof(ApplicationPublicResponse))]
 public partial class DtoJsonContext : JsonSerializerContext;
