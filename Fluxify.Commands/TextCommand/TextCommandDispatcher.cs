@@ -13,12 +13,9 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Messages;
-using Fluxify.Application.Model.Messages;
-using Fluxify.Application.Entities.Messages;
 using Fluxify.Commands.CommandCollection;
 using Fluxify.Commands.Exceptions;
 using Fluxify.Commands.Model;
-using Fluxify.Dto.Channels.Text.Messages;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fluxify.Commands.TextCommand;
@@ -52,7 +49,7 @@ public class TextCommandDispatcher
 
         while (true)
         {
-            var command = commandContext.Tokenizer.Peek(out _);
+            var command = commandContext.Tokenizer.Peek();
 
             try
             {

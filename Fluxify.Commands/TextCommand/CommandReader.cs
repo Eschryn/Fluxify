@@ -12,170 +12,218 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Buffers;
+using System.Collections.Frozen;
+using System.Runtime.InteropServices;
 using Fluxify.Commands.Exceptions;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Commands.TextCommand;
 
 public class CommandReader(CommandTokenizer tokenizer)
 {
-    public T GetNext<T>()
+    private static readonly SearchValues<char> StringDelimiters = SearchValues.Create("\"'<>");
+    private static readonly SearchValues<char> TopLevelDelimiters = SearchValues.Create("<\"'");
+
+    private static readonly Dictionary<Type, Func<ReadOnlyMemory<char>, object?>> Parsers = new()
     {
-        var next = GetNext(true);
-        if (next is ReadOnlyMemory<char> memory)
+        { typeof(string), memory => memory.ToString() },
+        { typeof(sbyte), memory => sbyte.Parse(memory.Span) },
+        { typeof(byte), memory => byte.Parse(memory.Span) },
+        { typeof(short), memory => short.Parse(memory.Span) },
+        { typeof(ushort), memory => ushort.Parse(memory.Span) },
+        { typeof(int), memory => int.Parse(memory.Span) },
+        { typeof(uint), memory => uint.Parse(memory.Span) },
+        { typeof(long), memory => long.Parse(memory.Span) },
+        { typeof(ulong), memory => ulong.Parse(memory.Span) },
+        { typeof(nint), memory => nint.Parse(memory.Span) },
+        { typeof(nuint), memory => nuint.Parse(memory.Span) },
+        { typeof(float), memory => float.Parse(memory.Span) },
+        { typeof(double), memory => double.Parse(memory.Span) },
+        { typeof(decimal), memory => decimal.Parse(memory.Span) },
+        { typeof(bool), memory => bool.Parse(memory.Span) },
+        { typeof(char), memory => memory.Span[0] },
+        { typeof(char[]), memory => memory.Span.ToArray() },
+        { typeof(ReadOnlyMemory<char>), memory => memory },
         {
-            return (T)ParseMemory(memory, typeof(T));
+            typeof(Uri),
+            c => Uri.TryCreate(
+                c.ToString().TrimStart('<').TrimEnd('>'),
+                UriKind.RelativeOrAbsolute,
+                out var uri
+            )
+                ? uri
+                : null
         }
-        
-        if (next is T value)
-            return value;
-        
-        throw new CommandException($"Invalid arguments provided. Expected: {typeof(T).Name}, got {next.GetType().Name}.");
+    };
+
+    private static FrozenDictionary<Type, Func<ReadOnlyMemory<char>, object?>> _frozenParsers =
+        Parsers.ToFrozenDictionary();
+
+    private object? _lastFailedRead;
+
+    public T GetNext<T>()
+        => TryGetNext<T>(out var next)
+            ? next
+            : throw new CommandException(
+                $"Invalid arguments provided. Expected: {typeof(T).Name}, got {next.GetType().Name}.");
+
+    public bool TryGetNext<T>(out T? result)
+    {
+        var next = _lastFailedRead ?? GetNext(true);
+        _lastFailedRead = null;
+
+        switch (next)
+        {
+            case T value:
+                result = value;
+                return true;
+            case ReadOnlyMemory<char> memory
+                when TryParseMemory(memory, typeof(T), out var parsedObject)
+                     && parsedObject is T obj:
+                result = obj;
+                return true;
+            default:
+                result = default;
+                _lastFailedRead = next;
+                return false;
+        }
     }
 
-    private object ParseMemory(ReadOnlyMemory<char> memory, Type type)
+    private bool TryParseMemory(ReadOnlyMemory<char> memory, Type type, out object? result)
     {
+        result = null;
+
         try
         {
-            if (type == typeof(int))
-                return int.Parse(memory.Span);
-            if (type == typeof(uint))
-                return uint.Parse(memory.Span);
-            if (type == typeof(bool))
-                return bool.Parse(memory.Span);
-            if (type == typeof(sbyte))
-                return sbyte.Parse(memory.Span);
-            if (type == typeof(byte))
-                return byte.Parse(memory.Span);
-            if (type == typeof(short))
-                return short.Parse(memory.Span);
-            if (type == typeof(ushort))
-                return ushort.Parse(memory.Span);
-            if (type == typeof(long))
-                return long.Parse(memory.Span);
-            if (type == typeof(ulong))
-                return ulong.Parse(memory.Span);
-            if (type == typeof(char))
-                return memory.Span[0];
-            if (type == typeof(decimal))
-                return decimal.Parse(memory.Span);
-            if (type == typeof(float))
-                return float.Parse(memory.Span);
-            if (type == typeof(double))
-                return double.Parse(memory.Span);
-            if (type == typeof(nint))
-                return nint.Parse(memory.Span);
-            if (type == typeof(nuint))
-                return nuint.Parse(memory.Span);
-            if (type == typeof(nint))
-                return nint.Parse(memory.Span);
-            if (type == typeof(string))
-                return memory.ToString();
-            if (type == typeof(char[]))
-                return memory.ToArray();
-            if (type == typeof(ReadOnlyMemory<char>))
-                return memory;
+            if (_frozenParsers.TryGetValue(type, out var parser)
+                && parser(memory) is { } obj)
+            {
+                result = obj;
+            }
+            else if (type == typeof(ReadOnlyMemory<char>))
+                result = memory;
         }
         catch (FormatException e)
         {
             throw new CommandException($"Invalid argument provided. Malformed {type.Name}.");
         }
-        
-        throw new NotSupportedException();
+
+        return result is not null;
     }
 
-    public string GetNextString() => GetNext(true).ToString() ?? throw new CommandException("Invalid arguments provided.");
-    
     public object GetNext(bool ignoreSpace = false)
     {
-        var token = tokenizer.Next(out _);
+        var token = tokenizer.Until(TopLevelDelimiters);
         switch (token.Span)
         {
-            case "<":
-                return ParseMention();
-            default: 
+            case "<" when ParseMention() is { } mention:
+                return mention;
+            case "<": // url
+                return ParseQuotedString(token.Span, '>', escapable: false).ToString().AsMemory();
+            case "\"" or "'":
+                return ParseQuotedString(token.Span)[1..^1].ToString().AsMemory();
+            default:
                 return token;
         }
     }
 
-    private Mentionable ParseMention()
+    private ReadOnlySpan<char> ParseQuotedString(ReadOnlySpan<char> startSpan, char? endChar = null,
+        bool escapable = true)
     {
+        endChar ??= startSpan[0];
+        var totalLength = startSpan.Length;
+        var ignoreNext = false;
+        var terminated = false;
+
+        while (tokenizer.HasMore)
+        {
+            var readOnlyMemory = tokenizer.Until(StringDelimiters);
+            var lastPos = readOnlyMemory.Length - 1;
+            totalLength += readOnlyMemory.Length;
+            if (readOnlyMemory.Span[lastPos] == endChar && !ignoreNext)
+            {
+                terminated = true;
+                break;
+            }
+
+            ignoreNext = readOnlyMemory.Span[lastPos] == '\\' && escapable;
+        }
+
+        if (!terminated)
+        {
+            throw new CommandParameterFormatException("Unterminated quoted string.");
+        }
+
+        return MemoryMarshal.CreateReadOnlySpan(
+            ref MemoryMarshal.GetReference(startSpan),
+            totalLength
+        );
+    }
+
+    private Mentionable? ParseMention()
+    {
+        var parsed = true;
         try
         {
-            var type = tokenizer.Next(out _).Span;
-            var snowflakeStr = tokenizer.Next(out _);
-            
+            var type = tokenizer.Peek().Span;
             switch (type)
             {
                 case "@":
+                    tokenizer.ConsumeNext();
+                    var snowflakeStr = tokenizer.Next();
                     switch (snowflakeStr.Span)
                     {
                         case "!":
-                            snowflakeStr = tokenizer.Next(out _);
+                            snowflakeStr = tokenizer.Next();
                             return new Mentionable.Member(ulong.Parse(snowflakeStr.Span));
                         case "&":
-                            snowflakeStr = tokenizer.Next(out _);
+                            snowflakeStr = tokenizer.Next();
                             return new Mentionable.Role(ulong.Parse(snowflakeStr.Span));
                         default:
                             return new Mentionable.Member(ulong.Parse(snowflakeStr.Span));
                     }
                 case "#":
+                    tokenizer.ConsumeNext();
+                    snowflakeStr = tokenizer.Next();
                     return new Mentionable.Channel(ulong.Parse(snowflakeStr.Span));
                 case ":":
-                    var name = tokenizer.Next(out _).Span;
-                    if (tokenizer.Next(out _).Span is not ":")
-                        throw new FormatException();
-                    
-                    var emojiId = tokenizer.Next(out _).Span;
+                    tokenizer.ConsumeNext();
+                    var name = tokenizer.Next().Span;
+                    if (tokenizer.Next().Span is not ":")
+                        throw new CommandParameterFormatException(
+                            "Emoji name must be followed by a colon and an emoji id.s");
+
+                    var emojiId = tokenizer.Next().Span;
                     return new Mentionable.Emoji(name.ToString(), ulong.Parse(emojiId));
                 case "t":
+                    tokenizer.ConsumeNext();
+                    snowflakeStr = tokenizer.Next();
                     if (snowflakeStr.Span is not ":")
-                        throw new FormatException();
-                    
-                    var dateTimeStr = tokenizer.Next(out _).Span;
+                        throw new CommandParameterFormatException("Not a valid datetime format.");
+
+                    var dateTimeStr = tokenizer.Next().Span;
                     var dateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(dateTimeStr));
 
-                    if (tokenizer.Next(out _).Span is not ":")
+                    if (tokenizer.Next().Span is not ":")
                         return new Mentionable.DateTime(dateTime, "R");
-                    
-                    var format = tokenizer.Next(out _).Span;
+
+                    var format = tokenizer.Next().Span;
                     return new Mentionable.DateTime(dateTime, format.ToString());
                 default:
-                    throw new FormatException();
+                    parsed = false;
+                    return null;
             }
         }
         finally
         {
-            if (tokenizer.Next(out _).Span is not ">") 
-                throw new FormatException();
+            if (parsed && tokenizer.Next().Span is not ">")
+                throw new CommandParameterFormatException("Invalid mention format.");
         }
     }
-}
 
-public abstract record Mentionable
-{
-    public record Role(Snowflake Id) : Mentionable
+    public static void RegisterCustomParser(Type type, Func<ReadOnlyMemory<char>, object?> parser)
     {
-        public override string ToString() => "<@&" + Id + ">";
-    }
-
-    public record Channel(Snowflake Id) : Mentionable
-    {
-        public override string ToString() => "<#" + Id + ">";
-    }
-
-    public record Member(Snowflake Id) : Mentionable
-    {
-        public override string ToString() => "<@" + Id + ">";
-    }
-
-    public record Emoji(string Name, Snowflake Id) : Mentionable
-    {
-        public override string ToString() => $"<:{Name}:{Id}>";
-    }
-
-    public record DateTime(DateTimeOffset Value, string Format) : Mentionable
-    {
-        public override string ToString() => $"<t:{Value}:{Format}>";
+        Parsers[type] = parser;
+        _frozenParsers = Parsers.ToFrozenDictionary();
     }
 }

@@ -28,9 +28,10 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
         "\u180E\u200B\u200C\u200D\u2060\uFEFF";
 
     private const string AllWhiteSpaceChars = WhiteSpaceChars + WhiteSpaceCharsNoBreak;
-    private const string DelimiterChars = "#:<>@&!";
+    private const string DelimiterChars = "#:<>@&!\"'";
 
-    private (ReadOnlyMemory<char> value, Range range)? _cached;
+    private ReadOnlyMemory<char>? _cached;
+    private ReadOnlyMemory<char>? _beforePeek;
     private int _offset = offset;
     private ReadOnlyMemory<char> _input = input;
 
@@ -40,6 +41,7 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
         SearchValues.Create(AllWhiteSpaceChars + DelimiterChars);
 
     private static readonly SearchValues<char> Delimiters = SearchValues.Create(DelimiterChars);
+    public bool HasMore => _cached != null || _input.Length > 0;
 
     private ReadOnlyMemory<char> NextChar()
     {
@@ -75,35 +77,55 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
         _input = _input[newRelativeOffset..];
     }
 
-    public ReadOnlyMemory<char> Peek(out Range range)
+    public ReadOnlyMemory<char> Peek()
     {
-        _cached = (Next(DelimitersWithSpace, out range), range);
-
-        return _cached.Value.value;
+        _beforePeek ??= _input;
+        _cached ??= Next(DelimitersWithSpace);
+        
+        return _cached.Value;
     }
 
-    public void ConsumeNext() => _ = Next(out _);
+    public void ConsumeNext() => _ = Next();
 
-    public ReadOnlyMemory<char> Next(out Range range)
+    public ReadOnlyMemory<char> Next()
     {
         if (_cached is not null)
         {
-            range = _cached.Value.range;
-            var val = _cached.Value.value;
+            var val = _cached.Value;
             _cached = null;
+            _beforePeek = null;
             return val;
         }
 
-        return Next(DelimitersWithSpace, out range);
+        return Next(DelimitersWithSpace);
+    }
+
+    public ReadOnlyMemory<char> Until(SearchValues<char> delimiters)
+    {
+        if (_beforePeek is {} oldInput)
+        {
+            _input = oldInput;
+            _cached = null;
+            _beforePeek = null;
+        }
+        
+        return Next(delimiters);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ReadOnlyMemory<char> NextNoSpace(out Range range)
+    public ReadOnlyMemory<char> NextNoSpace()
     {
-        return Next(Delimiters, out range);
+        if (_beforePeek is {} oldInput)
+        {
+            _input = oldInput;
+            _cached = null;
+            _beforePeek = null;
+        }
+        
+        return Next(Delimiters);
     }
 
-    public ReadOnlyMemory<char> Next(SearchValues<char> delimiters, out Range range)
+    public ReadOnlyMemory<char> Next(SearchValues<char> delimiters)
     {
         var nextIndex = _input.Span.IndexOfAny(delimiters);
         if (nextIndex == 0)
@@ -112,13 +134,11 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
         {
             if (nextIndex == -1)
             {
-                range = _offset.._input.Length;
                 nextIndex = _input.Length;
 
                 return _input;
             }
 
-            range = _offset..nextIndex;
             return _input[..nextIndex];
         }
         finally
