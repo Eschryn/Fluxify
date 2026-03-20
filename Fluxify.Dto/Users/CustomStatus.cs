@@ -19,6 +19,7 @@ namespace Fluxify.Dto.Users;
 public record CustomStatus(
     Snowflake? EmojiId = null,
     string? EmojiName = null,
+    bool? EmojiAnimated = null,
     DateTimeOffset? ExpiresAt = null,
     string? Text = null
 );

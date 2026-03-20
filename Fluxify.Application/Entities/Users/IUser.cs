@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+using System.Drawing;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class PartialUser : IEntity
+public interface IUser : IEntity
 {
-    public Snowflake Id { get; init; }
-    public bool? Bot { get; init; }
-    public string? Username { get; init; }
-    public string? Discriminator { get; init; }
-    public string? GlobalName { get; init; }
-    public string? Avatar { get; init; }
-    public int? AvatarColor { get; init; }
-    public bool? System { get; init; }
-    public PublicUserFlags Flags { get; init; }
+    public bool? Bot { get; }
+    public string Username { get; }
+    public string? Discriminator { get; }
+    public string? GlobalName { get; }
+    public string? Avatar { get; }
+    public Color? AvatarColor { get; }
+    public bool? System { get; }
+    public PublicUserFlags Flags { get; }
 }

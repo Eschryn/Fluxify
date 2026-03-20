@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Entities.Channels;
 
-namespace Fluxify.Gateway.Model.Data.Guild.Roles;
-
-public record GatewayGuildRoleDelete(Snowflake GuildId, Snowflake RoleId);
+public class Dm(
+    FluxerApplication fluxerApplication
+) : TextChannel(fluxerApplication);

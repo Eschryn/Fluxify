@@ -15,6 +15,7 @@
 using System.Net.WebSockets;
 using Fluxify.Core;
 using Fluxify.Core.Credentials;
+using Fluxify.Dto.Users;
 using Fluxify.Gateway.Model;
 using Fluxify.Gateway.Model.Data;
 using Fluxify.Gateway.Model.Data.Voice;
@@ -171,6 +172,14 @@ public sealed partial class GatewayClient
                 _lastSequence = payload.Sequence;
                 HandleDispatch(payload.Type!, payload.Data!);
                 break;
+            case GatewayOpCode.HeartbeatAck:
+                Log.ServerAcknowledgedHeartbeat(_logger);
+                AcknowledgeHeartbeatResponse();
+                break;
+            case GatewayOpCode.Heartbeat:
+                Log.ServerRequestedHeartbeat(_logger);
+                RequestHeartbeat();
+                break;
             case GatewayOpCode.Hello:
                 InitializeClientHeartbeat(payload.Data!);
                 await LoginAsync(cancellationToken);
@@ -191,14 +200,6 @@ public sealed partial class GatewayClient
                     invalidateSession: !(payload.Data as bool? ?? false),
                     cancellationToken: cancellationToken);
                 break;
-            case GatewayOpCode.Heartbeat:
-                Log.ServerRequestedHeartbeat(_logger);
-                RequestHeartbeat();
-                break;
-            case GatewayOpCode.HeartbeatAck:
-                Log.ServerAcknowledgedHeartbeat(_logger);
-                AcknowledgeHeartbeatResponse();
-                break;
             case null:
                 // this should only happen if the JSON couldn't deserialize.
                 // since we don't have any insight, we expect that FluxerProtocol has already logged the exception  
@@ -209,6 +210,26 @@ public sealed partial class GatewayClient
         }
     }
 
+    public async Task UpdatePresenceAsync(
+        UserStatus status,
+        bool? afk = null,
+        bool? mobile = null,
+        CustomStatus? customStatus = null,
+        CancellationToken cancellationToken = default
+    ) => await _client.SendAsync(
+        new GatewayPayload(
+            Opcode: GatewayOpCode.PresenceUpdate,
+            Data: new PresenceUpdate(
+                status,
+                mobile,
+                afk,
+                customStatus
+            ),
+            Sequence: _lastSequence
+        ), cancellationToken
+    ); 
+    
+    [Obsolete("Use UpdatePresenceAsync(UserStatus, bool?, bool?, CustomStatus?) instead.", false)]
     public async Task UpdatePresenceAsync(PresenceUpdate data, CancellationToken cancellationToken = default) 
         => await _client.SendAsync(new GatewayPayload(GatewayOpCode.PresenceUpdate, data), cancellationToken);
 

@@ -21,11 +21,9 @@ public static class TextChannelExtensions {
     extension(TextChannel channel)
     {
         public Task<Message?> SendMessageAsync(string message) 
-        {
-            return channel.SendMessageAsync(new MessageDto
+            => channel.SendMessageAsync(new MessageDto
             {
                 Content = message
             });
-        }
     }
 }

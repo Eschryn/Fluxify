@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Users;
+namespace Fluxify.Application.Entities.Channels;
 
-public class UserPrivate : User
+public interface INestedChannel : IGuildChannel
 {
-    
+    public GuildCategory? Parent { get; }
 }

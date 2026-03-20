@@ -22,11 +22,12 @@ public record GuildMemberResponse(
     int? AccentColor,
     [property: JsonPropertyName("avatar")] string? AvatarHash,
     [property: JsonPropertyName("banner")] string? BannerHash,
+    DateTimeOffset? JoinedAt,
     DateTimeOffset? CommunicationsDisabledUntil,
     bool Deaf,
     bool Mute,
     string? Nick,
     GuildMemberProfileFlags ProfileFlags,
     Snowflake[] Roles,
-    UserPartialResponse UserPartial
+    UserPartialResponse? User
 );

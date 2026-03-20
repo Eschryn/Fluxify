@@ -20,13 +20,12 @@ namespace Fluxify.Application.Entities.Channels;
 
 public abstract class TextChannel(
     FluxerApplication fluxerApplication
-) : IChannel
+) : ITextChannel
 {
-    public async Task<Message?> SendMessageAsync(MessageDto message) 
-        => await fluxerApplication.Messages.SendMessageAsync(Id, message);
+    public async Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default) 
+        => await fluxerApplication.Messages.SendMessageAsync(Id, message, cancellationToken);
 
     public required Snowflake Id { get; init; }
-    public required string Name { get; init; }
-    public Snowflake? LastMessageId { get; init; }
-    public DateTimeOffset? LastPinTimestamp { get; init; }
+    public Snowflake? LastMessageId { get; internal set; }
+    public DateTimeOffset? LastPinTimestamp { get; internal set; }
 }

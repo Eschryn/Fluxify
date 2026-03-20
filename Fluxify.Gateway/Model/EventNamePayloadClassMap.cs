@@ -70,8 +70,8 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.GuildUpdate, Data<GuildResponse>() }, // untested
             { GatewayEvent.GuildDelete, Data<GatewayGuildDelete>() }, // untested
 
-            { GatewayEvent.GuildMemberAdd, Data<GuildMemberResponse>() }, // untested
-            { GatewayEvent.GuildMemberUpdate, Data<GuildMemberResponse>() }, // untested
+            { GatewayEvent.GuildMemberAdd, Data<GatewayGuildMember>() }, // untested
+            { GatewayEvent.GuildMemberUpdate, Data<GatewayGuildMember>() }, // untested
             { GatewayEvent.GuildMemberRemove, Data<GatewayGuildMemberDelete>() }, // untested
 
             { GatewayEvent.GuildRoleCreate, Data<GatewayGuildRole>() }, // untested

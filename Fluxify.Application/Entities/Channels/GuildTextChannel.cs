@@ -13,18 +13,17 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GuildTextChannel(FluxerApplication fluxerApplication) : TextChannel(fluxerApplication), IGuildChannel
+public class GuildTextChannel(FluxerApplication fluxerApplication) : TextChannel(fluxerApplication), INestedChannel, INamedChannel
 {
-    public Guild? Guild { get; } 
-    public Snowflake GuildId { get; init; }
-    public string? Topic { get; init; }
-    public int? Position { get; init; }
-    public bool? Nsfw { get; init; }
-    public GuildCategory? Parent { get; init; }
-    public int? RateLimitPerUser { get; init; }
-    public PermissionOverwrite[]? Overwrites { get; init; }
+    public required string Name { get; set; }
+    public required Guild Guild { get; init; } 
+    public string? Topic { get; internal set; }
+    public int? Position { get; internal set; }
+    public GuildCategory? Parent { get; internal set; } 
+    public bool? Nsfw { get; internal set; }
+    public int? RateLimitPerUser { get; internal set; }
+    public PermissionOverwrite[]? Overwrites { get; internal set; }
 }

@@ -19,6 +19,7 @@ using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
 using Fluxify.Dto.Channels.Text.Messages.Reactions;
+using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Gateway.Model.Data.Channel.Message;
@@ -26,6 +27,8 @@ namespace Fluxify.Gateway.Model.Data.Channel.Message;
 public record GatewayMessageCreate(
     Snowflake Id,
     Snowflake ChannelId,
+    Snowflake? GuildId,
+    GuildMemberResponse? Member,
     UserPartialResponse Author,
     Snowflake? WebhookId,
     MessageType Type,

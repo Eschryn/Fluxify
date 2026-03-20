@@ -19,6 +19,5 @@ namespace Fluxify.Application.Entities;
 
 public interface IGuildScopedEntity
 {
-    public Snowflake GuildId { get; }
-    public Guild? Guild { get; }
+    public Guild Guild { get; }
 }

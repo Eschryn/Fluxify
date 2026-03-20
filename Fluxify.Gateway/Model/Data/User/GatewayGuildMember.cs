@@ -13,9 +13,34 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
+using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Users;
 
-namespace Fluxify.Dto.Guilds.Emoji;
+namespace Fluxify.Gateway.Model.Data.User;
 
-public record GuildEmojiWithUserResponse(bool Animated, Snowflake? Id, string Name, UserPartialResponse UserPartial)
-    : GuildEmojiResponse(Animated, Id, Name);
+public record GatewayGuildMember(
+    Snowflake GuildId,
+    int? AccentColor,
+    string? AvatarHash,
+    string? BannerHash,
+    DateTimeOffset? JoinedAt,
+    DateTimeOffset? CommunicationsDisabledUntil,
+    bool Deaf,
+    bool Mute,
+    string? Nick,
+    GuildMemberProfileFlags ProfileFlags,
+    Snowflake[] Roles,
+    UserPartialResponse User
+) : GuildMemberResponse(
+    AccentColor,
+    AvatarHash,
+    BannerHash,
+    JoinedAt,
+    CommunicationsDisabledUntil,
+    Deaf,
+    Mute,
+    Nick,
+    ProfileFlags,
+    Roles,
+    User
+);

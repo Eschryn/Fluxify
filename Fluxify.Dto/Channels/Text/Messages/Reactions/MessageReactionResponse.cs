@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Dto.Guilds.Emoji;
+
 namespace Fluxify.Dto.Channels.Text.Messages.Reactions;
 
 public record MessageReactionResponse(
     int Count,
-    MessageReactionResponseEmoji Emoji,
+    GuildEmojiResponse Emoji,
     bool? Me
 );

@@ -12,8 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Model.Messages;
 using Fluxify.Core.Types;
 
-namespace Fluxify.Gateway.Model.Data.Guild.Roles;
+namespace Fluxify.Application.Entities.Channels;
 
-public record GatewayGuildRoleDelete(Snowflake GuildId, Snowflake RoleId);
+public interface ITextChannel : IChannel
+{
+    public Snowflake? LastMessageId { get; }
+    public DateTimeOffset? LastPinTimestamp { get; }
+    
+    public Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default);
+}

@@ -12,16 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Users;
+using System.Drawing;
+using Fluxify.Application.Entities.Guilds;
 using Fluxify.Core.Types;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Roles;
 
-public class GroupDm(FluxerApplication fluxerApplication) : TextChannel(fluxerApplication), INamedChannel
+public class Role : IEntity
 {
-    public string? IconHash { get; internal set; }
-    public Snowflake OwnerId { get; internal set; }
-    public IUser[] Recipients { get; internal set; } = [];
-    public Dictionary<string, string> Nicks { get; internal set; } = [];
+    public Snowflake Id { get; internal set; }
     public required string Name { get; set; }
+    public long Position { get; internal set; }
+    public bool IsMentionable { get; internal set; }
+    public bool Hoist { get; internal set; }
+    public long? HoistPosition { get; internal set; }
+    public string? UnicodeEmoji { get; internal set; }
+    public Color Color { get; internal set; }
+    public Permissions Permissions { get; internal set; }
+    public required Guild Guild { get; init; }
 }
