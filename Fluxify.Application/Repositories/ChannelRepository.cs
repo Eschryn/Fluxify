@@ -24,22 +24,24 @@ namespace Fluxify.Application.Repositories;
 public class ChannelRepository(RestClient client, ChannelMapper mapper)
 {
     public event Action<IChannel, ChangeType>? OnChange;
-    private readonly PermanentCache<IChannel, ChannelMapper> _cache = new(mapper);
+    internal readonly PermanentCache<IChannel, ChannelMapper> Cache = new(mapper);
 
     public async Task<IChannel> GetAsync(Snowflake id, bool bypassCache = false)
     {
-        var channel = await _cache.GetOrCreateAsync(id, GetChannelRestAsync, bypassCache);
+        var channel = await Cache.GetOrCreateAsync(id, GetChannelRestAsync, bypassCache);
         
         OnChange?.Invoke(channel, ChangeType.Update);
         
         return channel;
     }
 
-    internal void Insert(ChannelResponse response)
-        => _cache.UpdateOrCreate(mapper.FromDto(response, 
-            response.ParentId is { } pId ? _cache.GetCachedOrDefault<GuildCategory>(pId) : null));
+    internal IChannel Insert(ChannelResponse response)
+        => Cache.UpdateOrCreate(mapper.FromDto(response, 
+            response.ParentId is { } pId ? Cache.GetCachedOrDefault<GuildCategory>(pId) : null));
 
-    private async Task<IChannel?> GetChannelRestAsync(Snowflake id) 
+    internal T? GetCachedOrDefault<T>(Snowflake id) where T : IChannel => Cache.GetCachedOrDefault<T>(id);
+    
+    private async Task<IChannel> GetChannelRestAsync(Snowflake id) 
         => await client.Channels[id].GetAsync() is {} channel 
             ? await mapper.FromDtoAsync(channel) 
             : throw new Exception($"Couldn't get channel with id {id}");
@@ -51,14 +53,14 @@ public class ChannelRepository(RestClient client, ChannelMapper mapper)
 
         var entity = await mapper.FromDtoAsync(channelAsync);
         OnChange?.Invoke(entity, ChangeType.Create);
-        return _cache.UpdateOrCreate(entity);
+        return Cache.UpdateOrCreate(entity);
     }
 
     public async Task DeleteAsync(Snowflake id, bool silent = false)
     {
         await client.Channels[id].DeleteAsync(silent);
-        _cache.Remove(id);
+        Cache.Remove(id);
     }
     
-    internal void Reset() => _cache.Clear();
+    internal void Reset() => Cache.Clear();
 }

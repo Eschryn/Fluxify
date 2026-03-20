@@ -28,6 +28,7 @@ public sealed class Embed
     public EmbedMedia? Thumbnail { get; set; }
     public EmbedFooter? Footer { get; set; }
     public EmbedField[]? Fields { get; set; }
+    public Embed[]? Children { get; internal init; }
     public bool? Nsfw { get; internal set; }
     public EmbedMedia? Video { get; internal set; }
     public EmbedMedia? Audio { get; internal set; }

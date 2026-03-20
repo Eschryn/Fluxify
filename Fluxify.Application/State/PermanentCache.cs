@@ -28,6 +28,8 @@ public class PermanentCache<TData, TMapper>(TMapper mapper)
     public bool IsCached(Snowflake id) =>  _dataContainer.ContainsKey(id);
     public T? GetCachedOrDefault<T>(Snowflake id) where T : TData => (T?)_dataContainer.GetValueOrDefault(id);
     
+    public ICollection<TData> GetAllCached() => _dataContainer.Values;
+    
     public async Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory, bool bypassCache = false)
     {
         if (bypassCache)
@@ -56,7 +58,12 @@ public class PermanentCache<TData, TMapper>(TMapper mapper)
     public TData UpdateOrCreate(TData data)
         => _dataContainer.AddOrUpdate(data.Id,
             _ => data,
-            (_, existing) => mapper.UpdateEntity(existing, data));
+            (_, existing) =>
+            {
+                mapper.UpdateEntity(existing, data);
+                
+                return existing;
+            });
     
     public void Remove(Snowflake id) => _dataContainer.TryRemove(id, out _);
     public void Clear() => _dataContainer.Clear();

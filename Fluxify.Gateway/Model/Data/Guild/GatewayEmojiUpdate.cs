@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Emoji;
 
 namespace Fluxify.Gateway.Model.Data.Guild;
 
-public record GatewayEmojiUpdate(GuildEmojiResponse[] Emojis);
+public record GatewayEmojiUpdate(Snowflake GuildId, GuildEmojiResponse[] Emojis);

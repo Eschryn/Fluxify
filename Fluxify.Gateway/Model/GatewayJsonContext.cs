@@ -45,6 +45,7 @@ namespace Fluxify.Gateway.Model;
 [JsonSerializable(typeof(GatewayGuildRole))]
 [JsonSerializable(typeof(GatewayGuildRoleDelete))]
 [JsonSerializable(typeof(GatewayGuildRoleBulk))]
+[JsonSerializable(typeof(GatewayGuildMember))]
 [JsonSerializable(typeof(GatewayEmojiUpdate))]
 [JsonSerializable(typeof(GatewayStickerUpdate))]
 [JsonSerializable(typeof(GatewayBanData))]

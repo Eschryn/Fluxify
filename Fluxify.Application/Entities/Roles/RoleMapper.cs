@@ -12,8 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+using Fluxify.Application.Entities.Guilds;
+using Fluxify.Dto.Guilds.Roles;
+using Riok.Mapperly.Abstractions;
 
-namespace Fluxify.Gateway.Model.Data.Guild.Roles;
+namespace Fluxify.Application.Entities.Roles;
 
-public record GatewayGuildRoleDelete(Snowflake GuildId, Snowflake RoleId);
+[Mapper]
+[UseStaticMapper(typeof(CommonMapper))]
+public partial class RoleMapper : IUpdateEntity<Role>
+{
+    [MapProperty(nameof(GuildRoleResponse.Mentionable), nameof(Role.IsMentionable))]
+    public partial Role MapFromDto(GuildRoleResponse dto, Guild guild);
+    
+    public partial void UpdateEntity([MappingTarget] Role data, Role update);
+}

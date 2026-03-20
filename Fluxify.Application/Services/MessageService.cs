@@ -19,7 +19,7 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Services;
 
-public class MessageService(
+internal class MessageService(
     RestClient client,
     MessageMapper mapper)
 {

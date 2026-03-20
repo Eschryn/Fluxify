@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Stickers;
 
 namespace Fluxify.Gateway.Model.Data.Guild;
 
-public record GatewayStickerUpdate(GuildStickerResponse[] Stickers);
+public record GatewayStickerUpdate(Snowflake GuildId, GuildStickerResponse[] Stickers);

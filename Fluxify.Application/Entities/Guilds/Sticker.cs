@@ -18,7 +18,9 @@ namespace Fluxify.Application.Entities.Guilds;
 
 public class Sticker
 {
-    public string Name { get; set; }
-    public bool IsAnimated { get; set; }
-    public Snowflake? Id { get; set; }
+    public required string Name { get; set; }
+    public string? Description { get; set; }
+    public string[]? Tags { get; set; }
+    public bool IsAnimated { get; init; }
+    public Snowflake? Id { get; init; }
 }

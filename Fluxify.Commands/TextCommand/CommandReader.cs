@@ -62,10 +62,10 @@ public class CommandReader(CommandTokenizer tokenizer)
     private object? _lastFailedRead;
 
     public T GetNext<T>()
-        => TryGetNext<T>(out var next)
+        => (TryGetNext<T>(out var next)
             ? next
-            : throw new CommandException(
-                $"Invalid arguments provided. Expected: {typeof(T).Name}, got {next.GetType().Name}.");
+            : default) ?? throw new CommandException(
+            $"Invalid arguments provided. Expected: {typeof(T).Name}, got {next?.GetType().Name}.");
 
     public bool TryGetNext<T>(out T? result)
     {
@@ -103,7 +103,7 @@ public class CommandReader(CommandTokenizer tokenizer)
             else if (type == typeof(ReadOnlyMemory<char>))
                 result = memory;
         }
-        catch (FormatException e)
+        catch (FormatException)
         {
             throw new CommandException($"Invalid argument provided. Malformed {type.Name}.");
         }

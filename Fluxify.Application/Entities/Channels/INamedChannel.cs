@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Entities.Channels;
 
-namespace Fluxify.Dto.Channels.Text.Messages.Reactions;
-
-public record MessageReactionResponseEmoji(
-    bool? Animated,
-    Snowflake? Id,
-    string Name
-);
+public interface INamedChannel : IChannel
+{
+    public string Name { get; }
+}

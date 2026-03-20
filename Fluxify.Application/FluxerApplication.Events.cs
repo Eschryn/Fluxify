@@ -15,15 +15,14 @@
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Core.Events;
-using Fluxify.Dto.Channels;
-using Fluxify.Gateway.Model.Data.Channel.Message;
-using Fluxify.Gateway.Model.Data.Guild;
 
 namespace Fluxify.Application;
 
 public partial class FluxerApplication
 {
     private readonly HandlerContainer<Message> _messageHandlers = new();
+    private readonly HandlerContainer<Guild> _guildCreatedHandlers = new();
+    private readonly HandlerContainer<Guild> _guildUpdatedHandlers = new();
     
     public event Func<Message, Task> MessageReceived
     {
@@ -31,34 +30,17 @@ public partial class FluxerApplication
         remove => _messageHandlers.RemoveDelegate(value);
     }
     
-    private void InitializeEvents()
+    public event Func<Guild, Task> GuildCreated
     {
-        Gateway.MessageCreate += HandleMessageCreate;
-        Gateway.ChannelCreate += HandleChannelCreate;
-        Gateway.GuildCreate += HandleGuildCreate;
+        add => _guildCreatedHandlers.InsertDelegate(value);
+        remove => _guildCreatedHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<Guild, Task> GuildUpdated
+    {
+        add => _guildUpdatedHandlers.InsertDelegate(value);
+        remove => _guildUpdatedHandlers.RemoveDelegate(value);
     }
 
-    private async Task HandleMessageCreate(GatewayMessageCreate arg)
-    {
-        var message = await _messageMapper.MapAsync(arg);
-        await _messageHandlers.CallHandlersAsync(message);
-    }
 
-
-    private Task HandleGuildCreate(GatewayGuildCreate arg)
-    {
-        foreach (var channelResponse in arg.Channels)
-        {
-            Channels.Insert(channelResponse);
-        }
-        
-        return Task.CompletedTask;
-    }
-
-    // enrich events
-    private Task HandleChannelCreate(ChannelResponse arg)
-    {
-        Channels.Insert(arg);
-        return Task.CompletedTask;
-    }
 }

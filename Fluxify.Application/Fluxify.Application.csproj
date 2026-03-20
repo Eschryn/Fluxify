@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <WarningsAsErrors>RMG020;RMG012</WarningsAsErrors>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\Fluxify.Gateway\Fluxify.Gateway.csproj" />
       <ProjectReference Include="..\Fluxify.Rest\Fluxify.Rest.csproj" />

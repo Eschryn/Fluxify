@@ -14,6 +14,10 @@
 
 using Fluxify.Core.Types;
 
-namespace Fluxify.Gateway.Model.Data.Guild.Roles;
+namespace Fluxify.Application.Entities.Messages;
 
-public record GatewayGuildRoleDelete(Snowflake GuildId, Snowflake RoleId);
+public class CallInfo
+{
+    public DateTimeOffset? EndedAt { get; init; }
+    public Snowflake[]? Participants { get; init; }
+}

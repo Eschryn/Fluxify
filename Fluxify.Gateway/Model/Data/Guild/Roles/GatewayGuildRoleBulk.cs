@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Roles;
 
 namespace Fluxify.Gateway.Model.Data.Guild.Roles;
 
-public record GatewayGuildRoleBulk(GuildRoleResponse[] Roles);
+public record GatewayGuildRoleBulk(
+    Snowflake GuildId,
+    GuildRoleResponse[] Roles
+);

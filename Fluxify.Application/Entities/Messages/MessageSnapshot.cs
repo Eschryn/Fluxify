@@ -13,20 +13,22 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Model.Messages;
+using Fluxify.Application.Model.Messages.Embeds;
 using Fluxify.Core.Types;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Messages;
 
-public class GuildVoiceChannel(FluxerApplication fluxerApplication) : IGuildChannel
+public class MessageSnapshot
 {
-    public Snowflake Id { get; internal set; }
-    public required string Name { get; set; }
-    public int Bitrate { get; internal set; }
-    public int? UserLimit { get; internal set; }
-    public Snowflake GuildId { get; internal set; }
-    public Snowflake? RtcRegion { get; internal set; }
-    public required Guild Guild { get; init; }
-    public GuildCategory? Parent { get; internal set; }
-    public int? Position { get; internal set; }
-    public PermissionOverwrite[]? Overwrites { get; internal set; }
+    public string? Content { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset? EditedAt { get; init; }
+    public Snowflake[]? Mentions { get; init; }
+    public Snowflake[]? MentionRoles { get; init; }
+    public Embed[]? Embeds { get; init; }
+    public Attachment[]? Attachments { get; init; }
+    public Sticker[]? Stickers { get; init; }
+    public MessageFlags Flags { get; init; }
+    public MessageType Type { get; init; }
 }
