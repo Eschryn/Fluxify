@@ -17,6 +17,7 @@ using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
@@ -60,7 +61,7 @@ public partial class MessageMapper(
     
     public partial CreateMessageRequest Map(MessageDto message);
     public async Task<Message> MapAsync(MessageResponse message, IUser author, IUser? referencedAuthor = null)  
-        => Map(message, (TextChannel)await application.Channels.GetAsync(message.ChannelId), author, referencedAuthor);
+        => Map(message, (ITextChannel)await application.Channels.GetAsync(message.ChannelId), author, referencedAuthor);
     public Task<Message> MapAsync(MessageResponse message)  
         => MapAsync(message, GetAuthor(message), message.ReferencedMessage != null ? GetAuthor(message.ReferencedMessage) : null);
     
@@ -86,15 +87,15 @@ public partial class MessageMapper(
     [MapperIgnoreSource(nameof(MessageBaseResponse.ChannelId))]
     [MapperIgnoreSource(nameof(MessageBaseResponse.Author))]
     [MapValue(nameof(Message.ReferencedMessage), null)]
-    private partial Message MapMessageBase(MessageBaseResponse message, TextChannel channel, IUser author, FluxerApplication application);
-    public Message MapMessageBase(MessageBaseResponse message, TextChannel channel, IUser author) 
+    private partial Message MapMessageBase(MessageBaseResponse message, ITextChannel channel, IUser author, FluxerApplication application);
+    public Message MapMessageBase(MessageBaseResponse message, ITextChannel channel, IUser author) 
         => MapMessageBase(message, channel, author, application);
     
     [MapProperty(nameof(MessageSnapshotResponse.Timestamp), nameof(MessageSnapshot.CreatedAt))]
     [MapProperty(nameof(MessageSnapshotResponse.EditedTimestamp), nameof(MessageSnapshot.EditedAt))]
     private partial MessageSnapshot MapSnapshot(MessageSnapshotResponse message);
     
-    public Message Map(MessageResponse message, TextChannel channel, IUser author, IUser? referencedAuthor)
+    public Message Map(MessageResponse message, ITextChannel channel, IUser author, IUser? referencedAuthor)
         => Map(
             message,
             channel,
@@ -112,5 +113,5 @@ public partial class MessageMapper(
     [MapperIgnoreSource(nameof(MessageResponse.ChannelId))]
     [MapperIgnoreSource(nameof(MessageResponse.ReferencedMessage))]
     [MapperIgnoreSource(nameof(MessageResponse.Author))]
-    private partial Message Map(MessageResponse message, TextChannel channel, IUser author, Message? referencedMessage, FluxerApplication application);
+    private partial Message Map(MessageResponse message, ITextChannel channel, IUser author, Message? referencedMessage, FluxerApplication application);
 }

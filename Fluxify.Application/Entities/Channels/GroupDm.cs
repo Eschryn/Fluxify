@@ -17,7 +17,7 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GroupDm(FluxerApplication fluxerApplication) : TextChannel(fluxerApplication), INamedChannel
+public class GroupDm(FluxerApplication fluxerApplication) : PrivateTextChannel(fluxerApplication), INamedChannel
 {
     public string? IconHash { get; internal set; }
     public Snowflake OwnerId { get; internal set; }

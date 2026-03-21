@@ -24,4 +24,5 @@ public interface ITextChannel : IChannel
     public DateTimeOffset? LastPinTimestamp { get; }
     
     public Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default);
+    Task IndicateTypingAsync(CancellationToken cancellationToken = default);
 }

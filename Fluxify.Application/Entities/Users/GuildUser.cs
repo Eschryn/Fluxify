@@ -21,7 +21,7 @@ using Fluxify.Dto.Guilds.Members;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GuildUser(RoleRepository roleRepository) : IUser, IEntity
+public class GuildUser : IUser, IEntity
 {
     public Snowflake Id { get; init; }
 
@@ -35,7 +35,7 @@ public class GuildUser(RoleRepository roleRepository) : IUser, IEntity
     public bool Mute { get; internal set;  }
     public string? Nick { get; internal set;  }
     public GuildMemberProfileFlags ProfileFlags { get; internal set;  }
-    public IReadOnlyCollection<Role> Roles => AssignedRoleIds.Select(roleRepository.Cache.GetCachedOrDefault<Role>).OfType<Role>().ToArray();
+    public IReadOnlyCollection<Role> Roles => AssignedRoleIds.Select(Guild.RolesRepository.Cache.GetCachedOrDefault<Role>).OfType<Role>().ToArray();
     public required Guild Guild { get; init; }
     internal IUser User { get; set; } = default!;
     public bool? Bot => User.Bot;

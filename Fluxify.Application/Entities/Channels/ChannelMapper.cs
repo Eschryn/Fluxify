@@ -77,6 +77,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.Url))]
     [MapperIgnoreSource(nameof(ChannelResponse.ParentId))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
+    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
     private partial GuildTextChannel TextChannelFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,
@@ -96,6 +97,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.LastPinTimestamp))]
     [MapperIgnoreSource(nameof(ChannelResponse.ParentId))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
+    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
     private partial GuildVoiceChannel VoiceChannelFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,
@@ -140,6 +142,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.LastPinTimestamp))]
     [MapperIgnoreSource(nameof(ChannelResponse.ParentId))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
+    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
     private partial GuildLinkChannel LinkChannelFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,

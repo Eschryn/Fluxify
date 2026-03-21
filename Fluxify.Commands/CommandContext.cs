@@ -34,7 +34,7 @@ public class CommandContext
     public Message Message { get; }
     public IUser Author => Message.Author;
     public Guild? Guild => Message.Channel is IGuildChannel channel ? channel.Guild : null;
-    public TextChannel TextChannel => Message.Channel;
+    public ITextChannel TextChannel => Message.Channel;
     public IServiceProvider Services { get; }
     internal CommandTokenizer Tokenizer { get; }
     public CommandReader Reader { get; }

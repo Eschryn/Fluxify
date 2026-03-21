@@ -31,5 +31,5 @@ public class MessageDto
     public Snowflake? FavoriteMemeId { get; set; }
     public List<Snowflake>? Stickers { get; set; }
     public bool Tts { get; set; }
-    public List<FileUpload>? Files { get; set; }
+    public FileUpload[]? Files { get; init; }
 }

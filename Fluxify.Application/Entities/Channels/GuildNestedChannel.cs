@@ -14,6 +14,7 @@
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class Dm(
-    FluxerApplication fluxerApplication
-) : PrivateTextChannel(fluxerApplication);
+public class GuildNestedChannel(FluxerApplication fluxerApplication) : GuildChannel(fluxerApplication), INestedChannel
+{
+    public required GuildCategory? Parent { get; init; }
+}

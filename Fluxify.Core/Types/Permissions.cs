@@ -20,6 +20,7 @@ namespace Fluxify.Core.Types;
 [JsonConverter(typeof(PermissionConverter))]
 public enum Permissions : ulong
 {
+    None = 0,
     CreateInstantInvite = 0x1,
     KickMembers = 0x2,
     BanMembers = 0x4,

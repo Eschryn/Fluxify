@@ -227,7 +227,7 @@ public partial class FluxerApplication
             user = Users.Insert(arg.Author);
         }
         
-        var message = await _messageMapper.MapAsync(arg, user);
+        var message = await MessageMapper.MapAsync(arg, user);
         await _messageHandlers.CallHandlersAsync(message);
     }
 

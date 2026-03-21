@@ -30,8 +30,8 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
     [MapProperty(nameof(GuildMemberResponse.Roles), nameof(GuildUser.AssignedRoleIds))]
     [MapperIgnoreTarget(nameof(GuildUser.Roles))]
     [MapperIgnoreSource(nameof(GuildMemberResponse.User))]
-    private partial GuildUser Map(GuildMemberResponse dto, IUser user, Snowflake id, Guild guild, RoleRepository roleRepository);
-    public GuildUser Map(GuildMemberResponse dto, IUser user, Guild guild, RoleRepository roleRepository) => Map(dto, user, user.Id, guild, roleRepository);
+    private partial GuildUser Map(GuildMemberResponse dto, IUser user, Snowflake id, Guild guild);
+    public GuildUser Map(GuildMemberResponse dto, IUser user, Guild guild) => Map(dto, user, user.Id, guild);
 
     [MapperIgnoreTarget(nameof(GlobalUser.Id))]
     [MapperIgnoreSource(nameof(GlobalUser.Id))]

@@ -19,6 +19,7 @@ using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Settings;
+using Fluxify.Rest.Guilds;
 using UserMapper = Fluxify.Application.Entities.Users.UserMapper;
 
 namespace Fluxify.Application.Entities.Guilds;
@@ -29,6 +30,9 @@ public class Guild(FluxerApplication app) : IEntity
         => field ??= new RoleRepository(Id, app.Rest, new RoleMapper(), app.Guilds);
     internal GuildMemberRepository MembersRepository 
         => field ??= new GuildMemberRepository(this, app.Rest, new UserMapper(), app.Users, app.Guilds);
+    
+    internal GuildRequestBuilder RequestBuilder => field ??= app.Rest.Guilds[Id];
+    
     internal ConcurrentDictionary<Snowflake, IGuildChannel> GuildChannels { get; } = new();
     internal ConcurrentDictionary<Snowflake, GuildEmoji> GuildEmojis { get; } = new();
     internal ConcurrentDictionary<Snowflake, Sticker> GuildStickers { get; } = new();

@@ -43,7 +43,7 @@ internal class GuildMemberRepository(
             : Insert(guildMemberResponse, await guildRepository.GetAsync(guild.Id), await guild.MembersRepository.GetAsync(memberId));
     }
 
-    internal GuildUser Insert(GuildMemberResponse member, Guild guild, IUser user) => Cache.UpdateOrCreate(mapper.Map(member, user, guild, guild.RolesRepository));
+    internal GuildUser Insert(GuildMemberResponse member, Guild guild, IUser user) => Cache.UpdateOrCreate(mapper.Map(member, user, guild));
 
     internal void Delete(Snowflake memberId)
     {

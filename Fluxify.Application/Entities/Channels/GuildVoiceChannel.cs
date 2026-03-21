@@ -17,16 +17,11 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GuildVoiceChannel(FluxerApplication fluxerApplication) : IGuildChannel
+public class GuildVoiceChannel(FluxerApplication fluxerApplication) : GuildChannel(fluxerApplication), INestedChannel
 {
-    public Snowflake Id { get; internal set; }
-    public required string Name { get; set; }
     public int Bitrate { get; internal set; }
     public int? UserLimit { get; internal set; }
     public Snowflake GuildId { get; internal set; }
     public Snowflake? RtcRegion { get; internal set; }
-    public required Guild Guild { get; init; }
     public GuildCategory? Parent { get; internal set; }
-    public int? Position { get; internal set; }
-    public PermissionOverwrite[]? Overwrites { get; internal set; }
 }
