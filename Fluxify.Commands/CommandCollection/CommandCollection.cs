@@ -53,7 +53,7 @@ public class CommandCollection : ICommandCollection
     {
         return new TextCommandDispatcher(
             configuration,
-            CommandTreeNode.FromEntries(RegistrationEntries, Preconditions.Values.ToArray()),
-            RegistrationEntries);
+            CommandTreeNode.FromEntries(RegistrationEntries, Preconditions.Values.ToArray())
+        );
     }
 }
