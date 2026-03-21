@@ -27,6 +27,8 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
 {
     public partial GlobalUser Map(UserPartialResponse dto);
     
+    public partial WebhookUser MapWebhook(UserPartialResponse dto);
+    
     [MapProperty(nameof(GuildMemberResponse.Roles), nameof(GuildUser.AssignedRoleIds))]
     [MapperIgnoreTarget(nameof(GuildUser.Roles))]
     [MapperIgnoreSource(nameof(GuildMemberResponse.User))]
