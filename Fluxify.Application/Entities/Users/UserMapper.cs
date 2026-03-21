@@ -25,8 +25,12 @@ namespace Fluxify.Application.Entities.Users;
 [UseStaticMapper(typeof(CommonMapper))]
 public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<GuildUser>
 {
+    [MapProperty(nameof(UserPartialResponse.Avatar), nameof(GlobalUser.AvatarHash))]
     public partial GlobalUser Map(UserPartialResponse dto);
     
+    public partial PrivateUser Map(UserPrivateReponse dto);
+    
+    [MapProperty(nameof(UserPartialResponse.Avatar), nameof(GlobalUser.AvatarHash))]
     public partial WebhookUser MapWebhook(UserPartialResponse dto);
     
     [MapProperty(nameof(GuildMemberResponse.Roles), nameof(GuildUser.AssignedRoleIds))]

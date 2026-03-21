@@ -42,7 +42,7 @@ public class GuildUser : IUser, IEntity
     public string Username => User.Username;
     public string? Discriminator => User.Discriminator;
     public string? GlobalName => User.GlobalName;
-    public string? Avatar => User.Avatar;
+    public string? GlobalAvatarHash => User.AvatarHash;
     public Color? AvatarColor => User.AvatarColor;
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;

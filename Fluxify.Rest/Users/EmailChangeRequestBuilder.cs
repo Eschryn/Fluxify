@@ -49,10 +49,10 @@ public class EmailChangeRequestBuilder(HttpClient client)
         cancellationToken: cancellationToken
     );
     
-    public async Task<UserPrivate?> BouncedVerifyNewAsync(
+    public async Task<UserPrivateReponse?> BouncedVerifyNewAsync(
         EmailChangeBouncedRequestVerifyNewRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EmailChangeBouncedRequestVerifyNewRequest, UserPrivate>(
+    ) => await client.JsonRequestAsync<EmailChangeBouncedRequestVerifyNewRequest, UserPrivateReponse>(
         HttpMethod.Post,
         BouncedVerifyNewUrl,
         request,

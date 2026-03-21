@@ -71,17 +71,17 @@ public class MeRequestBuilder(HttpClient client)
     public ScheduledMessagesRequestBuilder ScheduledMessages { get; } = new(client);
     public SudoRequestBuilder Sudo { get; } = new(client);
 
-    public async Task<UserPrivate?> GetMeAsync(CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<UserPrivate>(
+    public async Task<UserPrivateReponse?> GetMeAsync(CancellationToken cancellationToken = default)
+        => await client.JsonRequestAsync<UserPrivateReponse>(
             HttpMethod.Get,
             MeUrl,
             cancellationToken: cancellationToken
         );
 
-    public async Task<UserPrivate?> UpdateMeAsync(
+    public async Task<UserPrivateReponse?> UpdateMeAsync(
         UserUpdateWithVerificationRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<UserUpdateWithVerificationRequest, UserPrivate>(
+    ) => await client.JsonRequestAsync<UserUpdateWithVerificationRequest, UserPrivateReponse>(
         HttpMethod.Patch,
         MeUrl,
         request,

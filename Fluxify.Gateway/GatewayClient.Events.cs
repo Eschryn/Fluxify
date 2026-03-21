@@ -63,7 +63,7 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.SessionsReplace, value!);
     }
 
-    public event Func<UserPrivate, Task>? UserUpdate
+    public event Func<UserPrivateReponse, Task>? UserUpdate
     {
         add => InsertHandler(GatewayEvent.UserUpdate, value!);
         remove => RemoveHandler(GatewayEvent.UserUpdate, value!);

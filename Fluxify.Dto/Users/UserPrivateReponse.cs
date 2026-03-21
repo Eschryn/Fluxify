@@ -18,7 +18,7 @@ using Fluxify.Dto.Auth;
 
 namespace Fluxify.Dto.Users;
 
-public record UserPrivate(
+public record UserPrivateReponse(
     int? AccentColor,
     string[] Acls,
     AuthenticatorTypes[] AuthenticatorTypes,

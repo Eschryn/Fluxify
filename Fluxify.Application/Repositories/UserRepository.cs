@@ -30,6 +30,9 @@ public class UserRepository(RestClient client, Entities.Users.UserMapper mapper)
    internal GlobalUser Insert(UserPartialResponse response)
       => Cache.UpdateOrCreate(mapper.Map(response));
 
+   internal GlobalUser Insert(UserPrivateReponse response)
+      => Cache.UpdateOrCreate(mapper.Map(response));
+
    internal GlobalUser? GetCachedOrDefault(Snowflake id) => Cache.GetCachedOrDefault<GlobalUser>(id);
    
    private async Task<GlobalUser> GetUserRestAsync(Snowflake id) 

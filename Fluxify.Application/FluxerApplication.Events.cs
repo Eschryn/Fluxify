@@ -23,6 +23,7 @@ public partial class FluxerApplication
     private readonly HandlerContainer<Message> _messageHandlers = new();
     private readonly HandlerContainer<Guild> _guildCreatedHandlers = new();
     private readonly HandlerContainer<Guild> _guildUpdatedHandlers = new();
+    private readonly HandlerContainer<Guild> _guildDeletedHandlers = new();
     
     public event Func<Message, Task> MessageReceived
     {
@@ -40,6 +41,12 @@ public partial class FluxerApplication
     {
         add => _guildUpdatedHandlers.InsertDelegate(value);
         remove => _guildUpdatedHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<Guild, Task> GuildDeleted
+    {
+        add => _guildDeletedHandlers.InsertDelegate(value);
+        remove => _guildDeletedHandlers.RemoveDelegate(value);
     }
 
 

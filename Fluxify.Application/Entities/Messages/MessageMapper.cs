@@ -24,6 +24,7 @@ using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
 using Fluxify.Dto.Channels.Text.Messages.Reactions;
 using Fluxify.Dto.Guilds.Emoji;
+using Fluxify.Dto.Users;
 using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Messages;
@@ -78,6 +79,8 @@ public partial class MessageMapper(
     [MapperIgnoreTarget(nameof(Sticker.Description))]
     [MapProperty(nameof(MessageStickerResponse.Animated), nameof(Sticker.IsAnimated))]
     private partial Sticker MapSticker(MessageStickerResponse sticker);
+
+    private IUser MapUser(UserPartialResponse user) => application.Users.GetCachedOrDefault(user.Id) ?? application.Users.Insert(user);
     
     [MapProperty(nameof(MessageBaseResponse.Timestamp), nameof(Message.CreatedAt))]
     [MapProperty(nameof(MessageBaseResponse.EditedTimestamp), nameof(Message.EditedAt))]
