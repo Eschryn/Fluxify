@@ -24,9 +24,16 @@ internal class RegistrationVisitor(Precondition[] preconditions)
     {
         return entry switch
         {
-            CommandRegistration reg => new CommandTreeNode(Empty, reg.Handler, reg.Preconditions.Select(p => _preconditions[p]).ToArray()),
+            CommandRegistration reg => new CommandTreeNode(
+                Empty, 
+                reg.Handler,
+                reg.Meta,
+                reg.Preconditions.Select(p => _preconditions[p]).ToArray()),
             ModuleRegistration reg => new CommandTreeNode(
-                reg.Children.ToFrozenDictionary(k => k.MetaName, Visit), null,  reg.Preconditions.Select(p => _preconditions[p]).ToArray()),
+                reg.Children.ToFrozenDictionary(k => k.MetaName, Visit),
+                null,
+                reg.Meta,
+                reg.Preconditions.Select(p => _preconditions[p]).ToArray()),
             _ => throw new InvalidOperationException("Unknown registration entry type")
         };
     }

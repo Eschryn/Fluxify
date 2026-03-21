@@ -17,6 +17,7 @@ using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
+using Fluxify.Commands.Model;
 using Fluxify.Commands.TextCommand;
 
 namespace Fluxify.Commands;
@@ -38,6 +39,7 @@ public class CommandContext
     public IServiceProvider Services { get; }
     internal CommandTokenizer Tokenizer { get; }
     public CommandReader Reader { get; }
+    public CommandMeta Meta { get; internal set; }
     internal HashSet<string> PreconditionsFulfilled { get; set; } = [];
 
     public Task ReplyAsync(MessageDto message) => Message.ReplyAsync(message);

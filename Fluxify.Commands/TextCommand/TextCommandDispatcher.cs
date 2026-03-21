@@ -24,16 +24,13 @@ public class TextCommandDispatcher
 {
     private readonly CommandConfiguration _config;
     private readonly CommandTreeNode _rootTreeNode;
-    private readonly List<RegistrationEntry> _registrationEntries;
 
     internal TextCommandDispatcher(
         CommandConfiguration config,
-        CommandTreeNode rootTreeNode,
-        List<RegistrationEntry> registrationEntries)
-    {
+        CommandTreeNode rootTreeNode
+    ) {
         _config = config;
         _rootTreeNode = rootTreeNode;
-        _registrationEntries = registrationEntries;
     }
 
     public async Task DispatchAsync(Message message)
@@ -62,6 +59,14 @@ public class TextCommandDispatcher
                 }
                 else if (currentTreeNode.DefaultCommand is { } cmd)
                 {
+                    // provide info about current command
+                    commandContext.Meta = currentTreeNode.Meta switch
+                    {
+                        CommandMeta c => c,
+                        ModuleMeta m => m.DefaultCommand is { } defaultCommand ? (CommandMeta)currentTreeNode.Commands[defaultCommand].Meta : throw new InvalidOperationException(),
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                    
                     await cmd(commandContext).ConfigureAwait(false);
                     break;
                 }
