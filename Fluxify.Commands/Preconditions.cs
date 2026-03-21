@@ -37,7 +37,7 @@ public static class Preconditions
             )
         );
 
-    public static Precondition RequireBotPermissions(Permissions permissions, string? failMessage = null,
+    /*public static Precondition RequireBotPermissions(Permissions permissions, string? failMessage = null,
         string? guildFailMessage = null)
         => new(
             $"require_bot_permissions${Enum.Format(PermissionEnumType, permissions, "X")}",
@@ -48,7 +48,7 @@ public static class Preconditions
                 failMessage,
                 guildFailMessage ?? "The bot does not have the required permissions to use this command."
             )
-        );
+        );*/
 
     private static PreconditionDelegate RequirePermissionTemplate(
         Permissions permissions,
