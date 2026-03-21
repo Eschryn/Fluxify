@@ -14,8 +14,9 @@
 
 namespace Fluxify.Application.Entities.Channels;
 
-public interface IGuildChannel : INamedChannel, IGuildScopedEntity
+public interface IGuildChannel : IGuildScopedEntity, IChannel
 {
+    public string Name { get; }
     public int? Position { get; }
     public PermissionOverwrite[]? Overwrites { get; }
 }
