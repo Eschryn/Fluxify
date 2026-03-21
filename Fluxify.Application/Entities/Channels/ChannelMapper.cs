@@ -29,8 +29,12 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
                         : null,
             guild: dto.GuildId is { } guildId ? await application.Guilds.GetAsync(guildId) : null);
 
-    public IChannel FromDto(ChannelResponse dto, GuildCategory? parent)
-        => FromDto(dto, parent, dto.GuildId is {} gId ? application.Guilds.Cache.GetCachedOrDefault<Guild>(gId)! : null);
+    public IChannel FromDto(ChannelResponse dto)
+        => FromDto(
+            dto, 
+            dto.ParentId is { } pId ? application.Channels.Cache.GetCachedOrDefault<GuildCategory>(pId) : null,
+            dto.GuildId is {} gId ? application.Guilds.Cache.GetCachedOrDefault<Guild>(gId)! : null
+        );
     
     public IChannel FromDto(ChannelResponse dto, GuildCategory? parent, Guild? guild)
     {
@@ -165,6 +169,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.LastMessageId))]
     [MapperIgnoreSource(nameof(ChannelResponse.LastPinTimestamp))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
+    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
     private partial GuildCategory CategoryFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,

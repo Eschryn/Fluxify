@@ -53,7 +53,8 @@ public class FluxerConfig
             
         return new HttpClient(authenticationHeaderHandler)
         {
-            BaseAddress = cfg.GetApiBaseUri()
+            BaseAddress = cfg.GetApiBaseUri(),
+            DefaultRequestVersion = Version.Parse("2.0"),
         };
     }
 

@@ -34,7 +34,7 @@ public record ChannelResponse(
     int? Position,
     int? RateLimitPerUser,
     UserPartialResponse[]? Recipients,
-    Snowflake? RtcRegion,
+    string? RtcRegion,
     string? Topic,
     ChannelType Type,
     string? Url,

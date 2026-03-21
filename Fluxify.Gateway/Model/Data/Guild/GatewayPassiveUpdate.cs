@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Guilds;
+using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Channels;
+using Fluxify.Gateway.Model.Data.Voice;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Gateway.Model.Data.Guild;
 
-public class GuildVoiceChannel(FluxerApplication fluxerApplication) : GuildChannel(fluxerApplication), INestedChannel
-{
-    public int Bitrate { get; internal set; }
-    public int? UserLimit { get; internal set; }
-    public Snowflake GuildId { get; internal set; }
-    public string? RtcRegion { get; internal set; }
-    public GuildCategory? Parent { get; internal set; }
-}
+public record GatewayPassiveUpdate(
+    Snowflake GuildId,
+    [property: JsonPropertyName("channels")]
+    Dictionary<Snowflake, Snowflake> ChannelLastMessageId, 
+    VoiceStateResponse[]? VoiceStates,
+    ChannelResponse[]? CreatedChannels,
+    ChannelResponse[]? UpdatedChannels,
+    Snowflake[]? DeletedChannels
+);

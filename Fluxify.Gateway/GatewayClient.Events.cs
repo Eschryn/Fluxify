@@ -399,6 +399,15 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.CallDelete, value!);
     }
 
+    /// <remarks>
+    /// This is only called for users and not bots
+    /// </remarks>
+    public event Func<GatewayPassiveUpdate, Task>? PassiveUpdates
+    {
+        add => InsertHandler(GatewayEvent.PassiveUpdates, value!);
+        remove => RemoveHandler(GatewayEvent.PassiveUpdates, value!);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private HandlerContainer<T> GetHandlerContainer<T>(string eventType) =>
         (HandlerContainer<T>)_eventHandlers[eventType];
@@ -428,7 +437,15 @@ public sealed partial class GatewayClient
             {
                 using var _ = _logger.BeginScope(packetType);
                 await handlerContainer.CallHandlersAsync(packetData);
-            }).ContinueWith(t => Log.UserCodeException(_logger, t.Exception!), TaskContinuationOptions.OnlyOnFaulted);
+            }).ContinueWith(t 
+                => Log.UserCodeException(
+                    _logger,
+                    t.Exception!.InnerExceptions.Count == 1 
+                        ? t.Exception.InnerExceptions.First()
+                        : t.Exception!
+                ),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
         }
         else
         {

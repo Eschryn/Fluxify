@@ -17,11 +17,4 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GuildCategory(FluxerApplication fluxerApplication) : IGuildChannel
-{
-    public Snowflake Id { get; init; }
-    public required string Name { get; set; }
-    public required Guild Guild { get; init; }
-    public int? Position { get; internal set; }
-    public PermissionOverwrite[]? Overwrites { get; internal set; }
-}
+public class GuildCategory(FluxerApplication fluxerApplication) : GuildChannel(fluxerApplication);

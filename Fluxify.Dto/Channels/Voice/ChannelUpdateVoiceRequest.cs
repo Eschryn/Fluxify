@@ -21,6 +21,6 @@ public record ChannelUpdateVoiceRequest(
     string? Name,
     Snowflake? ParentId,
     ChannelPermissionOverwrite[] PermissionOverwrites,
-    Snowflake? RtcRegion,
+    string? RtcRegion,
     int? UserLimit
 ) : ChannelUpdateRequest;

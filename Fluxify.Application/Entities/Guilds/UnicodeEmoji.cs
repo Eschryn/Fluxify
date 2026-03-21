@@ -17,4 +17,6 @@ namespace Fluxify.Application.Entities.Guilds;
 public class UnicodeEmoji : IEmoji
 {
     public required string Name { get; init; }
+    
+    public static implicit operator UnicodeEmoji(string unicodeEmoji) => new() { Name = unicodeEmoji };
 }

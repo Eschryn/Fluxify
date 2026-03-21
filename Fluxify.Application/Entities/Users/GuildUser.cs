@@ -46,4 +46,10 @@ public class GuildUser : IUser, IEntity
     public Color? AvatarColor => User.AvatarColor;
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;
+
+    public async Task AddRoleAsync(Role role, string? reason = null)
+        => await Guild.RequestBuilder.Members[role.Id].AddRoleAsync(role.Id, reason);
+    
+    public async Task AddRoleAsync(Snowflake roleId, string? reason = null) 
+        => await Guild.RequestBuilder.Members[roleId].AddRoleAsync(roleId, reason);
 }

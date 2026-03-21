@@ -27,10 +27,16 @@ public class GuildTextChannel(FluxerApplication fluxerApplication) : GuildNested
     public Snowflake? LastMessageId { get; internal set; }
     public DateTimeOffset? LastPinTimestamp { get; internal set; }
     
-    public async Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default) 
+    public async Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default)
         => await FluxerApplication.MessageMapper.MapAsync(
-            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.Map(message), cancellationToken)
+            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.Map(message),
+                cancellationToken)
             ?? throw new Exception("Message was not sent"));
 
     public Task IndicateTypingAsync(CancellationToken cancellationToken = default) => RequestBuilder.IndicateTypingAsync(cancellationToken);
+
+    public async Task<Message> GetMessageAsync(Snowflake id, CancellationToken cancellationToken = default)
+        => await FluxerApplication.MessageMapper.MapAsync(
+            await RequestBuilder.Messages[id].GetMessageAsync(cancellationToken) ??
+            throw new Exception("Message was not found"));
 }
