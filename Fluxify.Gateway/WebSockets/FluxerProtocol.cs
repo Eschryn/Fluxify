@@ -23,7 +23,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Fluxify.Gateway.WebSockets;
 
-public sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSocketProtocol<GatewayPayload>
+internal sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSocketProtocol<GatewayPayload>
 {
     private readonly ILogger _logger = fluxerConfig.LoggerFactory.CreateLogger<FluxerProtocol>();
     private readonly JsonSerializerOptions _serializerOptions = new()
