@@ -14,7 +14,7 @@
 
 namespace Fluxify.Application.State;
 
-public enum ChangeType
+internal enum ChangeType
 {
     Create,
     Update,

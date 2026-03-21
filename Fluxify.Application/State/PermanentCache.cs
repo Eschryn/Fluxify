@@ -18,12 +18,12 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
-public class PermanentCache<TData, TMapper>(TMapper mapper)
+internal sealed class PermanentCache<TData, TMapper>(TMapper mapper)
     where TData : class, IEntity
     where TMapper : IUpdateEntity<TData>
 {
     private readonly ConcurrentDictionary<Snowflake, TData> _dataContainer = new();
-    private readonly ResourceLock _lock = new();
+    private readonly ResourceTransactions<TData> _transactions = new();
 
     public bool IsCached(Snowflake id) =>  _dataContainer.ContainsKey(id);
     public T? GetCachedOrDefault<T>(Snowflake id) where T : TData => (T?)_dataContainer.GetValueOrDefault(id);
@@ -32,27 +32,12 @@ public class PermanentCache<TData, TMapper>(TMapper mapper)
     
     public async Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory, bool bypassCache = false)
     {
-        if (bypassCache)
+        if (!bypassCache && _dataContainer.TryGetValue(id, out var data))
         {
-            var entity = await factory(id);
-            _dataContainer.TryAdd(id, entity);
-            return entity;
+            return data;
         }
         
-        if (_dataContainer.TryGetValue(id, out var data))
-        {
-            return data;
-        }
-
-        using var _ = await _lock.LockAsync(id);
-
-        // we need to check again because maybe we got data from another thread
-        if (_dataContainer.TryGetValue(id, out data))
-        {
-            return data;
-        }
-
-        return _dataContainer[id] = await factory(id);
+        return await _transactions.BeginAsync(id, async () => UpdateOrCreate(await factory(id)));
     }
 
     public TData UpdateOrCreate(TData data)

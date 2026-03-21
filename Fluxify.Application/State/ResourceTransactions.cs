@@ -12,21 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.ObjectPool;
+using System.Collections.Concurrent;
+using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
-public class SemaphorePool : IPooledObjectPolicy<SemaphoreSlim>
+internal sealed class ResourceTransactions<T>
 {
-    public SemaphoreSlim Create() => new(1);
+    private readonly ConcurrentDictionary<Snowflake, Task<T>> _activeTransactions = new();
 
-    public bool Return(SemaphoreSlim obj)
-    {
-        if (obj.CurrentCount != 1)
+    public Task<T> BeginAsync(Snowflake id, Func<Task<T>> transaction, CancellationToken cancellationToken = default)
+        => _activeTransactions.GetOrAdd(id, async snow =>
         {
-            throw new InvalidOperationException("Semaphore must be in released state");
-        }
-
-        return true;
-    }
+            try
+            {
+                return await transaction();
+            }
+            finally
+            {
+                _ = _activeTransactions.TryRemove(snow, out _);
+            }
+        });
 }
