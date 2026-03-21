@@ -43,7 +43,7 @@ public class Guild(FluxerApplication app) : IEntity
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
     
-    public GuildUser CurrentUser => MembersRepository.Cache.GetCachedOrDefault<GuildUser>(app.CurrentUser.Id)!;
+    //public GuildUser CurrentUser => MembersRepository.Cache.GetCachedOrDefault<GuildUser>(app.CurrentUser.Id)!;
     
     public GuildVoiceChannel? AfkChannel { get; internal set; }
     public int AfkTimeout { get; internal set; }
