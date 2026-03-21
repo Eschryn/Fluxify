@@ -17,11 +17,11 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GroupDm(FluxerApplication fluxerApplication) : PrivateTextChannel(fluxerApplication), INamedChannel
+public class GroupDm(FluxerApplication fluxerApplication) : PrivateTextChannel(fluxerApplication)
 {
     public string? IconHash { get; internal set; }
     public Snowflake OwnerId { get; internal set; }
     public IUser[] Recipients { get; internal set; } = [];
     public Dictionary<string, string> Nicks { get; internal set; } = [];
-    public required string Name { get; set; }
+    public required string? Name { get; set; }
 }
