@@ -25,11 +25,11 @@ namespace Fluxify.Application.Repositories;
 
 public sealed class RoleRepository(Snowflake guildId, RestClient client, RoleMapper mapper, GuildRepository guildRepository)
 {
-    internal PermanentCache<Role, RoleMapper> Cache = new(mapper);
+    internal PermanentCache<IRole, RoleMapper> Cache = new(mapper);
 
-    public async Task<Role> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
+    public async Task<IRole> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 
-    private async Task<Role> Factory(Snowflake arg)
+    private async Task<IRole> Factory(Snowflake arg)
     {
         var guildRoleResponses = await client.Guilds[guildId].Roles.ListAsync() ?? [];
         foreach (var guildRoleResponse in guildRoleResponses)

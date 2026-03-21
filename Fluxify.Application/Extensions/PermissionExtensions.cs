@@ -17,18 +17,18 @@ using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Core.Types;
 
-namespace Fluxify.Application.Entensions;
+namespace Fluxify.Application.Extensions;
 
 public static class PermissionExtensions
 {
     extension(IGuildChannel guildChannel)
     {
-        public Permissions GetUserPermissions(GuildUser user) => ((GuildChannel)guildChannel).GetUserPermissions(user);
+        public Permissions CalculateUserPermissions(GuildUser user) => ((GuildChannel)guildChannel).CalculateUserPermissions(user);
     }
     
     extension(GuildChannel guildChannel)
     {
-        public Permissions GetUserPermissions(GuildUser user)
+        internal Permissions CalculateUserPermissions(GuildUser user)
         {
             if (guildChannel.Guild.Owner.Id == user.Id)
             {

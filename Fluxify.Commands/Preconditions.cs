@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entensions;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Extensions;
 using Fluxify.Commands.Model;
 using Fluxify.Core.Types;
 
@@ -27,20 +27,45 @@ public static class Preconditions
     public static Precondition RequireAuthorPermissions(Permissions permissions, string? failMessage = null,
         string? guildFailMessage = null)
         => new(
-            $"require_permissions${Enum.Format(PermissionEnumType, permissions, "X")}",
+            $"require_author_permissions${Enum.Format(PermissionEnumType, permissions, "X")}",
             $"Requires permissions: {Enum.Format(PermissionEnumType, permissions, "F")}",
-            ctx =>
-            {
-                if (ctx.TextChannel is not IGuildChannel guildChannel)
-                {
-                    return PreconditionResult.Fail(failMessage ?? "This command can only be used in a guild.");
-                }
+            RequirePermissionTemplate(
+                permissions,
+                static ctx => (GuildUser)ctx.Author,
+                failMessage,
+                guildFailMessage ?? "You do not have the required permissions to use this command."
+            )
+        );
 
-                return (guildChannel.GetUserPermissions((GuildUser)ctx.Author) & permissions) == permissions
-                    ? PreconditionResult.Success
-                    : PreconditionResult.Fail(guildFailMessage ??
-                                              "You do not have the required permissions to use this command.");
-            });
+    public static Precondition RequireBotPermissions(Permissions permissions, string? failMessage = null,
+        string? guildFailMessage = null)
+        => new(
+            $"require_bot_permissions${Enum.Format(PermissionEnumType, permissions, "X")}",
+            $"Requires permissions: {Enum.Format(PermissionEnumType, permissions, "F")}",
+            RequirePermissionTemplate(
+                permissions,
+                static ctx => ctx.Guild!.CurrentUser,
+                failMessage,
+                guildFailMessage ?? "The bot does not have the required permissions to use this command."
+            )
+        );
+
+    private static PreconditionDelegate RequirePermissionTemplate(
+        Permissions permissions,
+        Func<CommandContext, GuildUser> target,
+        string? failMessage,
+        string guildFailMessage
+    ) => ctx =>
+    {
+        if (ctx.TextChannel is not IGuildChannel guildChannel)
+        {
+            return PreconditionResult.Fail(failMessage ?? "This command can only be used in a guild.");
+        }
+
+        return (guildChannel.CalculateUserPermissions(target(ctx)) & permissions) == permissions
+            ? PreconditionResult.Success
+            : PreconditionResult.Fail(guildFailMessage);
+    };
 
     public static Precondition RequireGuildContext(string? failMessage = null)
         => new(

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entensions;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Extensions;
 using Fluxify.Core.Types;
 using Fluxify.Rest;
 using Fluxify.Rest.Channel;
@@ -51,7 +51,7 @@ public abstract class GuildChannel(FluxerApplication fluxerApplication) : IGuild
             return;
         }
 
-        if ((this.GetUserPermissions(guildUser) & permissions) != permissions)
+        if ((this.CalculateUserPermissions(guildUser) & permissions) != permissions)
         {
             throw new RestApiException(
                 "missing_permissions",

@@ -18,10 +18,10 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Roles;
 
-public class Role : IEntity
+public class Role : IRole
 {
     public Snowflake Id { get; internal set; }
-    public required string Name { get; set; }
+    public required string Name { get; init; }
     public long Position { get; internal set; }
     public bool IsMentionable { get; internal set; }
     public bool Hoist { get; internal set; }
