@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Guilds;
-using Fluxify.Dto.Guilds.Roles;
-using Riok.Mapperly.Abstractions;
+using System.Drawing;
+using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Roles;
 
-[Mapper]
-[UseStaticMapper(typeof(CommonMapper))]
-public partial class RoleMapper : IUpdateEntity<IRole>
+public interface IRole : IEntity, IGuildScopedEntity
 {
-    [MapProperty(nameof(GuildRoleResponse.Mentionable), nameof(Role.IsMentionable))]
-    public partial Role MapFromDto(GuildRoleResponse dto, Guild guild);
-    
-    public partial void UpdateEntity([MappingTarget] IRole data, IRole update);
+    public string Name { get; }
+    public long Position { get; }
+    public bool IsMentionable { get; }
+    public bool Hoist { get; }
+    public long? HoistPosition { get; }
+    public string? UnicodeEmoji { get; }
+    public Color Color { get; }
+    public Permissions Permissions { get; }
 }

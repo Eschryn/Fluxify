@@ -15,14 +15,15 @@
 using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
-using Fluxify.Application.Repositories;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Members;
+using Fluxify.Rest.Guilds;
 
 namespace Fluxify.Application.Entities.Users;
 
 public class GuildUser : IUser, IEntity
 {
+    private MemberRequestBuilder RequestBuilder => field ??= Guild.RequestBuilder.Members[Id];
     public Snowflake Id { get; init; }
 
     internal Snowflake[] AssignedRoleIds { get; set; } = [];
@@ -35,7 +36,7 @@ public class GuildUser : IUser, IEntity
     public bool Mute { get; internal set;  }
     public string? Nick { get; internal set;  }
     public GuildMemberProfileFlags ProfileFlags { get; internal set;  }
-    public IReadOnlyCollection<Role> Roles => AssignedRoleIds.Select(Guild.RolesRepository.Cache.GetCachedOrDefault<Role>).OfType<Role>().ToArray();
+    public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(Guild.RolesRepository.Cache.GetCachedOrDefault<IRole>).OfType<IRole>().ToArray();
     public required Guild Guild { get; init; }
     internal IUser User { get; set; } = default!;
     public bool? Bot => User.Bot;
@@ -47,9 +48,18 @@ public class GuildUser : IUser, IEntity
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;
 
-    public async Task AddRoleAsync(Role role, string? reason = null)
-        => await Guild.RequestBuilder.Members[role.Id].AddRoleAsync(role.Id, reason);
+    public Task AddRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
+        => RequestBuilder.AddRoleAsync(role.Id, reason, cancellationToken);
     
-    public async Task AddRoleAsync(Snowflake roleId, string? reason = null) 
-        => await Guild.RequestBuilder.Members[roleId].AddRoleAsync(roleId, reason);
+    public Task AddRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default) 
+        => RequestBuilder.AddRoleAsync(roleId, reason, cancellationToken);
+
+    public Task RemoveRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
+        => RequestBuilder.RemoveRoleAsync(role.Id, reason, cancellationToken);
+    
+    public Task RemoveRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default) 
+        => RequestBuilder.RemoveRoleAsync(roleId, reason, cancellationToken);
+    
+    public Task KickAsync(string? reason = null, CancellationToken cancellationToken = default) 
+        => RequestBuilder.KickAsync(reason, cancellationToken);
 }
