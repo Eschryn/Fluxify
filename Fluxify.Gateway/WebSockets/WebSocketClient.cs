@@ -21,7 +21,7 @@ namespace Fluxify.Gateway.WebSockets;
 /// 
 /// </summary>
 /// <param name="config"></param>
-public sealed class WebSocketClient<TProtocol, TFrame>(
+internal sealed class WebSocketClient<TProtocol, TFrame>(
     TProtocol protocol,
     WebSocketClientConfig config
 )
@@ -128,16 +128,15 @@ public sealed class WebSocketClient<TProtocol, TFrame>(
 
     private async Task<WebSocketMessageType> FillPipe(CancellationToken cancellationToken)
     {
-        var buffer = _receivePipe.Writer.GetMemory(Config.ReceiveBufferSize);
-
         Exception? exception = null;
         ValueWebSocketReceiveResult result;
         try
         {
             do
             {
+                var buffer = _receivePipe.Writer.GetMemory(Config.ReceiveBufferSize);
+                
                 result = await _clientWebSocket.ReceiveAsync(buffer, cancellationToken);
-
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     throw new GatewayCloseException(
