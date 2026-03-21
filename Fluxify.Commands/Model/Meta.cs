@@ -1,4 +1,4 @@
-﻿// Copyright 2026 Fluxify Contributors
+// Copyright 2026 Fluxify Contributors
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,4 @@
 
 namespace Fluxify.Commands.Model;
 
-public record ModuleMeta(
-    string Name,
-    string Description,
-    string Help,
-    string? DefaultCommand = null
-) : Meta(Name);
+public abstract record Meta(string Name);

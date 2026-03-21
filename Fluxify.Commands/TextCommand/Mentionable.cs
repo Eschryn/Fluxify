@@ -28,7 +28,7 @@ public abstract record Mentionable
         public override string ToString() => "<#" + Id + ">";
     }
 
-    public record Member(Snowflake Id) : Mentionable
+    public record User(Snowflake Id) : Mentionable
     {
         public override string ToString() => "<@" + Id + ">";
     }

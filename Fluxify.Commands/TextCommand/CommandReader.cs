@@ -175,12 +175,12 @@ public class CommandReader(CommandTokenizer tokenizer)
                     {
                         case "!":
                             snowflakeStr = tokenizer.Next();
-                            return new Mentionable.Member(ulong.Parse(snowflakeStr.Span));
+                            return new Mentionable.User(ulong.Parse(snowflakeStr.Span));
                         case "&":
                             snowflakeStr = tokenizer.Next();
                             return new Mentionable.Role(ulong.Parse(snowflakeStr.Span));
                         default:
-                            return new Mentionable.Member(ulong.Parse(snowflakeStr.Span));
+                            return new Mentionable.User(ulong.Parse(snowflakeStr.Span));
                     }
                 case "#":
                     tokenizer.ConsumeNext();
