@@ -216,7 +216,11 @@ public partial class FluxerApplication
     private async Task HandleMessageCreate(GatewayMessageCreate arg)
     {
         IUser user;
-        if (arg.GuildId.HasValue)
+        if (arg.WebhookId.HasValue)
+        {
+            user = _userMapper.MapWebhook(arg.Author);
+        }
+        else if (arg.GuildId.HasValue)
         {
             var guild = await Guilds.GetAsync(arg.GuildId.Value);
             var globalUser = Users.Insert(arg.Author);
