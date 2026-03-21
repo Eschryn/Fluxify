@@ -81,6 +81,25 @@ public partial class FluxerApplication
         Gateway.GuildRoleUpdate += HandleGuildRoleUpdate;
         Gateway.GuildRoleUpdateBulk += HandleGuildRoleUpdate;
         Gateway.GuildRoleDelete += HandleGuildRoleDelete;
+        
+        Gateway.PassiveUpdates += HandlePassiveUpdate;
+    }
+
+    private async Task HandlePassiveUpdate(GatewayPassiveUpdate arg)
+    {
+        var guild = await Guilds.GetAsync(arg.GuildId);
+        foreach (var channelChanges in arg.CreatedChannels?.Concat(arg.UpdatedChannels ?? []) ?? arg.UpdatedChannels ?? [])
+        {
+            Channels.Insert(channelChanges);
+        }
+
+        foreach (var argDeletedChannel in arg.DeletedChannels ?? [])
+        {
+            Channels.Cache.Remove(argDeletedChannel);
+        }
+        
+        // TODO: Handle voice state updates
+        // arg.VoiceStates[0].
     }
 
 
@@ -90,6 +109,28 @@ public partial class FluxerApplication
         foreach (var channels in arg.PrivateChannels)
         {
             Channels.Insert(channels);
+        }
+        
+        foreach (var userPartialResponse in arg.Users)
+        {
+            Users.Insert(userPartialResponse);
+        }
+        
+        foreach (var guildReadyData in arg.Guilds)
+        {
+            if (guildReadyData.Unavailable.HasValue || guildReadyData.Properties is null)
+            {
+                continue;
+            }
+
+            InsertGuild(
+                guildReadyData.Properties,
+                guildReadyData.Roles!,
+                guildReadyData.Members!,
+                guildReadyData.Channels!,
+                guildReadyData.Stickers!,
+                guildReadyData.Emojis!
+            );
         }
         
         return Task.CompletedTask;
@@ -237,24 +278,15 @@ public partial class FluxerApplication
 
     private async Task HandleGuildCreate(GatewayGuildCreate arg)
     {
-        var guild = Guilds.Insert(arg.Properties);
-
-        foreach (var channelResponse in arg.Channels)
-        {
-            Channels.Insert(channelResponse);
-        }
-
-        foreach (var guildRoleResponse in arg.Roles)
-        {
-            guild.RolesRepository.Insert(guildRoleResponse, guild);
-        }
-
-        foreach (var guildMemberResponse in arg.Members)
-        {
-            var user = Users.Insert(guildMemberResponse.User!);
-            guild.MembersRepository.Insert(guildMemberResponse, guild, user);
-        }
-
+        var guild = InsertGuild(
+            arg.Properties,
+            arg.Roles,
+            arg.Members,
+            arg.Channels,
+            arg.Stickers,
+            arg.Emojis
+        );
+        
         await _guildCreatedHandlers.CallHandlersAsync(guild);
     }
 
@@ -277,33 +309,13 @@ public partial class FluxerApplication
     private async Task HandleGuildStickersUpdate(GatewayStickerUpdate arg)
     {
         var guild = await Guilds.GetAsync(arg.GuildId);
-        foreach (var guildStickerResponse in arg.Stickers)
-        {
-            guild.GuildStickers.AddOrUpdate(
-                guildStickerResponse.Id,
-                _ => CommonMapper.MapToSticker(guildStickerResponse),
-                (_, target) =>
-                {
-                    CommonMapper.UpdateSticker(target, guildStickerResponse);
-                    return target;
-                });
-        }
+        GuildInsertStickers(arg.Stickers, guild);
     }
 
     private async Task HandleGuildEmojisUpdate(GatewayEmojiUpdate arg)
     {
         var guild = await Guilds.GetAsync(arg.GuildId);
-        foreach (var guildEmojiResponse in arg.Emojis)
-        {
-            guild.GuildEmojis.AddOrUpdate(
-                guildEmojiResponse.Id!.Value,
-                _ => (GuildEmoji)CommonMapper.MapToEmoji(guildEmojiResponse),
-                (_, target) =>
-                {
-                    target.Name = guildEmojiResponse.Name;
-                    return target;
-                });
-        }
+        GuildInsertEmoji(arg.Emojis, guild);
     }
 
     private async Task HandleChannelCreate(ChannelResponse arg)
@@ -327,22 +339,6 @@ public partial class FluxerApplication
         Channels.Cache.Remove(arg.Id);
 
         return Task.CompletedTask;
-    }
-
-    private void InsertChannel(ChannelResponse arg)
-    {
-        var channel = Channels.Insert(arg);
-        if (channel is IGuildChannel guildChannel)
-        {
-            guildChannel.Guild.GuildChannels.AddOrUpdate(
-                guildChannel.Id,
-                _ => guildChannel,
-                (_, target) =>
-                {
-                    _channelMapper.UpdateEntity(target, guildChannel);
-                    return target;
-                });
-        }
     }
 
     private async Task HandleGuildRoleUpdate(GatewayGuildRole arg)

@@ -26,5 +26,7 @@ public enum UserStatus
     [JsonStringEnumMemberName("dnd")]
     Dnd,
     [JsonStringEnumMemberName("invisible")]
-    Invisible
+    Invisible,
+    [JsonStringEnumMemberName("offline")]
+    Offline
 }

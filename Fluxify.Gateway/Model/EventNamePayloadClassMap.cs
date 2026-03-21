@@ -122,7 +122,9 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.CallUpdate, Data<GatewayCallSchema>() }, // untested
             { GatewayEvent.CallDelete, Data<GatewayChannelId>() }, // untested
             
-            { GatewayEvent.GuildAuditLogEntryCreate, Data<GuildAuditLogEntryResponse>() } // untested
+            { GatewayEvent.GuildAuditLogEntryCreate, Data<GuildAuditLogEntryResponse>() }, // untested
+
+            { GatewayEvent.PassiveUpdates, Data<GatewayPassiveUpdate>() }
         };
 
         TypeTable = sourceTable.ToFrozenDictionary(k => k.Key, v => v.Value.Item1);

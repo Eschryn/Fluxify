@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
@@ -28,7 +29,7 @@ public class Message(
 ) : IEntity
 {
     private MessageRequestBuilder RequestBuilder => field ??= application.Rest.Channels[Channel.Id].Messages[Id];
-    
+
     public Snowflake Id { get; init; }
     public string? Content { get; internal set; }
 
@@ -51,10 +52,10 @@ public class Message(
 
     public bool IsPinned { get; internal set; }
     public bool? HasTts { get; internal set; }
-    
-    public GlobalUser[]? Mentions { get; internal set; }
+
+    public IUser[]? Mentions { get; internal set; }
     public Snowflake[]? MentionRoles { get; internal set; }
-    
+
     public CallInfo? Call { get; internal set; }
 
     public MessageReference? MessageReference { get; internal set; }
@@ -72,15 +73,69 @@ public class Message(
         {
             MessageId = Id,
             ChannelId = Channel.Id,
-            GuildId = Channel is IGuildChannel guildChannel 
-                ? guildChannel.Guild.Id 
+            GuildId = Channel is IGuildChannel guildChannel
+                ? guildChannel.Guild.Id
                 : null,
             Type = MessageReferenceType.Reply
         };
 
         return await Channel.SendMessageAsync(message, cancellationToken);
     }
+    
+    private static string GetEmojiString(IEmoji emoji) => emoji switch
+    {
+        GuildEmoji ge => $"{ge.Name}:{ge.Id.ToString(CultureInfo.InvariantCulture)}",
+        UnicodeEmoji ue => ue.Name,
+        _ => throw new ArgumentOutOfRangeException(nameof(emoji), emoji, null)
+    };
+    
+    public async Task ReactAsync(IEmoji emoji, CancellationToken cancellationToken = default)
+        => await RequestBuilder.Reactions[GetEmojiString(emoji)]
+            .ReactAsync(application.Gateway.SessionId!, cancellationToken);
 
-    public async Task ReactAsync(string unicodeEmoji, CancellationToken cancellationToken = default) 
-        => await RequestBuilder.Reactions[unicodeEmoji].ReactAsync(application.Gateway.SessionId!, cancellationToken);
+    public async Task RemoveReactionAsync(IEmoji emoji, IUser user,
+        CancellationToken cancellationToken = default)
+    {
+        var messageReactionRequestBuilder = RequestBuilder.Reactions[GetEmojiString(emoji)];
+
+        if (user.Id == application.CurrentUser.Id)
+        {
+            await messageReactionRequestBuilder.RemoveOwnReactionAsync(application.Gateway.SessionId!,
+                cancellationToken);
+        }
+        else
+        {
+            await messageReactionRequestBuilder.RemoveReactionAsync(user.Id.ToString(CultureInfo.InvariantCulture),
+                cancellationToken);
+        }
+    }
+
+    public async IAsyncEnumerable<ICollection<IUser>> GetReactionUsersAsync(
+        IEmoji emoji,
+        int limit = 100,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    ) {
+        Snowflake? lastId = null;
+        do
+        {
+            var userPartialResponses = await RequestBuilder.Reactions[GetEmojiString(emoji)]
+                .ListUsersAsync(
+                    limit,
+                    lastId, 
+                    cancellationToken
+                );
+            
+            lastId = userPartialResponses?.LastOrDefault()?.Id;
+            yield return userPartialResponses?.Select(application.Users.Insert).ToArray() ?? [];
+        } while (lastId != null);
+    }
+
+    public async Task RemoveAllReactionsAsync(IEmoji emoji, CancellationToken cancellationToken = default)
+        => await RequestBuilder.Reactions[GetEmojiString(emoji)].RemoveAllAsync(cancellationToken);
+
+    public async Task RemoveAllReactionsAsync(CancellationToken cancellationToken = default)
+        => await RequestBuilder.Reactions.RemoveAllReactionsAsync(cancellationToken);
+    
+    public async Task PinAsync(CancellationToken cancellationToken = default) 
+        => await application.Rest.Channels[Channel.Id].Messages.Pins[Id].PinAsync(cancellationToken);
 }

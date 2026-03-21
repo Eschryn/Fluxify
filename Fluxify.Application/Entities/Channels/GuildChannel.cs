@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entensions;
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Core.Types;
+using Fluxify.Rest;
 using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GuildChannel(FluxerApplication fluxerApplication) : IGuildChannel
+public abstract class GuildChannel(FluxerApplication fluxerApplication) : IGuildChannel
 {
     protected FluxerApplication FluxerApplication => fluxerApplication;
-    protected ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
+    internal ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
     internal Dictionary<Snowflake, PermissionOverwrite> OverwritesDictionary = new();
     public required Snowflake Id { get; init; }
     public string Name { get; internal set; } = string.Empty;
@@ -42,4 +43,19 @@ public class GuildChannel(FluxerApplication fluxerApplication) : IGuildChannel
     
     //public async Task CreateInviteAsync(CancellationToken cancellationToken = default) 
     //    => await Guild.RequestBuilder.
+
+    protected void AssertPermission(Permissions permissions)
+    {
+        if (Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(FluxerApplication.CurrentUser.Id) is not {} guildUser)
+        {
+            return;
+        }
+
+        if ((this.GetUserPermissions(guildUser) & permissions) != permissions)
+        {
+            throw new RestApiException(
+                "missing_permissions",
+                "Bot user does not have sufficient permissions to perform this action.", []);
+        }
+    }
 }

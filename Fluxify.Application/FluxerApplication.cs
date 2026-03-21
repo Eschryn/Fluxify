@@ -18,8 +18,8 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Repositories;
 using Fluxify.Core;
+using Fluxify.Core.Credentials;
 using Fluxify.Gateway;
-using Fluxify.Gateway.Model.Data.Guild.Roles;
 using Fluxify.Rest;
 using UserMapper = Fluxify.Application.Entities.Users.UserMapper;
 
@@ -58,13 +58,25 @@ public partial class FluxerApplication
 
     public virtual async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        var gatewayBotResponse = await Rest.Gateway.GetGatewayBotAsync(cancellationToken);
-        if (gatewayBotResponse == null)
+        Uri gatewayUri;
+        var credentials = await Config.CredentialProvider();
+        if (credentials is BotTokenCredentials botTokenCredentials)
         {
-            throw new Exception("Could not get gateway information.");
+            var gatewayBotResponse = await Rest.Gateway.GetGatewayBotAsync(cancellationToken);
+            if (gatewayBotResponse == null)
+            {
+                throw new Exception("Could not get gateway information.");
+            }
+
+            gatewayUri = new Uri(gatewayBotResponse.Url);
+        }
+        else
+        {
+            // TODO: get from instance data
+            gatewayUri = new Uri("wss://gateway.fluxer.app/");
         }
         
-        await Gateway.RunAsync(new Uri(gatewayBotResponse.Url), cancellationToken);
+        await Gateway.RunAsync(gatewayUri, cancellationToken);
     } 
     
     public ChannelRepository Channels { get; }

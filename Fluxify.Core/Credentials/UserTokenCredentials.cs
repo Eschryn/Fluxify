@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Guilds;
-using Fluxify.Core.Types;
+namespace Fluxify.Core.Credentials;
 
-namespace Fluxify.Application.Entities.Channels;
-
-public class GuildVoiceChannel(FluxerApplication fluxerApplication) : GuildChannel(fluxerApplication), INestedChannel
+public class UserTokenCredentials(string token) : ITokenCredentials
 {
-    public int Bitrate { get; internal set; }
-    public int? UserLimit { get; internal set; }
-    public Snowflake GuildId { get; internal set; }
-    public string? RtcRegion { get; internal set; }
-    public GuildCategory? Parent { get; internal set; }
+    public string Token { get; } = token;
+    
+    public bool Validate()
+    {
+        return true;
+    }
+    
+    public string GetAuthorizationHeaderValue() => Token;
 }

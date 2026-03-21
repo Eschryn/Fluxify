@@ -28,11 +28,17 @@ public class MessageReactionRequestBuilder(HttpClient client, Snowflake channelI
     private static string Uri(CompositeFormat format, Snowflake channelId, Snowflake messageId, string emoji) 
         => string.Format(FormatProvider, format, channelId, messageId, emoji);
 
-    public async Task<UserPartialResponse[]?> ListUsersAsync()
-        => await client.JsonRequestAsync<UserPartialResponse[]>(
+    public async Task<UserPartialResponse[]?> ListUsersAsync(
+        int? limit = null,
+        Snowflake? after = null,
+        CancellationToken cancellationToken = default
+    ) => await client.JsonRequestAsync<UserPartialResponse[]>(
             HttpMethod.Get,
-            Uri(GetUrl, channelId, messageId, emoji)
-        );
+            Uri(GetUrl, channelId, messageId, emoji) + new QueryBuilder()
+                .AddQuery("limit", limit?.ToString())
+                .AddQuery("after", after?.ToString()),
+            cancellationToken: cancellationToken
+    );
 
     public async Task ReactAsync(string sessionId, CancellationToken cancellationToken = default)
         => await client.RequestAsync(

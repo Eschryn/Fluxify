@@ -14,6 +14,14 @@
 
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Channels;
+using Fluxify.Dto.Guilds;
+using Fluxify.Dto.Guilds.Emoji;
+using Fluxify.Dto.Guilds.Members;
+using Fluxify.Dto.Guilds.Roles;
+using Fluxify.Dto.Guilds.Stickers;
+using Fluxify.Gateway.Model.Data.User;
+using Fluxify.Gateway.Model.Data.Voice;
 
 namespace Fluxify.Gateway.Model.Data.Guild;
 
@@ -26,5 +34,14 @@ public record GuildReadyData(
     int? MemberCount,
     bool? Lazy,
     bool? Large,
-    DateTimeOffset? JoinedAt
+    DateTimeOffset? JoinedAt,
+    GuildResponse? Properties,
+    GuildRoleResponse[]? Roles,
+    ChannelResponse[]? Channels,
+    GuildEmojiResponse[]? Emojis,
+    GuildStickerResponse[]? Stickers,
+    GuildMemberResponse[]? Members,
+    int? OnlineCount,
+    Presence[]? Presences,
+    VoiceStateResponse[]? VoiceStates
 );

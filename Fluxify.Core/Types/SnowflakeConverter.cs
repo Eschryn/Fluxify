@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -39,4 +40,19 @@ public class SnowflakeConverter : JsonConverter<Snowflake>
     {
         writer.WriteStringValue(((ulong)value).ToString());
     }
+
+    public override Snowflake ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.PropertyName)
+        {
+            return ulong.TryParse(reader.GetString(), out var result)
+                ? new Snowflake(result)
+                : throw new JsonException();
+        }
+        
+        return Read(ref reader, typeToConvert, options);
+    }
+    
+    public override void WriteAsPropertyName(Utf8JsonWriter writer, Snowflake value, JsonSerializerOptions options) 
+        => writer.WritePropertyName(value.ToString(NumberFormatInfo.InvariantInfo));
 }
