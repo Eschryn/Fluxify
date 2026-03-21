@@ -20,9 +20,9 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-public class UserRepository(RestClient client, Entities.Users.UserMapper mapper)
+public sealed class UserRepository(RestClient client, UserMapper mapper)
 {
-   public readonly PermanentCache<GlobalUser, Entities.Users.UserMapper> Cache = new(mapper);
+   internal readonly PermanentCache<GlobalUser, UserMapper> Cache = new(mapper);
    
    public async Task<GlobalUser> GetAsync(Snowflake id, bool bypassCache = false) 
       => await Cache.GetOrCreateAsync(id, GetUserRestAsync, bypassCache);

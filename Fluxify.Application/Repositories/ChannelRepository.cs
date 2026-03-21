@@ -21,9 +21,9 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-public class ChannelRepository(RestClient client, ChannelMapper mapper)
+public sealed class ChannelRepository(RestClient client, ChannelMapper mapper)
 {
-    public event Action<IChannel, ChangeType>? OnChange;
+    internal event Action<IChannel, ChangeType>? OnChange;
     internal readonly PermanentCache<IChannel, ChannelMapper> Cache = new(mapper);
 
     public async Task<IChannel> GetAsync(Snowflake id, bool bypassCache = false)
@@ -35,9 +35,7 @@ public class ChannelRepository(RestClient client, ChannelMapper mapper)
         return channel;
     }
 
-    internal IChannel Insert(ChannelResponse response)
-        => Cache.UpdateOrCreate(mapper.FromDto(response, 
-            response.ParentId is { } pId ? Cache.GetCachedOrDefault<GuildCategory>(pId) : null));
+    internal IChannel Insert(ChannelResponse response) => Cache.UpdateOrCreate(mapper.FromDto(response));
 
     internal T? GetCachedOrDefault<T>(Snowflake id) where T : IChannel => Cache.GetCachedOrDefault<T>(id);
     
