@@ -24,7 +24,7 @@ public class GlobalUser : IUser
     public string Username { get; internal set; } = string.Empty;
     public string? Discriminator { get; internal set; }
     public string? GlobalName { get; internal set; }
-    public string? Avatar { get; internal set; }
+    public string? AvatarHash { get; internal set; }
     public Color? AvatarColor { get; internal set; }
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }

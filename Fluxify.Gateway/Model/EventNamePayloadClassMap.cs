@@ -50,7 +50,7 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.SessionsReplace, Data<GatewaySession[]>() },
 
             // new all need to be tested
-            { GatewayEvent.UserUpdate, Data<UserPrivate>() }, // untested
+            { GatewayEvent.UserUpdate, Data<UserPrivateReponse>() }, // untested
             { GatewayEvent.UserPinnedDmsUpdate, Data<Snowflake[]>() }, // untested
             { GatewayEvent.UserSettingsUpdate, Data<UserSettings>() }, // untested
             { GatewayEvent.UserGuildSettingsUpdate, Data<UserGuildSettingsResponse>() }, // untested

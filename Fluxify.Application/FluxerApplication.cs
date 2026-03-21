@@ -15,6 +15,7 @@
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Repositories;
 using Fluxify.Core;
 using Fluxify.Gateway;
@@ -34,6 +35,8 @@ public partial class FluxerApplication
 
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
+    
+    public PrivateUser CurrentUser { get; private set; }
     
     public FluxerApplication(FluxerConfig config, GatewayConfig? gatewayConfig = null)
     {

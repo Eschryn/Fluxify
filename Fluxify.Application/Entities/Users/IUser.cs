@@ -22,7 +22,7 @@ public interface IUser : IEntity
     public string Username { get; }
     public string? Discriminator { get; }
     public string? GlobalName { get; }
-    public string? Avatar { get; }
+    public string? AvatarHash { get; }
     public Color? AvatarColor { get; }
     public bool? System { get; }
     public PublicUserFlags Flags { get; }

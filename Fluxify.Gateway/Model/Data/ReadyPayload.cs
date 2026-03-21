@@ -34,7 +34,7 @@ namespace Fluxify.Gateway.Model.Data;
 public record ReadyPayload(
     int Version,
     string SessionId,
-    UserPrivate User,
+    UserPrivateReponse User,
     GuildReadyData[] Guilds,
     ChannelResponse[] PrivateChannels,
     RelationshipResponse[] Relationships,
