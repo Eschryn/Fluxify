@@ -15,16 +15,24 @@
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Core.Types;
+using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public abstract class TextChannel(
+public abstract class PrivateTextChannel(
     FluxerApplication fluxerApplication
 ) : ITextChannel
 {
+    protected ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
+    
     public async Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default) 
-        => await fluxerApplication.Messages.SendMessageAsync(Id, message, cancellationToken);
+        => await fluxerApplication.MessageMapper.MapAsync(
+            await RequestBuilder.Messages.SendMessageAsync(fluxerApplication.MessageMapper.Map(message), cancellationToken)
+                ?? throw new Exception("Message was not sent"));
 
+    public async Task IndicateTypingAsync(CancellationToken cancellationToken = default)
+        => await RequestBuilder.IndicateTypingAsync(cancellationToken);
+    
     public required Snowflake Id { get; init; }
     public Snowflake? LastMessageId { get; internal set; }
     public DateTimeOffset? LastPinTimestamp { get; internal set; }

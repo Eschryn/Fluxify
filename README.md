@@ -65,7 +65,7 @@ bot.Module("secret", m =>
     .Command(
         "open-pod-bay-doors",
         (CommandContext ctx) => ctx.ReplyAsync("I'm sorry dave I'm afraid I can't do that"),
-        botOwnerPrecondition
+        Preconditions.RequireAuthorPermissions(Permissions.Administrator)
     );
 ```
 

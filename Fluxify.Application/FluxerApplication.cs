@@ -15,9 +15,7 @@
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
-using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Repositories;
-using Fluxify.Application.Services;
 using Fluxify.Core;
 using Fluxify.Gateway;
 using Fluxify.Gateway.Model.Data.Guild.Roles;
@@ -29,7 +27,7 @@ namespace Fluxify.Application;
 public partial class FluxerApplication
 {
     protected readonly FluxerConfig Config;
-    private readonly MessageMapper _messageMapper;
+    internal readonly MessageMapper MessageMapper;
     private readonly ChannelMapper _channelMapper;
     private readonly UserMapper _userMapper;
     private readonly GuildMapper _guildMapper;
@@ -43,13 +41,12 @@ public partial class FluxerApplication
         Gateway = new GatewayClient(config, gatewayConfig);
         Rest = new RestClient(config);
 
-        _messageMapper = new MessageMapper(this);
+        MessageMapper = new MessageMapper(this);
         _channelMapper = new ChannelMapper(this);
         _userMapper = new UserMapper();
         _guildMapper = new GuildMapper(this);
         
         Channels = new ChannelRepository(Rest, _channelMapper);
-        Messages = new MessageService(Rest, _messageMapper);
         Users = new UserRepository(Rest, _userMapper);
         Guilds = new GuildRepository(Rest, _guildMapper);
         
@@ -70,5 +67,4 @@ public partial class FluxerApplication
     public ChannelRepository Channels { get; }
     public UserRepository Users { get; }
     public GuildRepository Guilds { get; }
-    internal MessageService Messages { get; }
 }

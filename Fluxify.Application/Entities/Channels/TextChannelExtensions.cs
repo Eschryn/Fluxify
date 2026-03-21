@@ -18,7 +18,7 @@ using Fluxify.Application.Model.Messages;
 namespace Fluxify.Application.Entities.Channels;
 
 public static class TextChannelExtensions {
-    extension(TextChannel channel)
+    extension(ITextChannel channel)
     {
         public Task<Message?> SendMessageAsync(string message) 
             => channel.SendMessageAsync(new MessageDto

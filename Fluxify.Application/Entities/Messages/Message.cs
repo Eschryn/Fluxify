@@ -30,11 +30,11 @@ public class Message(
     private MessageRequestBuilder RequestBuilder => field ??= application.Rest.Channels[Channel.Id].Messages[Id];
     
     public Snowflake Id { get; init; }
-    public required string Content { get; set; }
+    public string? Content { get; internal set; }
 
     public Snowflake? WebhookId { get; internal set; }
     public required IUser Author { get; init; }
-    public required TextChannel Channel { get; init; }
+    public required ITextChannel Channel { get; init; }
     public Attachment[]? Attachments { get; internal set; }
     public Embed[]? Embeds { get; set; }
     public bool MentionsEveryone { get; internal set; }
@@ -66,7 +66,7 @@ public class Message(
         throw new NotImplementedException();
     }
     
-    public async Task ReplyAsync(MessageDto message, CancellationToken cancellationToken = default)
+    public async Task<Message?> ReplyAsync(MessageDto message, CancellationToken cancellationToken = default)
     {
         message.MessageReference = new MessageReference
         {
@@ -78,7 +78,7 @@ public class Message(
             Type = MessageReferenceType.Reply
         };
 
-        await Channel.SendMessageAsync(message, cancellationToken);
+        return await Channel.SendMessageAsync(message, cancellationToken);
     }
 
     public async Task ReactAsync(string unicodeEmoji, CancellationToken cancellationToken = default) 

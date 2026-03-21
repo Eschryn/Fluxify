@@ -21,11 +21,12 @@ namespace Fluxify.Application.Model.Messages;
 public sealed class MessageBuilder(string? content = null)
 {
     private ulong _uploadCounter;
-    
-    public MessageDto Message { get; } = new()
+
+    private MessageDto Message { get; } = new()
     {
         Content = content,
     };
+    private List<FileUpload>? _files;
     
     public MessageBuilder WithContent(string content)
     {
@@ -83,8 +84,8 @@ public sealed class MessageBuilder(string? content = null)
             Filename = upload.FileName,
             Flags = flags ?? AttachmentFlags.None
         });
-        Message.Files ??= [];
-        Message.Files.Add(upload);
+        _files ??= [];
+        _files.Add(upload);
 
         return this;
     }
@@ -100,7 +101,23 @@ public sealed class MessageBuilder(string? content = null)
         return this;
     }
 
-    public MessageDto Build() => Message;
+    public MessageDto Build()
+    {
+        return new MessageDto()
+        {
+            AllowedMentions = Message.AllowedMentions,
+            Attachments = Message.Attachments,
+            Content = Message.Content,
+            Embeds = Message.Embeds,
+            FavoriteMemeId = Message.FavoriteMemeId,
+            Flags = Message.Flags,
+            Tts = Message.Tts,
+            Files = _files?.ToArray(),
+            MessageReference = Message.MessageReference,
+            Nonce = Message.Nonce,
+            Stickers = Message.Stickers
+        };
+    }
 
     public MessageBuilder WithFlags(MessageFlags compactAttachments)
     {

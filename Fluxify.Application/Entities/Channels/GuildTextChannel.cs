@@ -13,17 +13,24 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Model.Messages;
+using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GuildTextChannel(FluxerApplication fluxerApplication) : TextChannel(fluxerApplication), INestedChannel, INamedChannel
+public class GuildTextChannel(FluxerApplication fluxerApplication) : GuildNestedChannel(fluxerApplication), ITextChannel, INestedChannel
 {
-    public required string Name { get; set; }
-    public required Guild Guild { get; init; } 
     public string? Topic { get; internal set; }
-    public int? Position { get; internal set; }
-    public GuildCategory? Parent { get; internal set; } 
     public bool? Nsfw { get; internal set; }
     public int? RateLimitPerUser { get; internal set; }
-    public PermissionOverwrite[]? Overwrites { get; internal set; }
+    public Snowflake? LastMessageId { get; internal set; }
+    public DateTimeOffset? LastPinTimestamp { get; internal set; }
+    
+    public async Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default) 
+        => await FluxerApplication.MessageMapper.MapAsync(
+            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.Map(message), cancellationToken)
+            ?? throw new Exception("Message was not sent"));
+
+    public Task IndicateTypingAsync(CancellationToken cancellationToken = default) => RequestBuilder.IndicateTypingAsync(cancellationToken);
 }
