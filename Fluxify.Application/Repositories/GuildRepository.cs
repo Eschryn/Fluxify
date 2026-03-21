@@ -22,12 +22,12 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-public class GuildRepository(RestClient client, GuildMapper mapper)
+public sealed class GuildRepository(RestClient client, GuildMapper mapper)
 {
     internal readonly PermanentCache<Guild, GuildMapper> Cache = new(mapper);
    
-    public async Task<Guild> GetAsync(Snowflake id, bool bypassCache = false) 
-        => await Cache.GetOrCreateAsync(id, GetGuildRestAsync, bypassCache);
+    public Task<Guild> GetAsync(Snowflake id, bool bypassCache = false) 
+        => Cache.GetOrCreateAsync(id, GetGuildRestAsync, bypassCache);
 
     internal Guild Insert(GuildResponse response)
     {

@@ -22,15 +22,15 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-internal class GuildMemberRepository(
+internal sealed class GuildMemberRepository(
     Guild guild,
     RestClient client,
     UserMapper mapper,
     UserRepository userRepository,
     GuildRepository guildRepository)
 {
-    public UserRepository UserRepository { get; } = userRepository;
-    public PermanentCache<GuildUser, UserMapper> Cache = new(mapper);
+    internal UserRepository UserRepository { get; } = userRepository;
+    internal PermanentCache<GuildUser, UserMapper> Cache = new(mapper);
 
     public async Task<GuildUser> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 

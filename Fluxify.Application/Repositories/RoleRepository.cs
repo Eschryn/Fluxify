@@ -23,9 +23,9 @@ using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Repositories;
 
-public class RoleRepository(Snowflake guildId, RestClient client, RoleMapper mapper, GuildRepository guildRepository)
+public sealed class RoleRepository(Snowflake guildId, RestClient client, RoleMapper mapper, GuildRepository guildRepository)
 {
-    public PermanentCache<Role, RoleMapper> Cache = new(mapper);
+    internal PermanentCache<Role, RoleMapper> Cache = new(mapper);
 
     public async Task<Role> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 
