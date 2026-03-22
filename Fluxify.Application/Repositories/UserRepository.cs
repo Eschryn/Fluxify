@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.State;
 using Fluxify.Core.Types;
@@ -20,9 +21,9 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-public sealed class UserRepository(RestClient client, UserMapper mapper)
+public sealed class UserRepository(RestClient client, UserMapper mapper, CacheConfig config)
 {
-   internal readonly PermanentCache<GlobalUser, UserMapper> Cache = new(mapper);
+   internal readonly ICache<GlobalUser> Cache = ICache<GlobalUser>.CreateLru(config.UserCacheSize, mapper);
    
    public async Task<GlobalUser> GetAsync(Snowflake id, bool bypassCache = false) 
       => await Cache.GetOrCreateAsync(id, GetUserRestAsync, bypassCache);

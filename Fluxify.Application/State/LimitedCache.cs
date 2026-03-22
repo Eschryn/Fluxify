@@ -19,16 +19,19 @@ using Fluxify.Core.Types;
 namespace Fluxify.Application.State;
 
 /// <summary>
-/// Cache with no purge strategy
+/// Cache with FIFO purge strategy
 /// </summary>
 /// <param name="mapper"></param>
+/// <param name="maxCacheSize"></param>
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TMapper"></typeparam>
-internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TData>
+internal sealed class LimitedCache<TData, TMapper>(TMapper mapper, long maxCacheSize) : ICache<TData>
     where TData : class, IEntity
     where TMapper : IUpdateEntity<TData>
 {
     private readonly ConcurrentDictionary<Snowflake, TData> _dataContainer = new();
+    private ConcurrentQueue<Snowflake> _keyOrder = new();
+    private readonly ReaderWriterLockSlim _queueReplaceLock = new();
     private readonly ResourceTransactions<TData> _transactions = new();
 
     public bool IsCached(Snowflake id) => _dataContainer.ContainsKey(id);
@@ -49,7 +52,26 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
 
     public TData UpdateOrCreate(TData data)
         => _dataContainer.AddOrUpdate(data.Id,
-            _ => data,
+            key =>
+            {
+                _queueReplaceLock.EnterReadLock();
+                try
+                {
+                    if (_keyOrder.Count >= maxCacheSize)
+                    {
+                        _keyOrder.TryDequeue(out var id);
+                        _dataContainer.TryRemove(id, out _);
+                    }
+
+                    _keyOrder.Enqueue(key);
+                }
+                finally
+                {
+                    _queueReplaceLock.ExitReadLock();
+                }
+                
+                return data;
+            },
             (_, existing) =>
             {
                 mapper.UpdateEntity(existing, data);
@@ -57,6 +79,33 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
                 return existing;
             });
 
-    public void Remove(Snowflake id) => _dataContainer.TryRemove(id, out _);
-    public void Clear() => _dataContainer.Clear();
+    public void Remove(Snowflake id)
+    {
+        _dataContainer.TryRemove(id, out _);
+        _queueReplaceLock.EnterWriteLock();
+        // rebuild queue 
+        try
+        {
+            _keyOrder = new ConcurrentQueue<Snowflake>(_keyOrder.Where(key => key != id));
+        }
+        finally
+        {
+            _queueReplaceLock.ExitWriteLock();
+        }
+    }
+
+    public void Clear()
+    {
+        _dataContainer.Clear();
+        _queueReplaceLock.EnterReadLock();
+        
+        try
+        {
+            _keyOrder.Clear();
+        }
+        finally
+        {
+            _queueReplaceLock.ExitReadLock();   
+        }
+    }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.State;
 using Fluxify.Core.Types;
@@ -21,10 +22,10 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-public sealed class ChannelRepository(RestClient client, ChannelMapper mapper)
+public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, CacheConfig config)
 {
     internal event Action<IChannel, ChangeType>? OnChange;
-    internal readonly PermanentCache<IChannel, ChannelMapper> Cache = new(mapper);
+    internal readonly ICache<IChannel> Cache = ICache<IChannel>.CreateLru(config.ChannelCacheSize, mapper);
 
     public async Task<IChannel> GetAsync(Snowflake id, bool bypassCache = false)
     {

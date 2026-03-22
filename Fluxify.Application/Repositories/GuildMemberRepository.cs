@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
@@ -27,10 +28,11 @@ internal sealed class GuildMemberRepository(
     RestClient client,
     UserMapper mapper,
     UserRepository userRepository,
-    GuildRepository guildRepository)
-{
+    GuildRepository guildRepository,
+    CacheConfig config
+) {
     internal UserRepository UserRepository { get; } = userRepository;
-    internal PermanentCache<GuildUser, UserMapper> Cache = new(mapper);
+    internal ICache<GuildUser> Cache = ICache<GuildUser>.CreateLru(config.GuildUserCacheSize, mapper);
 
     public async Task<GuildUser> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 

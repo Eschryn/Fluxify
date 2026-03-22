@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
@@ -32,6 +33,7 @@ public partial class FluxerApplication
     private readonly ChannelMapper _channelMapper;
     private readonly UserMapper _userMapper;
     private readonly GuildMapper _guildMapper;
+    internal readonly CacheConfig CacheConfig = new();
 
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
@@ -49,9 +51,9 @@ public partial class FluxerApplication
         _userMapper = new UserMapper();
         _guildMapper = new GuildMapper(this);
         
-        Channels = new ChannelRepository(Rest, _channelMapper);
-        Users = new UserRepository(Rest, _userMapper);
-        Guilds = new GuildRepository(Rest, _guildMapper);
+        Channels = new ChannelRepository(Rest, _channelMapper, CacheConfig);
+        Users = new UserRepository(Rest, _userMapper, CacheConfig);
+        Guilds = new GuildRepository(Rest, _guildMapper, CacheConfig);
         
         InitializeEvents();
     }

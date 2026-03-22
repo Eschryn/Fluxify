@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.State;
@@ -22,9 +23,9 @@ using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-public sealed class GuildRepository(RestClient client, GuildMapper mapper)
+public sealed class GuildRepository(RestClient client, GuildMapper mapper, CacheConfig config)
 {
-    internal readonly PermanentCache<Guild, GuildMapper> Cache = new(mapper);
+    internal readonly ICache<Guild> Cache = ICache<Guild>.CreateLru(config.GuildCacheSize, mapper);
    
     public Task<Guild> GetAsync(Snowflake id, bool bypassCache = false) 
         => Cache.GetOrCreateAsync(id, GetGuildRestAsync, bypassCache);
