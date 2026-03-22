@@ -30,12 +30,22 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
             guild: dto.GuildId is { } guildId ? await application.Guilds.GetAsync(guildId) : null);
 
     public IChannel FromDto(ChannelResponse dto)
-        => FromDto(
-            dto, 
-            dto.ParentId is { } pId ? application.Channels.Cache.GetCachedOrDefault<GuildCategory>(pId) : null,
-            dto.GuildId is {} gId ? application.Guilds.Cache.GetCachedOrDefault<Guild>(gId)! : null
+    {
+        var guild = dto.GuildId is { } gId
+            ? (application.Guilds.Cache.GetCachedOrDefault<Guild>(gId) ?? new Guild(application)
+                { Id = gId, Name = string.Empty, Owner = null! })
+            : null;
+        
+        return FromDto(
+            dto,
+            dto.ParentId is { } pId
+                ? application.Channels.Cache.GetCachedOrDefault<GuildCategory>(pId) ??
+                  new GuildCategory(application) { Id = pId, Guild = guild! }
+                : null,
+            guild
         );
-    
+    }
+
     public IChannel FromDto(ChannelResponse dto, GuildCategory? parent, Guild? guild)
     {
         return dto.Type switch

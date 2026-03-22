@@ -29,7 +29,7 @@ public class Guild(FluxerApplication app) : IEntity
     internal RoleRepository RolesRepository 
         => field ??= new RoleRepository(Id, app.Rest, new RoleMapper(), app.Guilds);
     internal GuildMemberRepository MembersRepository 
-        => field ??= new GuildMemberRepository(this, app.Rest, new UserMapper(), app.Users, app.Guilds);
+        => field ??= new GuildMemberRepository(this, app.Rest, new UserMapper(), app.Users, app.Guilds, app.CacheConfig);
     
     internal GuildRequestBuilder RequestBuilder => field ??= app.Rest.Guilds[Id];
     

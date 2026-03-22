@@ -37,7 +37,7 @@ public class Message(
     public required IUser Author { get; init; }
     public required ITextChannel Channel { get; init; }
     public Attachment[]? Attachments { get; internal set; }
-    public Embed[]? Embeds { get; set; }
+    public Embed[]? Embeds { get; init; }
     public bool MentionsEveryone { get; internal set; }
     public Reaction[]? Reactions { get; internal set; }
     public Sticker[]? Stickers { get; internal set; }

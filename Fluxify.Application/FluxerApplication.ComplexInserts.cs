@@ -43,12 +43,12 @@ public partial class FluxerApplication
         foreach (var guildMemberResponse in members)
         {
             guild.MembersRepository.Insert(guildMemberResponse, guild,
-                Users.GetCachedOrDefault(guildMemberResponse.User!.Id)!);
+                Users.GetCachedOrDefault(guildMemberResponse.User!.Id) ?? Users.Insert(guildMemberResponse.User));
         }
 
         foreach (var channelResponse in channels)
         {
-            InsertChannel(channelResponse);
+            InsertChannel(channelResponse, guild);
         }
 
         GuildInsertStickers(stickers, guild);
@@ -87,13 +87,15 @@ public partial class FluxerApplication
         }
     }
 
-    private void InsertChannel(ChannelResponse arg)
+    private void InsertChannel(ChannelResponse arg, Guild? guild = null)
     {
         var channel = Channels.Insert(arg);
         if (channel is IGuildChannel guildChannel)
         {
-            guildChannel.Guild.GuildChannels.AddOrUpdate(
-                guildChannel.Id,
+            guild ??= guildChannel.Guild;
+        
+            guild?.GuildChannels.AddOrUpdate(
+                guild.Id,
                 _ => guildChannel,
                 (_, target) =>
                 {
