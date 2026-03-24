@@ -25,7 +25,7 @@ public static class FluxerExtensions
 {
     public static IServiceCollection AddFluxifyCore(this IServiceCollection services, Func<IServiceProvider, FluxerConfig> configure)
     {
-        services.TryAddScoped<FluxerConfig>(sp =>
+        services.TryAddSingleton<FluxerConfig>(sp =>
         {
             var fluxerConfig = configure(sp);
             if (fluxerConfig.LoggerFactory == NullLoggerFactory.Instance)
