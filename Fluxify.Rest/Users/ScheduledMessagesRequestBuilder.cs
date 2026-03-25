@@ -52,11 +52,12 @@ public class ScheduledMessagesRequestBuilder(HttpClient client)
     );
     
     public async Task<ScheduleMessageResponseSchema?> UpdateScheduledMessageAsync(
-        UpdateScheduledMessageRequest request,
+        Snowflake scheduledMessageId,
+        ScheduledMessageSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.MultipartJsonRequestAsync<ScheduledMessageResponseSchemaPayload, ScheduleMessageResponseSchema>(
+    ) => await client.MultipartJsonRequestAsync<ScheduledMessageSchema, ScheduleMessageResponseSchema>(
         HttpMethod.Patch,
-        string.Format(FormatProvider, ScheduledMessageUrl, request.Id),
+        string.Format(FormatProvider, ScheduledMessageUrl, scheduledMessageId),
         request,
         cancellationToken: cancellationToken
     );

@@ -56,4 +56,13 @@ public interface ITextChannel : IChannel
         Action<MessageEdit> edit,
         CancellationToken cancellationToken = default
     );
+    
+    Task MarkUnreadAsync(CancellationToken cancellationToken = default);
+    Task BulkDeleteMessagesAsync(Snowflake[] ids, CancellationToken cancellationToken = default);
+
+    public Task ScheduleMessageAsync(
+        MessageCreate message,
+        DateTimeOffset scheduledTime,
+        CancellationToken cancellationToken = default
+    );
 }

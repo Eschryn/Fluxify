@@ -22,9 +22,8 @@ using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
-using Fluxify.Dto.Channels.Text.Messages.Reactions;
-using Fluxify.Dto.Guilds.Emoji;
 using Fluxify.Dto.Users;
+using Fluxify.Dto.Users.ScheduledMessages;
 using Fluxify.Gateway.Model.Data.Channel.Message;
 using Riok.Mapperly.Abstractions;
 
@@ -62,6 +61,7 @@ public partial class MessageMapper(
     private partial MessageAttachmentRequest Map(Attachment attachment);
     
     public partial CreateMessageRequest Map(MessageCreate message);
+    public partial ScheduledMessageSchema Map(MessageCreate messageCreate, DateTime scheduledLocalAt, string timezone);
     
     [MapperIgnoreSource(nameof(Message.Id))] 
     [MapperIgnoreSource(nameof(Message.Reactions))] 

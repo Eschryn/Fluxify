@@ -16,6 +16,7 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels;
@@ -88,6 +89,25 @@ public abstract class PrivateTextChannel(
         limit,
         limitPerPage,
         before,
+        cancellationToken
+    );
+    
+    public Task MarkUnreadAsync(CancellationToken cancellationToken = default) 
+        => RequestBuilder.Messages.MarkUnreadAsync(cancellationToken);
+
+    public Task BulkDeleteMessagesAsync(Snowflake[] ids, CancellationToken cancellationToken = default)
+        => RequestBuilder.Messages.BulkDeleteAsync(new BulkDeleteMessagesRequest(ids), cancellationToken);
+    
+    public Task ScheduleMessageAsync(
+        MessageCreate message,
+        DateTimeOffset scheduledTime,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.Messages.ScheduleMessageAsync(
+        fluxerApplication.MessageMapper.Map(
+            message,
+            scheduledTime.LocalDateTime,
+            TimeZoneInfo.Local.StandardName
+        ),
         cancellationToken
     );
 }

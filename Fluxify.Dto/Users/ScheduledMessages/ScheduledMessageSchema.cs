@@ -16,22 +16,34 @@ using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds;
-using Fluxify.Dto.Channels.Text.Messages.Scheduled;
 using Fluxify.Dto.Uploads;
 
 namespace Fluxify.Dto.Users.ScheduledMessages;
 
-public record ScheduledMessageResponseSchemaPayload(
-    AllowedMentionsSchema? AllowedMentions,
-    MessageAttachmentResponse[]? Attachments,
-    FileUpload[]? Files,
-    string? Content,
-    MessageEmbedResponse[]? Embeds,
-    Snowflake? FavoriteMemeId,
-    MessageFlags? Flags,
-    ScheduledMessageReferenceSchema MessageReference,
-    Snowflake? Nonce,
-    Snowflake[]? StickerIds,
-    MessageStickerResponse[]? Stickers,
-    bool? Tts
-) : MultipartDto(Files);
+public record ScheduledMessageSchema(
+    DateTime ScheduledLocalAt,
+    string Timezone,
+    string? Content = null,
+    MessageAttachmentRequest[]? Attachments = null,
+    MessageEmbedResponse[]? Embeds = null,
+    AllowedMentionsSchema? AllowedMentions = null,
+    MessageReferenceResponse? MessageReference = null,
+    MessageFlags? Flags = null,
+    string? Nonce = null,
+    Snowflake? FavoriteMemeId = null,
+    Snowflake[]? Stickers = null,
+    bool? Tts = null,
+    FileUpload[]? Files = null
+) : CreateMessageRequest(
+    Content,
+    Attachments,
+    Embeds,
+    AllowedMentions,
+    MessageReference,
+    Flags,
+    Nonce,
+    FavoriteMemeId,
+    Stickers,
+    Tts,
+    Files
+);

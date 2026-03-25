@@ -21,7 +21,7 @@ public record ScheduleMessageResponseSchema(
     DateTimeOffset CreatedAt,
     Snowflake Id,
     DateTimeOffset? InvalidatedAt,
-    ScheduledMessageResponseSchemaPayload Payload,
+    ScheduledMessageSchema Payload,
     DateTimeOffset ScheduledAt,
     DateTimeOffset ScheduledAtLocal,
     ScheduledMessageStatus Status,
