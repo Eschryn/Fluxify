@@ -23,7 +23,37 @@ public interface ITextChannel : IChannel
 {
     public Snowflake? LastMessageId { get; }
     public DateTimeOffset? LastPinTimestamp { get; }
-    
-    public Task<Message?> SendMessageAsync(MessageDto message, CancellationToken cancellationToken = default);
+
+    Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default);
     Task IndicateTypingAsync(CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<IReadOnlyList<Message>> GetMessagesAsync(
+        Snowflake? start = null,
+        Direction direction = Direction.Before,
+        int limit = 100,
+        int limitPerPage = 50,
+        bool bypassCache = false,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<Message>> GetMessagesAroundAsync(
+        Snowflake around,
+        int limit = 100,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<Message> GetMessageAsync(Snowflake id, CancellationToken cancellationToken = default);
+    Task DeleteMessageAsync(Snowflake id, CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<IReadOnlyList<Message>> GetPinnedMessagesAsync(int limit = 100,
+        int limitPerPage = 25,
+        DateTimeOffset? before = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<Message> EditMessageAsync(
+        Message message,
+        Action<MessageEdit> edit,
+        CancellationToken cancellationToken = default
+    );
 }

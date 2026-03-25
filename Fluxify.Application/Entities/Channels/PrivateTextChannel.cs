@@ -12,39 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Types;
+using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public class GuildTextChannel(FluxerApplication fluxerApplication)
-    : GuildNestedChannel(fluxerApplication), ITextChannel, INestedChannel
+public abstract class PrivateTextChannel(
+    FluxerApplication fluxerApplication
+) : ITextChannel
 {
-    internal MessageRepository MessageRepository => field ??= new MessageRepository(
-        FluxerApplication,
-        FluxerApplication.Rest.Channels[Id].Messages,
-        this,
-        FluxerApplication.CacheConfig,
-        LastMessageId
-    );
+    protected ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
 
-    public string? Topic { get; internal set; }
-    public bool? Nsfw { get; internal set; }
-    public int? RateLimitPerUser { get; internal set; }
+    public required Snowflake Id { get; init; }
     public Snowflake? LastMessageId { get; internal set; }
     public DateTimeOffset? LastPinTimestamp { get; internal set; }
+    
+    internal MessageRepository MessageRepository 
+        => field ??= new MessageRepository(
+            fluxerApplication,
+            fluxerApplication.Rest.Channels[Id].Messages,
+            this,
+            fluxerApplication.CacheConfig,
+            LastMessageId
+        );
+    
+    public async Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default) 
+        => await fluxerApplication.MessageMapper.MapAsync(
+            await RequestBuilder.Messages.SendMessageAsync(fluxerApplication.MessageMapper.Map(message), cancellationToken)
+                ?? throw new Exception("Message was not sent"));
 
-    public async Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default)
-        => await FluxerApplication.MessageMapper.MapAsync(
-            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.Map(message),
-                cancellationToken)
-            ?? throw new Exception("Message was not sent"));
-
-    public Task IndicateTypingAsync(CancellationToken cancellationToken = default)
-        => RequestBuilder.IndicateTypingAsync(cancellationToken);
+    public async Task IndicateTypingAsync(CancellationToken cancellationToken = default)
+        => await RequestBuilder.IndicateTypingAsync(cancellationToken);
 
     public IAsyncEnumerable<IReadOnlyList<Message>> GetMessagesAsync(
         Snowflake? start = null,
@@ -70,20 +71,20 @@ public class GuildTextChannel(FluxerApplication fluxerApplication)
         Snowflake id,
         CancellationToken cancellationToken = default
     ) => MessageRepository.DeleteMessageAsync(id, cancellationToken);
-
+    
     public Task<Message> EditMessageAsync(
         Message message,
         Action<MessageEdit> edit,
         CancellationToken cancellationToken = default
     ) => MessageRepository.EditMessageAsync(message, edit, cancellationToken);
-
+    
     public IAsyncEnumerable<IReadOnlyList<Message>> GetPinnedMessagesAsync(
         int limit = 100,
         int limitPerPage = 25,
         DateTimeOffset? before = null,
         CancellationToken cancellationToken = default
     ) => RequestBuilder.Messages.GetPinnedMessagesAsync(
-        FluxerApplication.MessageMapper,
+        fluxerApplication.MessageMapper,
         limit,
         limitPerPage,
         before,

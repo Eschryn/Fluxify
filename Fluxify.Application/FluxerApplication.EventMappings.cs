@@ -14,7 +14,9 @@
 
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.State;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
@@ -168,21 +170,7 @@ public partial class FluxerApplication
 
     private Task HandleMessageReactionAdd(GatewayReaction arg)
     {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleMessageDeleteBulk(GatewayMessageDeleteBulk arg)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleMessageDelete(GatewayMessageDelete arg)
-    {
-        return Task.CompletedTask;
-    }
-
-    private Task HandleMessageUpdate(MessageResponse arg)
-    {
+        
         return Task.CompletedTask;
     }
 
@@ -254,26 +242,54 @@ public partial class FluxerApplication
         guild.MembersRepository.Insert(arg, guild, user);
     }
 
-    private async Task HandleMessageCreate(GatewayMessageCreate arg)
+    private async Task HandleMessageCreate(GatewayMessage arg)
     {
-        IUser user;
-        if (arg.WebhookId.HasValue)
+        var channel = (ITextChannel?)await Channels.GetAsync(arg.ChannelId);
+        var user = await InsertMessageUser(arg);
+        var message = channel switch
         {
-            user = _userMapper.MapWebhook(arg.Author);
-        }
-        else if (arg.GuildId.HasValue)
-        {
-            var guild = await Guilds.GetAsync(arg.GuildId.Value);
-            var globalUser = Users.Insert(arg.Author);
-            user = guild.MembersRepository.Insert(arg.Member!, guild, globalUser);
-        }
-        else
-        {
-            user = Users.Insert(arg.Author);
-        }
+            PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository.InsertNew(arg, user),
+            GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository.InsertNew(arg, user),
+            _ => await MessageMapper.MapAsync(arg, author: user)
+        };
+        
+        await _messageCreateHandlers.CallHandlersAsync(message);
+    }
 
-        var message = await MessageMapper.MapAsync(arg, user);
-        await _messageHandlers.CallHandlersAsync(message);
+    private async Task HandleMessageUpdate(GatewayMessage arg)
+    {
+        var channel = (ITextChannel?)await Channels.GetAsync(arg.ChannelId);
+        var user = await InsertMessageUser(arg);
+        var message = channel switch
+        {
+            PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository.Update(arg, user),
+            GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository.Update(arg, user),
+            _ => await MessageMapper.MapAsync(arg, author: user)
+        };
+        
+        await _messageUpdateHandlers.CallHandlersAsync(message);
+    }
+
+    private async Task HandleMessageDelete(GatewayMessageDelete arg)
+    {
+        var channel = (ITextChannel?)await Channels.GetAsync(arg.ChannelId);
+        if (channel is GuildTextChannel guildTextChannel)
+        {
+            guildTextChannel.MessageRepository.Cache.Remove(arg.Id);
+        }
+    }
+
+    private async Task HandleMessageDeleteBulk(GatewayMessageDeleteBulk arg)
+    {
+        var channel = (ITextChannel?)await Channels.GetAsync(arg.ChannelId);
+        var cache = channel switch
+        {
+            GuildTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageMapper> gtcCache } => gtcCache,
+            PrivateTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageMapper> ptcCache } => ptcCache,
+            _ => null
+        };
+        
+        cache?.RemoveAll(arg.Ids);
     }
 
     private async Task HandleGuildCreate(GatewayGuildCreate arg)

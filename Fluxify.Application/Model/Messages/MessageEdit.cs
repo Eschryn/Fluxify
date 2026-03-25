@@ -12,24 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
-using Fluxify.Core.Types;
-using Fluxify.Dto.Uploads;
+using Fluxify.Dto.Channels.Text.Messages;
+using Fluxify.Dto.Channels.Text.Messages.Attachments;
 
 namespace Fluxify.Application.Model.Messages;
 
-public class MessageDto
+public class MessageEdit
 {
     public string? Content { get; set; }
-    public List<Attachment>? Attachments { get; set; }
-    public List<Embed>? Embeds { get; set; }
-    public AllowedMentions? AllowedMentions { get; set; }
-    public MessageReference? MessageReference { get; set; }
+    public Embed[]? Embeds { get; set; }
     public MessageFlags? Flags { get; set; }
-    public string? Nonce { get; init; }
-    public Snowflake? FavoriteMemeId { get; set; }
-    public List<Snowflake>? Stickers { get; set; }
-    public bool Tts { get; set; }
-    public FileUpload[]? Files { get; init; }
+    public AllowedMentions? AllowedMentions { get; set; }
+    public Attachment[]? Attachments { get; set; }
 }

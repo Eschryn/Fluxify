@@ -25,6 +25,7 @@ using Fluxify.Dto.Channels.Text.Messages.Embeds;
 using Fluxify.Dto.Channels.Text.Messages.Reactions;
 using Fluxify.Dto.Guilds.Emoji;
 using Fluxify.Dto.Users;
+using Fluxify.Gateway.Model.Data.Channel.Message;
 using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Messages;
@@ -33,7 +34,7 @@ namespace Fluxify.Application.Entities.Messages;
 [UseStaticMapper(typeof(CommonMapper))]
 public partial class MessageMapper(
     FluxerApplication application
-)
+) : IUpdateEntity<Message>
 {
     private partial MessageAttachmentFlags MapToString(AttachmentFlags color);
 
@@ -60,11 +61,83 @@ public partial class MessageMapper(
     [MapperIgnoreSource(nameof(Attachment.Url))]
     private partial MessageAttachmentRequest Map(Attachment attachment);
     
-    public partial CreateMessageRequest Map(MessageDto message);
-    public async Task<Message> MapAsync(MessageResponse message, IUser author, IUser? referencedAuthor = null)  
-        => Map(message, (ITextChannel)await application.Channels.GetAsync(message.ChannelId), author, referencedAuthor);
-    public Task<Message> MapAsync(MessageResponse message)  
-        => MapAsync(message, GetAuthor(message), message.ReferencedMessage != null ? GetAuthor(message.ReferencedMessage) : null);
+    public partial CreateMessageRequest Map(MessageCreate message);
+    
+    [MapperIgnoreSource(nameof(Message.Id))] 
+    [MapperIgnoreSource(nameof(Message.Reactions))] 
+    [MapperIgnoreSource(nameof(Message.Author))] 
+    [MapperIgnoreSource(nameof(Message.Channel))] 
+    [MapperIgnoreSource(nameof(Message.EditedAt))] 
+    [MapperIgnoreSource(nameof(Message.CreatedAt))] 
+    [MapperIgnoreSource(nameof(Message.Call))] 
+    [MapperIgnoreSource(nameof(Message.MentionRoles))] 
+    [MapperIgnoreSource(nameof(Message.MentionedRoles))] 
+    [MapperIgnoreSource(nameof(Message.Mentions))] 
+    [MapperIgnoreSource(nameof(Message.MentionsEveryone))] 
+    [MapperIgnoreSource(nameof(Message.MessageReference))] 
+    [MapperIgnoreSource(nameof(Message.MessageSnapshots))] 
+    [MapperIgnoreSource(nameof(Message.ReferencedMessage))] 
+    [MapperIgnoreSource(nameof(Message.Stickers))] 
+    [MapperIgnoreSource(nameof(Message.WebhookId))] 
+    [MapperIgnoreSource(nameof(Message.HasTts))] 
+    [MapperIgnoreSource(nameof(Message.IsPinned))] 
+    [MapperIgnoreSource(nameof(Message.Nonce))] 
+    [MapperIgnoreSource(nameof(Message.Type))] 
+    [MapValue(nameof(MessageEdit.AllowedMentions), null)]
+    public partial MessageEdit MapToEdit(Message message);
+    public partial UpdateMessageRequest Map(MessageEdit message);
+    
+    public async Task<Message> MapAsync(MessageResponse message, ITextChannel? channel = null, IUser? author = null)
+    {
+        channel ??= (ITextChannel)await application.Channels.GetAsync(message.ChannelId);
+        author ??= channel switch
+        {
+            IGuildChannel guildChannel => await guildChannel.Guild.MembersRepository.GetAsync(message.Author.Id),
+            _ when message is GatewayMessage { GuildId: {} guildId } 
+                => await (
+                    await application.Guilds.GetAsync(guildId)
+                ).MembersRepository.GetAsync(message.Author.Id),
+            _ => await application.Users.GetAsync(message.Author.Id)
+        };
+        
+        return Map(message, channel, author);
+    }
+
+    public Message Map(MessageResponse message, ITextChannel? channel = null, IUser? author = null)    
+        => Map(
+            message,
+            channel ?? CreateMinimalChannel(message),
+            author ?? GetAuthor(message),
+            message.ReferencedMessage != null 
+                ? GetAuthor(message.ReferencedMessage) 
+                : null
+        );
+    
+    
+    private ITextChannel CreateMinimalChannel(MessageResponse response)
+    {
+        var guild = response is GatewayMessage { GuildId: { } guildId }
+            ? application.Guilds.Cache.GetCachedOrDefault<Guild>(guildId) ?? new Guild(application)
+            {
+                Id = guildId,
+                Name = string.Empty,
+                Owner = new GlobalUser()
+            }
+            : null;
+        
+        return guild != null ? 
+            new GuildTextChannel(application)
+            {
+                Id = response.ChannelId,
+                Guild = guild,
+                Name = string.Empty,
+                Parent = null
+            }
+            : new Dm(application)
+            {
+                Id = response.ChannelId
+            };
+    }
     
     private IUser GetAuthor(MessageBaseResponse message) 
         => (application.Channels.GetCachedOrDefault<IChannel>(message.ChannelId) is IGuildChannel guildChannel
@@ -117,4 +190,7 @@ public partial class MessageMapper(
     [MapperIgnoreSource(nameof(MessageResponse.ReferencedMessage))]
     [MapperIgnoreSource(nameof(MessageResponse.Author))]
     private partial Message Map(MessageResponse message, ITextChannel channel, IUser author, Message? referencedMessage, FluxerApplication application);
+
+    [MapperIgnoreSource(nameof(Message.Id))]
+    public partial void UpdateEntity([MappingTarget] Message data, Message update);
 }

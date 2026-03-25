@@ -22,7 +22,7 @@ public sealed class MessageBuilder(string? content = null)
 {
     private ulong _uploadCounter;
 
-    private MessageDto Message { get; } = new()
+    private MessageCreate Message { get; } = new()
     {
         Content = content,
     };
@@ -101,9 +101,9 @@ public sealed class MessageBuilder(string? content = null)
         return this;
     }
 
-    public MessageDto Build()
+    public MessageCreate Build()
     {
-        return new MessageDto()
+        return new MessageCreate()
         {
             AllowedMentions = Message.AllowedMentions,
             Attachments = Message.Attachments,

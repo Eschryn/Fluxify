@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Messages;
-using Fluxify.Application.Model.Messages;
+namespace Fluxify.Application.Common;
 
-namespace Fluxify.Application.Entities.Channels;
-
-public static class TextChannelExtensions {
-    extension(ITextChannel channel)
-    {
-        public Task<Message?> SendMessageAsync(string message) 
-            => channel.SendMessageAsync(new MessageCreate
-            {
-                Content = message
-            });
-    }
+internal class PagedRequest<TData, TIndex>(
+    int? limit,
+    TIndex? start,
+    Func<TIndex?, Task<Page<TIndex, TData>?>> requestFunc
+) : IAsyncEnumerable<IReadOnlyList<TData>>
+    where TIndex : struct
+{
+    public IAsyncEnumerator<IReadOnlyList<TData>> GetAsyncEnumerator(CancellationToken cancellationToken = default) 
+        => new PagedRequestEnumerator<TData, TIndex>(limit, start, requestFunc);
 }

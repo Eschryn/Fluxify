@@ -42,4 +42,28 @@ public record ChannelPinMessageResponse(
     MessageSnapshotResponse[]? MessageSnapshots,
     string? Nonce,
     MessageCallResponse? Call
+) : MessageResponse(
+    Id,
+    ChannelId,
+    Author,
+    WebhookId,
+    Type,
+    Flags,
+    Content,
+    Timestamp,
+    EditedTimestamp,
+    Pinned,
+    MentionEveryone,
+    Tts,
+    Mentions,
+    MentionRoles,
+    Embeds,
+    Attachments,
+    Stickers,
+    [],
+    MessageReference,
+    MessageSnapshots,
+    Nonce,
+    Call,
+    null
 );

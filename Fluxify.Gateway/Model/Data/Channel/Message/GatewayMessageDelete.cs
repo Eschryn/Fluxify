@@ -19,6 +19,7 @@ namespace Fluxify.Gateway.Model.Data.Channel.Message;
 public record GatewayMessageDelete(
     Snowflake Id,
     Snowflake ChannelId,
+    Snowflake GuildId,
     string? Content,
     Snowflake? AuthorId
 );

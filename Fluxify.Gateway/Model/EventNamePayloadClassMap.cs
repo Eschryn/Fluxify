@@ -94,8 +94,8 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.ChannelRecipientAdd, Data<GatewayGroupChange>() }, // untested
             { GatewayEvent.ChannelRecipientRemove, Data<GatewayGroupChange>() }, // untested
 
-            { GatewayEvent.MessageCreate, Data<GatewayMessageCreate>() },
-            { GatewayEvent.MessageUpdate, Data<MessageResponse>() },
+            { GatewayEvent.MessageCreate, Data<GatewayMessage>() },
+            { GatewayEvent.MessageUpdate, Data<GatewayMessage>() },
             { GatewayEvent.MessageDelete, Data<GatewayMessageDelete>() }, // untested
             { GatewayEvent.MessageDeleteBulk, Data<GatewayMessageDeleteBulk>() }, // untested
             { GatewayEvent.MessageReactionAdd, Data<GatewayReaction>() }, // untested

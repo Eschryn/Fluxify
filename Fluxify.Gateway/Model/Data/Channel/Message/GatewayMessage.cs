@@ -24,7 +24,7 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Gateway.Model.Data.Channel.Message;
 
-public record GatewayMessageCreate(
+public record GatewayMessage(
     Snowflake Id,
     Snowflake ChannelId,
     Snowflake? GuildId,

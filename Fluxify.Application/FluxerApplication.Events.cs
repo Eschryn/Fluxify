@@ -14,21 +14,30 @@
 
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Model.Events;
 using Fluxify.Core.Events;
 
 namespace Fluxify.Application;
 
 public partial class FluxerApplication
 {
-    private readonly HandlerContainer<Message> _messageHandlers = new();
+    private readonly HandlerContainer<Message> _messageCreateHandlers = new();
+    private readonly HandlerContainer<Message> _messageUpdateHandlers = new();
+    //private readonly HandlerContainer<MessageDeleteEvent> _messageDeleteHandlers = new();
     private readonly HandlerContainer<Guild> _guildCreatedHandlers = new();
     private readonly HandlerContainer<Guild> _guildUpdatedHandlers = new();
     private readonly HandlerContainer<Guild> _guildDeletedHandlers = new();
     
     public event Func<Message, Task> MessageReceived
     {
-        add => _messageHandlers.InsertDelegate(value);
-        remove => _messageHandlers.RemoveDelegate(value);
+        add => _messageCreateHandlers.InsertDelegate(value);
+        remove => _messageCreateHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<Message, Task> MessageUpdated
+    {
+        add => _messageUpdateHandlers.InsertDelegate(value);
+        remove => _messageUpdateHandlers.RemoveDelegate(value);
     }
     
     public event Func<Guild, Task> GuildCreated

@@ -58,4 +58,8 @@ public abstract class GuildChannel(FluxerApplication fluxerApplication) : IGuild
                 "Bot user does not have sufficient permissions to perform this action.", []);
         }
     }
+    
+    internal IUser? ResolveUser(Snowflake id) 
+        => (IUser?)Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(id) 
+           ?? fluxerApplication.Users.Cache.GetCachedOrDefault<GlobalUser>(id);
 }

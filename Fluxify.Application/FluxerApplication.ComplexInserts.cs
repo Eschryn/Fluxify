@@ -14,12 +14,14 @@
 
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Users;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Emoji;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Dto.Guilds.Stickers;
+using Fluxify.Gateway.Model.Data.Channel.Message;
 
 namespace Fluxify.Application;
 
@@ -103,5 +105,26 @@ public partial class FluxerApplication
                     return target;
                 });
         }
+    }
+
+    private async Task<IUser> InsertMessageUser(GatewayMessage arg)
+    {
+        IUser user;
+        if (arg.WebhookId.HasValue)
+        {
+            user = _userMapper.MapWebhook(arg.Author);
+        }
+        else if (arg.GuildId.HasValue)
+        {
+            var guild = await Guilds.GetAsync(arg.GuildId.Value);
+            var globalUser = Users.Insert(arg.Author);
+            user = guild.MembersRepository.Insert(arg.Member!, guild, globalUser);
+        }
+        else
+        {
+            user = Users.Insert(arg.Author);
+        }
+
+        return user;
     }
 }

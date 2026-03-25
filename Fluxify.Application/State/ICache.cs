@@ -30,11 +30,10 @@ internal interface ICache<TData> where TData : class, IEntity
     void Remove(Snowflake id);
     void Clear();
 
-    public static ICache<TData> CreateLimited<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData>
+    public static ICache<TData> CreateOrdered<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData>
         => limit switch
         {
-            long.MaxValue => new PermanentCache<TData, TMapper>(mapper),
-            > 0 => new LimitedCache<TData, TMapper>(mapper, limit),
+            > 0 => new OrderedCache<TData, TMapper>(mapper, limit),
             _ => new PassthroughCache<TData>()
         };
 

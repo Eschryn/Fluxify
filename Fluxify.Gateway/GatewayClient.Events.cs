@@ -279,13 +279,13 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.ChannelRecipientRemove, value!);
     }
 
-    public event Func<GatewayMessageCreate, Task>? MessageCreate
+    public event Func<GatewayMessage, Task>? MessageCreate
     {
         add => InsertHandler(GatewayEvent.MessageCreate, value!);
         remove => RemoveHandler(GatewayEvent.MessageCreate, value!);
     }
 
-    public event Func<MessageResponse, Task>? MessageUpdate
+    public event Func<GatewayMessage, Task>? MessageUpdate
     {
         add => InsertHandler(GatewayEvent.MessageUpdate, value!);
         remove => RemoveHandler(GatewayEvent.MessageUpdate, value!);

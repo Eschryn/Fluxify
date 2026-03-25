@@ -42,8 +42,8 @@ public class CommandContext
     public CommandMeta Meta { get; internal set; }
     internal HashSet<string> PreconditionsFulfilled { get; set; } = [];
 
-    public Task ReplyAsync(MessageDto message) => Message.ReplyAsync(message);
-    public Task ReplyAsync(string message) => Message.ReplyAsync(new MessageDto()
+    public Task ReplyAsync(MessageCreate message) => Message.ReplyAsync(message);
+    public Task ReplyAsync(string message) => Message.ReplyAsync(new MessageCreate()
     {
         Content = message
     });

@@ -52,7 +52,7 @@ namespace Fluxify.Gateway.Model;
 [JsonSerializable(typeof(GatewayBulkChannelUpdate))]
 [JsonSerializable(typeof(GatewayChannelPinsUpdate))]
 [JsonSerializable(typeof(GatewayChannelPinsAck))]
-[JsonSerializable(typeof(GatewayMessageCreate))]
+[JsonSerializable(typeof(GatewayMessage))]
 [JsonSerializable(typeof(GatewayMessageDelete))]
 [JsonSerializable(typeof(GatewayMessageDeleteBulk))]
 [JsonSerializable(typeof(GatewayReaction))]
