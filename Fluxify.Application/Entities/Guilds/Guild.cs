@@ -39,7 +39,7 @@ public class Guild(FluxerApplication app) : IEntity
 
     public IReadOnlyCollection<IRole> Roles => [..RolesRepository.Cache.GetAllCached()];
     public IReadOnlyCollection<GuildUser> Members => [..MembersRepository.Cache.GetAllCached()];
-    public IReadOnlyCollection<IGuildChannel> Channels => [..GuildChannels.Values];
+    public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels => GuildChannels.AsReadOnly();
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
     

@@ -97,7 +97,7 @@ public partial class FluxerApplication
             guild ??= guildChannel.Guild;
         
             guild?.GuildChannels.AddOrUpdate(
-                guild.Id,
+                channel.Id,
                 _ => guildChannel,
                 (_, target) =>
                 {
