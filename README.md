@@ -85,6 +85,18 @@ bot.Commands.Command("playFile", async (CommandContext ctx) =>
 }, Preconditions.RequireGuildContext());
 ```
 
+Alternatively you could also get the voice channel from the author if they are in a voice channel.
+```csharp
+var voiceChannel = context switch
+{
+    { Author: GuildUser { VoiceState.VoiceChannel: { } authorChannel } } => authorChannel,
+    { Reader: { } reader, Guild.Channels: { } guildChannels }
+        when guildChannels.TryGetValue(reader.GetNext<Mentionable.Channel>().Id, out var channel)
+        && channel is GuildVoiceChannel guildVoiceChannel => guildVoiceChannel,
+        _ => throw new CommandException("The mentioned channel is not a voice channel.")
+};
+```
+
 ### Preconditions
 ```csharp
 var botOwnerPrecondition = new Precondition(
