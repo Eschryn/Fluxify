@@ -38,7 +38,7 @@ namespace Fluxify.Gateway.Model;
 [JsonSerializable(typeof(GatewayMemeIdResponse))]
 [JsonSerializable(typeof(GatewayMessageIdResponse))]
 [JsonSerializable(typeof(GatewayAuthSessionChange))]
-[JsonSerializable(typeof(Presence))]
+[JsonSerializable(typeof(PresenceResponse))]
 [JsonSerializable(typeof(GatewayGuildCreate))]
 [JsonSerializable(typeof(GatewayGuildDelete))]
 [JsonSerializable(typeof(GatewayGuildMemberDelete))]

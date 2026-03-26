@@ -14,9 +14,11 @@
 
 using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Users;
 using Fluxify.Dto.Channels.Text.Messages.Reactions;
 using Fluxify.Dto.Guilds.Emoji;
 using Fluxify.Dto.Guilds.Stickers;
+using Fluxify.Gateway.Model.Data.User;
 using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application;

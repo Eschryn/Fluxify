@@ -135,7 +135,7 @@ public sealed partial class GatewayClient
         remove => RemoveHandler(GatewayEvent.AuthSessionChange, value!);
     }
 
-    public event Func<Presence, Task>? PresenceUpdate
+    public event Func<PresenceResponse, Task>? PresenceUpdate
     {
         add => InsertHandler(GatewayEvent.PresenceUpdate, value!);
         remove => RemoveHandler(GatewayEvent.PresenceUpdate, value!);

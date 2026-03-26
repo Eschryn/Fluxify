@@ -39,7 +39,7 @@ public record ReadyPayload(
     ChannelResponse[] PrivateChannels,
     RelationshipResponse[] Relationships,
     UserPartialResponse[] Users,
-    Presence[] Presences,
+    PresenceResponse[] Presences,
     GatewaySession[] Sessions,
     UserSettings? UserSettings,
     UserGuildSettingsResponse[]? UserGuildSettings,

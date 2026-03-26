@@ -65,4 +65,6 @@ public interface ITextChannel : IChannel
         DateTimeOffset scheduledTime,
         CancellationToken cancellationToken = default
     );
+
+    Task AckPinnedMessagesAsync(CancellationToken cancellationToken = default);
 }

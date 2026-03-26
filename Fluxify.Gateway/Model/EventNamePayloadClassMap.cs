@@ -64,7 +64,7 @@ internal static class EventNamePayloadClassMap
             { GatewayEvent.FavoriteMemeDelete, Data<GatewayMemeIdResponse>() }, // untested
 
             { GatewayEvent.AuthSessionChange, Data<GatewayAuthSessionChange>() }, // untested
-            { GatewayEvent.PresenceUpdate, Data<Presence>() }, // untested
+            { GatewayEvent.PresenceUpdate, Data<PresenceResponse>() }, // untested
 
             { GatewayEvent.GuildCreate, Data<GatewayGuildCreate>() }, // untested
             { GatewayEvent.GuildUpdate, Data<GuildResponse>() }, // untested

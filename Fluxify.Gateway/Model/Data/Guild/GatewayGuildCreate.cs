@@ -36,7 +36,7 @@ public record GatewayGuildCreate(
     GuildMemberResponse[] Members,
     int MemberCount,
     int OnlineCount,
-    Presence[] Presences,
+    PresenceResponse[] Presences,
     VoiceStateResponse[] VoiceStates,
     DateTimeOffset JoinedAt
 );

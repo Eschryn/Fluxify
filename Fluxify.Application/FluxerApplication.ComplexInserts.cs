@@ -22,6 +22,9 @@ using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Dto.Guilds.Stickers;
 using Fluxify.Gateway.Model.Data.Channel.Message;
+using Fluxify.Gateway.Model.Data.User;
+using Fluxify.Gateway.Model.Data.Voice;
+using UserStatus = Fluxify.Gateway.Model.Data.UserStatus;
 
 namespace Fluxify.Application;
 
@@ -33,7 +36,9 @@ public partial class FluxerApplication
         GuildMemberResponse[] members,
         ChannelResponse[] channels,
         GuildStickerResponse[] stickers,
-        GuildEmojiResponse[] emojis
+        GuildEmojiResponse[] emojis,
+        PresenceResponse[] presences,
+        VoiceStateResponse[] voiceStates
     )
     {
         var guild = Guilds.Insert(response);
@@ -53,12 +58,52 @@ public partial class FluxerApplication
             InsertChannel(channelResponse, guild);
         }
 
+        foreach (var voiceStateResponse in voiceStates)
+        {
+            if (guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(voiceStateResponse.UserId) is not { } user)
+            {
+                continue;
+            }
+
+            UpdateGuildUserVoiceState(voiceStateResponse, guild, user);
+        }
+
+        foreach (var presence in presences)
+        {
+            UpdateUserPresence(presence);
+        }
+        
         GuildInsertStickers(stickers, guild);
         GuildInsertEmoji(emojis, guild);
         
         return guild;
     }
 
+    private void UpdateUserPresence(PresenceResponse presence)
+    {
+        if (Users.GetCachedOrDefault(presence.UserPartial.Id) is {} user)
+        {
+            _userMapper.UpdateStatus(user, presence);
+        }
+    }
+
+    private void UpdateGuildUserVoiceState(VoiceStateResponse voiceState, Guild guild, GuildUser guildUser)
+    {
+        if (voiceState.ConnectionId != null)
+        {
+            guildUser.VoiceState ??= new VoiceState
+            {
+                VoiceChannel = (GuildVoiceChannel)guild.Channels[voiceState.ChannelId!.Value]
+            };
+             
+            _userMapper.UpdateVoiceState((VoiceState)guildUser.VoiceState, voiceState);
+        }
+        else
+        {
+            guildUser.VoiceState = null;
+        }
+    }
+    
     private static void GuildInsertStickers(GuildStickerResponse[] stickers, Guild guild)
     {
         foreach (var guildStickerResponse in stickers)

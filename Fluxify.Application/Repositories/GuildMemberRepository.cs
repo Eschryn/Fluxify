@@ -42,10 +42,11 @@ internal sealed class GuildMemberRepository(
 
         return guildMemberResponse is null ? 
             throw new Exception("Could not get guild member")
-            : Insert(guildMemberResponse, await guildRepository.GetAsync(guild.Id), await guild.MembersRepository.GetAsync(memberId));
+            : Insert(guildMemberResponse, await guildRepository.GetAsync(guild.Id), await userRepository.GetAsync(memberId));
     }
 
-    internal GuildUser Insert(GuildMemberResponse member, Guild guild, IUser user) => Cache.UpdateOrCreate(mapper.Map(member, user, guild));
+    internal GuildUser Insert(GuildMemberResponse member, Guild guild, GlobalUser user) 
+        => Cache.UpdateOrCreate(mapper.Map(member, user, guild));
 
     internal void Delete(Snowflake memberId)
     {

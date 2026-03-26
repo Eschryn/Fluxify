@@ -27,6 +27,7 @@ using Fluxify.Gateway.Model.Data.Channel.Reaction;
 using Fluxify.Gateway.Model.Data.Guild;
 using Fluxify.Gateway.Model.Data.Guild.Roles;
 using Fluxify.Gateway.Model.Data.User;
+using Fluxify.Gateway.Model.Data.Voice;
 
 namespace Fluxify.Application;
 
@@ -85,6 +86,20 @@ public partial class FluxerApplication
         Gateway.GuildRoleDelete += HandleGuildRoleDelete;
         
         Gateway.PassiveUpdates += HandlePassiveUpdate;
+        
+        Gateway.VoiceStateUpdate += HandleVoiceStateUpdate;
+    }
+
+    private async Task HandleVoiceStateUpdate(VoiceStateResponse arg)
+    {
+        if (!arg.GuildId.HasValue
+            || Guilds.Cache.GetCachedOrDefault<Guild>(arg.GuildId.Value) is not { } guild
+            || guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(arg.UserId) is not { } user)
+        {
+            return;
+        }
+        
+        UpdateGuildUserVoiceState(arg, guild, user);
     }
 
     private async Task HandlePassiveUpdate(GatewayPassiveUpdate arg)
@@ -131,7 +146,9 @@ public partial class FluxerApplication
                 guildReadyData.Members!,
                 guildReadyData.Channels!,
                 guildReadyData.Stickers!,
-                guildReadyData.Emojis!
+                guildReadyData.Emojis!,
+                guildReadyData.Presences!,
+                guildReadyData.VoiceStates!
             );
         }
         
@@ -300,7 +317,9 @@ public partial class FluxerApplication
             arg.Members,
             arg.Channels,
             arg.Stickers,
-            arg.Emojis
+            arg.Emojis,
+            arg.Presences,
+            arg.VoiceStates
         );
         
         await _guildCreatedHandlers.CallHandlersAsync(guild);

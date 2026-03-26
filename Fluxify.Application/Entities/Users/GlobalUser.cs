@@ -14,11 +14,16 @@
 
 using System.Drawing;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Users;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GlobalUser : IUser
+public class GlobalUser : IUser, IPresence
 {
+    public UserStatus Status { get; internal set; } = UserStatus.Offline;
+    public bool IsMobile { get; internal set; } = false;
+    public bool IsAfk { get; internal set; } = false;
+    public CustomStatus? CustomStatus { get; internal set; } = null;
     public Snowflake Id { get; init; }
     public bool? Bot { get; internal set; }
     public string Username { get; internal set; } = string.Empty;

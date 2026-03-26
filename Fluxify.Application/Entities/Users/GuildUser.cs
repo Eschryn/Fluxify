@@ -21,7 +21,7 @@ using Fluxify.Rest.Guilds;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GuildUser : IUser, IEntity
+public class GuildUser : IUser, IEntity, IPresence
 {
     private MemberRequestBuilder RequestBuilder => field ??= Guild.RequestBuilder.Members[Id];
     public Snowflake Id { get; init; }
@@ -38,7 +38,11 @@ public class GuildUser : IUser, IEntity
     public GuildMemberProfileFlags ProfileFlags { get; internal set;  }
     public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(Guild.RolesRepository.Cache.GetCachedOrDefault<IRole>).OfType<IRole>().ToArray();
     public required Guild Guild { get; init; }
-    internal IUser User { get; set; } = default!;
+    internal GlobalUser User { get; set; } = default!;
+    public UserStatus Status => User.Status;
+    public bool IsMobile => User.IsMobile;
+    public bool IsAfk => User.IsAfk;
+    public CustomStatus? CustomStatus => User.CustomStatus;
     public bool? Bot => User.Bot;
     public string Username => User.Username;
     public string? Discriminator => User.Discriminator;
@@ -47,6 +51,8 @@ public class GuildUser : IUser, IEntity
     public Color? AvatarColor => User.AvatarColor;
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;
+    
+    public IVoiceState? VoiceState { get; internal set; }
 
     public Task AddRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
         => RequestBuilder.AddRoleAsync(role.Id, reason, cancellationToken);

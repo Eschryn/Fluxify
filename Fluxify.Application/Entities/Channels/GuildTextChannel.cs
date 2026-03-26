@@ -90,6 +90,9 @@ public class GuildTextChannel(FluxerApplication fluxerApplication)
         before,
         cancellationToken
     );
+    
+    public Task AckPinnedMessagesAsync(CancellationToken cancellationToken = default)
+        => RequestBuilder.Messages.Pins.AcknowledgeAsync(cancellationToken);
 
     public Task MarkUnreadAsync(CancellationToken cancellationToken = default) 
         => RequestBuilder.Messages.MarkUnreadAsync(cancellationToken);

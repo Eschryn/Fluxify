@@ -42,6 +42,6 @@ public record GuildReadyData(
     GuildStickerResponse[]? Stickers,
     GuildMemberResponse[]? Members,
     int? OnlineCount,
-    Presence[]? Presences,
+    PresenceResponse[]? Presences,
     VoiceStateResponse[]? VoiceStates
 );
