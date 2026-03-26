@@ -49,6 +49,42 @@ bot.Commands.Command("hug", async (CommandContext ctx) =>
 await bot.RunAsync();
 ```
 
+### Voice
+To connect to a voice channel you need the `Fluxify.Voice` package.
+Here is an example of how to play a file using ffmpeg.
+```csharp
+// voice session is per voice channel connection
+//   -> you'll have to create them per channel - but you can also have multiple sessions per channel
+//      probably what you want is some form of ConcurrentDictionary<Snowflake, VoiceSession> :)
+var voiceSession = new VoiceSession(bot.Gateway);
+
+// <prefix>playFile #Voice
+bot.Commands.Command("playFile", async (CommandContext ctx) =>
+{
+    var channel = ctx.Reader.GetNext<Mentionable.Channel>();
+    if (!ctx.Guild!.Channels.TryGetValue(channel.Id, out var channelValue)
+        || channelValue is not GuildVoiceChannel voiceChannel)
+    {
+        throw new CommandException("Channel is not a voice channel!");
+    }
+
+    await voiceSession.ConnectAsync(voiceChannel);
+    
+    // here you can pretty much use everything ffmpeg has to offer
+    // you could chain the stdout of yt-dlp into ffmpeg using .FromPipeInput(new StreamPipeSource()) :)
+    // I would recommend retaining the info about what is playing and the task that plays it in some AudioPlayer class
+    await FFMpegArguments
+        .FromFileInput("/Users/core/FLOW.mp3")
+        .OutputToPipe(voiceSession.AudioSourceSink, args => args
+            .WithAudioSamplingRate()
+            .ForceFormat(voiceSession.AudioSourceSink.GetFormat())
+        )
+        .ProcessAsynchronously();
+    
+    await voiceSession.DisconnectAsync();
+}, Preconditions.RequireGuildContext());
+```
+
 ### Preconditions
 ```csharp
 var botOwnerPrecondition = new Precondition(
