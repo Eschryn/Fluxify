@@ -5,6 +5,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FFMpegCore" Version="5.4.0" />
       <PackageReference Include="Livekit.Rtc.Dotnet" Version="0.1.0" />
       <PackageReference Include="System.Reactive" Version="6.1.0" />
     </ItemGroup>
