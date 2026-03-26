@@ -8,6 +8,7 @@
 * [Fluxify](#fluxify-)
   * [Getting Started](#getting-started)
     * [Building a Bot](#building-a-bot)
+    * [Voice](#voice)
     * [Preconditions](#preconditions)
     * [Logging (Simple)](#logging-simple)
     * [Dependency Injection](#dependency-injection)
@@ -45,6 +46,18 @@ bot.Commands.Command("hug", async (CommandContext ctx) =>
 
     await ctx.Message.Channel.SendMessageAsync(message);
 });
+
+// Subscribe to an event.
+bot.MessageUpdated += async message =>
+{
+    Console.WriteLine(message.Content);
+};
+
+// Some events are not exposed on the Bot class yet. For those you have to check in bot.Gateway.
+bot.Gateway.MessageReactionAdd += async (reaction) =>
+{
+    ...
+};
 
 await bot.RunAsync();
 ```
@@ -89,11 +102,16 @@ Alternatively you could also get the voice channel from the author if they are i
 ```csharp
 var voiceChannel = context switch
 {
+    // get voice channel from author
     { Author: GuildUser { VoiceState.VoiceChannel: { } authorChannel } } => authorChannel,
+
+    // alternative try getting from parameter
     { Reader: { } reader, Guild.Channels: { } guildChannels }
         when guildChannels.TryGetValue(reader.GetNext<Mentionable.Channel>().Id, out var channel)
         && channel is GuildVoiceChannel guildVoiceChannel => guildVoiceChannel,
-        _ => throw new CommandException("The mentioned channel is not a voice channel.")
+
+    // we got a parameter but its not a guild voice channel or we couldn't resolve it
+    _ => throw new CommandException("The mentioned channel is not a voice channel.")
 };
 ```
 
@@ -154,6 +172,11 @@ var gatewayConfig = new GatewayConfig
 };
 
 var bot = new Bot(..., gatewayConfig);
+
+// update presence
+await bot.Gateway.UpdatePresenceAsync(
+    status: UserStatus.Online,
+    customStatus: new CustomStatus(Text: "Hello World Again!"));
 ...
 ```
 
