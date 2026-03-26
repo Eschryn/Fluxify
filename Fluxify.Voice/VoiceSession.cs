@@ -69,6 +69,10 @@ public class VoiceSession : IAsyncDisposable
                 value
             ));
     }
+    
+    public bool IsConnected => _room.IsConnected;
+    
+    public AudioSourceSink AudioSourceSink { get; }
 
     public VoiceSession(GatewayClient gatewayClient)
     {
@@ -88,11 +92,62 @@ public class VoiceSession : IAsyncDisposable
             .Subscribe(UpdateVoiceState);
     }
 
+
+    public async Task ConnectAsync(GuildVoiceChannel voiceChannel)
+    {
+        _connectionId = null;
+        _voiceStateSubject.OnNext(
+            new UpdateVoiceState(
+                (_guildId = voiceChannel.Guild.Id).Value,
+                (_channelId = voiceChannel.Id).Value,
+                false,
+                false
+            ));
+
+        try
+        {
+            _connectTaskCompletionSource = new TaskCompletionSource();
+            await _connectTaskCompletionSource.Task;
+        }
+        finally
+        {
+            _connectTaskCompletionSource = null;
+        }
+    }
+
+    public async ValueTask DisconnectAsync()
+    {
+        if (_room.IsConnected)
+        {
+            if (_room.LocalParticipant is { } participant && _localTrackPublication is { } publication)
+            {
+                await participant.UnpublishTrackAsync(publication.Sid);
+            }
+
+            await _room.DisconnectAsync();
+        }
+    }
+
+    private void UpdateVoiceState(UpdateVoiceState data) => _ = _gatewayClient.UpdateVoiceStateAsync(data);
+
     private void RoomOnConnected(object? sender, EventArgs e)
     {
         _connectTaskCompletionSource?.TrySetResult();
 
         OnConnected?.Invoke(this, EventArgs.Empty);
+    }
+
+    private async Task OnVoiceStateUpdate(VoiceStateResponse arg)
+    {
+        if (_connectionId != null && arg.ConnectionId != _connectionId
+            || _connectionId == null && (arg.ChannelId != _channelId || arg.GuildId != _guildId))
+        {
+            return;
+        }
+
+        _guildId = arg.GuildId;
+        _channelId = arg.ChannelId;
+        _connectionId = arg.ConnectionId;
     }
 
     private async Task OnVoiceServerUpdate(GatewayVoiceServer arg)
@@ -127,72 +182,20 @@ public class VoiceSession : IAsyncDisposable
         });
     }
 
-    private void UpdateVoiceState(UpdateVoiceState data) => _ = _gatewayClient.UpdateVoiceStateAsync(data);
-
-    private async Task OnVoiceStateUpdate(VoiceStateResponse arg)
-    {
-        if (_connectionId != null && arg.ConnectionId != _connectionId
-            || _connectionId == null && (arg.ChannelId != _channelId || arg.GuildId != _guildId))
-        {
-            return;
-        }
-
-        _guildId = arg.GuildId;
-        _channelId = arg.ChannelId;
-        _connectionId = arg.ConnectionId;
-    }
-
-    public AudioSourceSink AudioSourceSink { get; }
-
-    public async Task ConnectAsync(GuildVoiceChannel voiceChannel)
-    {
-        _connectionId = null;
-        _voiceStateSubject.OnNext(
-            new UpdateVoiceState(
-                (_guildId = voiceChannel.Guild.Id).Value,
-                (_channelId = voiceChannel.Id).Value,
-                false,
-                false
-            ));
-
-        try
-        {
-            _connectTaskCompletionSource = new TaskCompletionSource();
-            await _connectTaskCompletionSource.Task;
-        }
-        finally
-        {
-            _connectTaskCompletionSource = null;
-        }
-    }
-
     public async ValueTask DisposeAsync()
     {
         await DisconnectAsync();
 
+        _gatewayClient.VoiceServerUpdate -= OnVoiceServerUpdate;
+        _gatewayClient.VoiceStateUpdate -= OnVoiceStateUpdate;
+
         _room.Dispose();
         _audioSource.Dispose();
         _localAudioTrack.Dispose();
-    }
-
-    private async ValueTask DisconnectAsync()
-    {
-        if (_room.IsConnected)
-        {
-            if (_room.LocalParticipant is { } participant && _localTrackPublication is { } publication)
-            {
-                await participant.UnpublishTrackAsync(publication.Sid);
-            }
-
-            await _room.DisconnectAsync();
-        }
-
-        _gatewayClient.VoiceStateUpdate -= OnVoiceStateUpdate;
-
         _voiceStateSubscription.Dispose();
         _localAudioTrack.Dispose();
         _room.Dispose();
-        _audioSource.Dispose();
         _voiceStateSubject.Dispose();
+        AudioSourceSink.Dispose();
     }
 }
