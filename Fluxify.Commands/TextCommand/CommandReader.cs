@@ -53,7 +53,10 @@ public class CommandReader(CommandTokenizer tokenizer)
             )
                 ? uri
                 : null
-        }
+        },
+        { typeof(DateTimeOffset), memory => DateTimeOffset.Parse(memory.Span) },
+        { typeof(TimeSpan), memory => TimeSpan.Parse(memory.Span) },
+        { typeof(Guid), memory => Guid.Parse(memory.Span) },
     };
 
     private static FrozenDictionary<Type, Func<ReadOnlyMemory<char>, object?>> _frozenParsers =
