@@ -21,5 +21,5 @@ public record GatewayVoiceServer(
     string Endpoint,
     string ConnectionId,
     Snowflake GuildId,
-    Snowflake? ChannelId
+    Snowflake ChannelId
 );

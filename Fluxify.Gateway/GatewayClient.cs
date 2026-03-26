@@ -114,6 +114,8 @@ public sealed partial class GatewayClient
 
         while (!cancellationToken.IsCancellationRequested)
         {
+            _client.ResetSocket();
+            
             try
             {
                 using var connectionTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -158,7 +160,6 @@ public sealed partial class GatewayClient
             }
 
             StopHeartbeat();
-            _client.ResetSocket();
             // TODO: implement backoff
             ConnectionState = ConnectionState.Reconnecting;
         }
@@ -224,8 +225,7 @@ public sealed partial class GatewayClient
                 mobile,
                 afk,
                 customStatus
-            ),
-            Sequence: _lastSequence
+            )
         ), cancellationToken
     ); 
     
