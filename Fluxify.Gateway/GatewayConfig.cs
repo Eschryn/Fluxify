@@ -31,7 +31,7 @@ public class GatewayConfig
     internal Dictionary<string, string> DeviceProperties { get; } = new()
     {
         ["os"] = Environment.OSVersion.Platform.ToString(),
-        ["browser"] = "Fluxify.Bot",
-        ["device"] = "Fluxify.Bot"
+        ["browser"] = "Fluxify",
+        ["device"] = "Fluxify"
     };
 }
