@@ -7,6 +7,7 @@
   <Project Path="Fluxify.Application/Fluxify.Application.csproj" />
   <Project Path="Fluxify.AspNetCore.Authentication/Fluxify.AspNetCore.Authentication.csproj" />
   <Project Path="Fluxify.Bot\Fluxify.Bot.csproj" />
+  <Project Path="Fluxify.Voice\Fluxify.Voice.csproj" />
   <Project Path="Fluxify.Commands\Fluxify.Commands.csproj" />
   <Project Path="Fluxify.Core\Fluxify.Core.csproj" />
   <Project Path="Fluxify.Dto\Fluxify.Dto.csproj" />
