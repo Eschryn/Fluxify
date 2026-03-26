@@ -91,12 +91,23 @@ public partial class FluxerApplication
     {
         if (voiceState.ConnectionId != null)
         {
-            guildUser.VoiceState ??= new VoiceState
+            if (guildUser.VoiceState?.VoiceChannel.Id != voiceState.ChannelId && voiceState.ChannelId.HasValue)
             {
-                VoiceChannel = (GuildVoiceChannel)guild.Channels[voiceState.ChannelId!.Value]
-            };
-             
-            _userMapper.UpdateVoiceState((VoiceState)guildUser.VoiceState, voiceState);
+                guildUser.VoiceState = new VoiceState
+                {
+                    VoiceChannel = (GuildVoiceChannel)guild.Channels[voiceState.ChannelId!.Value]
+                };
+                
+                _userMapper.UpdateVoiceState((VoiceState)guildUser.VoiceState, voiceState);
+            } 
+            else if (voiceState.ChannelId != null && guildUser.VoiceState != null)
+            {
+                _userMapper.UpdateVoiceState((VoiceState)guildUser.VoiceState, voiceState);
+            }
+            else
+            {
+                guildUser.VoiceState = null;
+            }
         }
         else
         {

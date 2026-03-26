@@ -168,6 +168,8 @@ public class VoiceSession : IAsyncDisposable
             {
                 await _room.LocalParticipant!.UnpublishTrackAsync(_localTrackPublication.Sid);
             }
+            
+            _localTrackPublication = null;
             await DisconnectAsync();
         }
 
