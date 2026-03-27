@@ -125,9 +125,20 @@ public sealed class MessageBuilder(string? content = null)
         return this;
     }
 
-    public MessageBuilder WithAllowedMentions(AllowedMentions allowedMentions)
-    {
-        Message.AllowedMentions = allowedMentions;
+    public MessageBuilder WithAllowedMentions(
+        bool repliedUser = false,
+        AllowedMentionsParse[]? parse = null,
+        Snowflake[]? roles = null,
+        Snowflake[]? users = null
+    ) {
+        Message.AllowedMentions = new AllowedMentions
+        {
+            Parse = parse,
+            RepliedUser = repliedUser,
+            Roles = roles,
+            Users = users
+        };
+        
         return this;
     }
 }

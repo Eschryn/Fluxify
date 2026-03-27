@@ -30,7 +30,7 @@ public class CommandConfiguration(string prefix, IServiceProvider serviceProvide
                 .WithEmbed(e =>
                     e.WithTitle("⚠️Error")
                         .WithDescription(ex.Response))
-                .WithAllowedMentions(new AllowedMentions { RepliedUser = false })
+                .WithAllowedMentions(repliedUser: false)
                 .Build());
         };
     

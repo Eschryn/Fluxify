@@ -93,6 +93,13 @@ public class Message(
 
         return await Channel.SendMessageAsync(message, cancellationToken);
     }
+    
+    public async Task<Message?> ReplyAsync(Action<MessageBuilder> builder, CancellationToken cancellationToken = default)
+    {
+        var messageBuilder = new MessageBuilder();
+        builder(messageBuilder);
+        return await ReplyAsync(messageBuilder.Build(), cancellationToken);
+    }
 
     private static string GetEmojiString(IEmoji emoji) => emoji switch
     {

@@ -25,5 +25,12 @@ public static class TextChannelExtensions {
             {
                 Content = message
             });
+        
+        public Task<Message?> SendMessageAsync(Action<MessageBuilder> builder)
+        {
+            var messageBuilder = new MessageBuilder();
+            builder(messageBuilder);
+            return channel.SendMessageAsync(messageBuilder.Build());
+        }
     }
 }
