@@ -21,6 +21,7 @@ using Fluxify.Dto.Guilds.AuditLog;
 using Fluxify.Dto.Guilds.Invite;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Guilds.Settings;
+using Fluxify.Dto.Invites;
 using Fluxify.Dto.Users.Settings.Security;
 using Fluxify.Rest.Channel;
 
@@ -38,6 +39,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     private static readonly CompositeFormat ChannelsUrl = CompositeFormat.Parse("guilds/{0}/channels");
     private static readonly CompositeFormat BanUrl = CompositeFormat.Parse("guilds/{0}/bans/{1}");
     private static readonly CompositeFormat FlexibleTextChannelNamesUrl = CompositeFormat.Parse("guilds/{0}/text-channel-flexible-names");
+    private static readonly CompositeFormat InvitesUrl = CompositeFormat.Parse("guilds/{0}/invites");
 
     public EmojisRequestBuilder Emojis { get; } = new(client, guildId);
     public MembersRequestBuilder Members { get; } = new(client, guildId);
@@ -51,24 +53,24 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
             cancellationToken: cancellationToken
         );
 
-    public async Task<GuildResponse?> UpdateAsync(
+    public Task<GuildResponse?> UpdateAsync(
         GuildUpdateRequest guildUpdateRequest,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildUpdateRequest, GuildResponse>(
+    ) => client.JsonRequestAsync<GuildUpdateRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, GetGuildUrl, guildId),
         guildUpdateRequest,
         cancellationToken: cancellationToken
     );
 
-    public async Task<GuildAuditLogListResponse?> ListAuditLogAsync(
+    public Task<GuildAuditLogListResponse?> ListAuditLogAsync(
         int? limit = null,
         Snowflake? before = null,
         Snowflake? after = null,
         Snowflake? user = null,
         AuditLogActionType? actionType = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildAuditLogListResponse>(
+    ) => client.JsonRequestAsync<GuildAuditLogListResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, AuditLogsUrl, guildId) + new QueryBuilder()
             .AddQuery("limit", limit?.ToString())
@@ -79,12 +81,12 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public async Task<ChannelResponse?> CreateChannelAsync(
+    public Task<ChannelResponse?> CreateChannelAsync(
         ChannelCreateRequest channelCreateRequest,
         string? reason = null,
         CancellationToken cancellationToken = default
     )
-        => await client.JsonRequestAsync<ChannelCreateRequest, ChannelResponse>(
+        => client.JsonRequestAsync<ChannelCreateRequest, ChannelResponse>(
             HttpMethod.Post,
             string.Format(FormatProvider, ChannelsUrl, guildId),
             channelCreateRequest,
@@ -92,31 +94,31 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
             cancellationToken: cancellationToken
         );
 
-    public async Task<ChannelResponse[]?> ListChannelsAsync(
+    public Task<ChannelResponse[]?> ListChannelsAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<ChannelResponse[]>(
+    ) => client.JsonRequestAsync<ChannelResponse[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, ChannelsUrl, guildId),
         cancellationToken: cancellationToken
     );
 
-    public async Task UpdateChannelPositionAsync(
+    public Task UpdateChannelPositionAsync(
         ChannelPositionUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Patch,
         string.Format(FormatProvider, ChannelsUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<GuildBanResponse?> BanAsync(
+    public Task<GuildBanResponse?> BanAsync(
         Snowflake userId,
         int? deleteMessageDays = null,
         TimeSpan? banDuration = null,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildBanResponse>(
+    ) => client.JsonRequestAsync<GuildBanResponse>(
         HttpMethod.Put,
         string.Format(FormatProvider, BanUrl, guildId, userId) + new QueryBuilder()
             .AddQuery("delete_message_days", deleteMessageDays?.ToString())
@@ -126,80 +128,88 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public async Task UnbanAsync(
+    public Task UnbanAsync(
         Snowflake userId,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, BanUrl, guildId, userId),
         reason: reason,
         cancellationToken: cancellationToken
     );
 
-    public async Task DeleteAsync(
+    public Task DeleteAsync(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         string.Format(FormatProvider, DeleteUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<GuildResponse?> ToggleDetachedBannerAsync(
+    public Task<GuildResponse?> ToggleDetachedBannerAsync(
         EnabledRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EnabledRequest, GuildResponse>(
+    ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, DetachedBannerUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<GuildResponse?> ToggleTextChannelFlexibleNames(
+    public Task<GuildResponse?> ToggleTextChannelFlexibleNames(
         EnabledRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EnabledRequest, GuildResponse>(
+    ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, FlexibleTextChannelNamesUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildResponse?> TransferOwnershipAsync(
+    public Task<GuildResponse?> TransferOwnershipAsync(
         GuildTransferOwnershipRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildTransferOwnershipRequest, GuildResponse>(
+    ) => client.JsonRequestAsync<GuildTransferOwnershipRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, TransferOwnershipUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildVanityUrlResponse?> GetVanityUrlAsync(
+    public Task<GuildVanityUrlResponse?> GetVanityUrlAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildVanityUrlResponse>(
+    ) => client.JsonRequestAsync<GuildVanityUrlResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, VanityUrl, guildId),
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildVanityUrlResponse?> UpdateVanityUrlAsync(
+    public Task<GuildVanityUrlResponse?> UpdateVanityUrlAsync(
         GuildVanityUrlUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildVanityUrlUpdateRequest, GuildVanityUrlResponse>(
+    ) => client.JsonRequestAsync<GuildVanityUrlUpdateRequest, GuildVanityUrlResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, VanityUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task LeaveGuildAsync(
+    public Task LeaveGuildAsync(
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, GetGuildUrl, guildId),
+        cancellationToken: cancellationToken
+    );
+    
+    public Task<InviteMetadataResponseSchema[]?> ListInvitesAsync(
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<InviteMetadataResponseSchema[]>(
+        HttpMethod.Get,
+        string.Format(FormatProvider, InvitesUrl, guildId),
         cancellationToken: cancellationToken
     );
 }

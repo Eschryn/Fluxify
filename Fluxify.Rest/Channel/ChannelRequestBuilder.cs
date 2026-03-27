@@ -17,6 +17,7 @@ using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Voice;
+using Fluxify.Dto.Invites;
 
 namespace Fluxify.Rest.Channel;
 
@@ -27,12 +28,13 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     private static readonly CompositeFormat OverwriteUrl = CompositeFormat.Parse("channels/{0}/permissions/{1}");
     private static readonly CompositeFormat RecipientUrl = CompositeFormat.Parse("channels/{0}/recipients/{1}");
     private static readonly CompositeFormat RtcRegionUrl = CompositeFormat.Parse("channels/{0}/rtc-regions");
+    private static readonly CompositeFormat InvitesUrl = CompositeFormat.Parse("channels/{0}/invites");
     private static readonly CompositeFormat TypingUrl = CompositeFormat.Parse("channels/{0}/typing");
     private static string Uri(CompositeFormat format, Snowflake id) => string.Format(FormatProvider, format, id);
 
     public MessagesRequestBuilder Messages { get; } = new(client, id);
     public CallRequestBuilder Call { get; } = new(client, id);
-    
+
     public async Task<ChannelResponse?> GetAsync(CancellationToken cancellationToken = default)
         => await client.JsonRequestAsync<ChannelResponse>(
             HttpMethod.Get,
@@ -40,17 +42,17 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
             cancellationToken: cancellationToken);
 
     public async Task<ChannelResponse?> UpdateAsync(
-        ChannelUpdateRequest request, 
+        ChannelUpdateRequest request,
         string? reason = null,
         CancellationToken cancellationToken = default
     ) =>
         await client.JsonRequestAsync<ChannelUpdateRequest, ChannelResponse>(
-            HttpMethod.Patch, 
-            Uri(GetUrl, id), request, 
-            reason: reason, 
+            HttpMethod.Patch,
+            Uri(GetUrl, id), request,
+            reason: reason,
             cancellationToken: cancellationToken);
 
-    public async Task DeleteAsync(bool? silent = null, CancellationToken cancellationToken = default) 
+    public async Task DeleteAsync(bool? silent = null, CancellationToken cancellationToken = default)
         => await client.RequestAsync(
             HttpMethod.Delete,
             Uri(GetUrl, id) + new QueryBuilder()
@@ -58,15 +60,17 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
             cancellationToken: cancellationToken
         );
 
-    public async Task SetPermissionsOverwriteAsync(ChannelPermissionOverwrite overwrite, CancellationToken cancellationToken = default) 
+    public async Task SetPermissionsOverwriteAsync(ChannelPermissionOverwrite overwrite,
+        CancellationToken cancellationToken = default)
         => await client.JsonRequestAsync(
             HttpMethod.Put,
             string.Format(FormatProvider, OverwriteUrl, id, overwrite.Id),
             overwrite,
             cancellationToken: cancellationToken
         );
-    
-    public async Task RemovePermissionsOverwriteAsync(Snowflake overwriteId, CancellationToken cancellationToken = default)
+
+    public async Task RemovePermissionsOverwriteAsync(Snowflake overwriteId,
+        CancellationToken cancellationToken = default)
         => await client.RequestAsync(
             HttpMethod.Delete,
             string.Format(FormatProvider, OverwriteUrl, id, overwriteId),
@@ -84,8 +88,9 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
             string.Format(FormatProvider, RecipientUrl, id, userId),
             cancellationToken: cancellationToken
         );
-    
-    public async Task RemoveRecipientAsync(Snowflake userId, bool? silent = null, CancellationToken cancellationToken = default)
+
+    public async Task RemoveRecipientAsync(Snowflake userId, bool? silent = null,
+        CancellationToken cancellationToken = default)
         => await client.RequestAsync(
             HttpMethod.Delete,
             string.Format(FormatProvider, RecipientUrl, id, userId) + new QueryBuilder()
@@ -99,13 +104,31 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
             Uri(RtcRegionUrl, id),
             cancellationToken: cancellationToken
         );
-    
+
     public async Task IndicateTypingAsync(CancellationToken cancellationToken = default)
         => await client.RequestAsync(
             HttpMethod.Post,
             Uri(TypingUrl, id),
             cancellationToken: cancellationToken
         );
-    
+
+    public async Task<InviteMetadataResponseSchema[]?> GetInvitesAsync(
+        CancellationToken cancellationToken = default
+    ) => await client.JsonRequestAsync<InviteMetadataResponseSchema[]>(
+        HttpMethod.Get,
+        Uri(InvitesUrl, id),
+        cancellationToken: cancellationToken
+    );
+
+    public async Task<InviteMetadataResponseSchema?> CreateInviteAsync(
+        ChannelInviteCreateRequest request,
+        CancellationToken cancellationToken = default
+    ) => await client.JsonRequestAsync<ChannelInviteCreateRequest, InviteMetadataResponseSchema>(
+        HttpMethod.Post,
+        Uri(InvitesUrl, id),
+        request,
+        cancellationToken: cancellationToken
+    );
+
     // TODO: get, upload and update stream
 }

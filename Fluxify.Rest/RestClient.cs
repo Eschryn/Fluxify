@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -42,7 +41,9 @@ public class RestClient
         Users = new UsersRequestBuilder(_httpClient);
         Channels = new ChannelsRequestBuilder(_httpClient);
         Gateway = new GatewayRequestBuilder(_httpClient);
+        Invites = new InvitesRequestBuilder(_httpClient);
         OAuth2 = new OAuth2RequestBuilder(_httpClient);
+        Packs = new PacksRequestBuilder(_httpClient);
     }
 
     internal static JsonSerializerOptions DefaultJsonOptions { get; } = new()
@@ -51,10 +52,13 @@ public class RestClient
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         TypeInfoResolver = JsonTypeInfoResolver.Combine(DtoJsonContext.Default, RestDtoContext.Default)
     };
-    
+
     public GatewayRequestBuilder Gateway { get; }
     public UsersRequestBuilder Users { get; }
     public GuildsRequestBuilder Guilds { get; }
     public ChannelsRequestBuilder Channels { get; }
     public OAuth2RequestBuilder OAuth2 { get; }
+    public InvitesRequestBuilder Invites { get; }
+    public PacksRequestBuilder Packs { get; }
+    
 }
