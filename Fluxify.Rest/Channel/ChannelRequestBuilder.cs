@@ -18,6 +18,7 @@ using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Voice;
 using Fluxify.Dto.Invites;
+using Fluxify.Rest.Channel.Messages;
 
 namespace Fluxify.Rest.Channel;
 

@@ -4,7 +4,7 @@ using Fluxify.Core.Types;
 using Fluxify.Dto.Invites;
 using Fluxify.Dto.Packs;
 
-namespace Fluxify.Rest;
+namespace Fluxify.Rest.Packs;
 
 public class PackRequestBuilder(HttpClient httpClient, Snowflake id)
 {

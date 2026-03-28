@@ -16,9 +16,8 @@ using System.Globalization;
 using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
-using Fluxify.Rest.Channel.Messages;
 
-namespace Fluxify.Rest.Channel;
+namespace Fluxify.Rest.Channel.Messages;
 
 public class MessageRequestBuilder(HttpClient client, Snowflake channelId, Snowflake messageId)
 {

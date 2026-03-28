@@ -21,7 +21,7 @@ using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
 using Fluxify.Core.Types;
-using Fluxify.Rest.Channel;
+using Fluxify.Rest.Channel.Messages;
 
 namespace Fluxify.Application.Entities.Messages;
 

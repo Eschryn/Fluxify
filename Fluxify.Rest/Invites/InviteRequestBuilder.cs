@@ -16,7 +16,7 @@ using System.Globalization;
 using System.Text;
 using Fluxify.Dto.Invites;
 
-namespace Fluxify.Rest;
+namespace Fluxify.Rest.Invites;
 
 public class InviteRequestBuilder(HttpClient httpClient, string code)
 {

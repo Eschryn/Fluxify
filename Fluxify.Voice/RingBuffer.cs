@@ -14,6 +14,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+namespace Fluxify.Voice;
+
 internal class RingBuffer(int size, int maxOverrun)
 {
     private readonly byte[] _ringBuffer = new byte[size];

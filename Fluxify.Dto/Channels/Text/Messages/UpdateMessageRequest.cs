@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
-using Fluxify.Dto.Channels.Text.Messages.Embeds;
+using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
 

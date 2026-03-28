@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Core;
 using Fluxify.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 // ReSharper disable once CheckNamespace
-using Fluxify.Core;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

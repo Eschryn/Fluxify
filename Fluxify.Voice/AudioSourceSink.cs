@@ -15,6 +15,8 @@
 using FFMpegCore.Pipes;
 using LiveKit.Rtc;
 
+namespace Fluxify.Voice;
+
 public class AudioSourceSink : IPipeSink, IDisposable
 {
     private readonly AudioSource _source;

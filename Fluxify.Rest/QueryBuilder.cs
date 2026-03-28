@@ -14,7 +14,7 @@
 
 using System.Text;
 
-namespace Fluxify.Rest.Channel;
+namespace Fluxify.Rest;
 
 public class QueryBuilder
 {

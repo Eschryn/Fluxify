@@ -1,6 +1,6 @@
 using Fluxify.Core.Types;
 
-namespace Fluxify.Rest;
+namespace Fluxify.Rest.Packs;
 
 public class PacksRequestBuilder(HttpClient httpClient)
 {

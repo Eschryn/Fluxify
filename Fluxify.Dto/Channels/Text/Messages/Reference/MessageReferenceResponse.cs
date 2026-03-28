@@ -14,7 +14,7 @@
 
 using Fluxify.Core.Types;
 
-namespace Fluxify.Dto.Channels.Text.Messages;
+namespace Fluxify.Dto.Channels.Text.Messages.Reference;
 
 public record MessageReferenceResponse(
     Snowflake ChannelId,

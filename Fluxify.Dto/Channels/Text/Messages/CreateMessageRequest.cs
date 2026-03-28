@@ -15,7 +15,8 @@
 using System.ComponentModel.DataAnnotations;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
-using Fluxify.Dto.Channels.Text.Messages.Embeds;
+using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
+using Fluxify.Dto.Channels.Text.Messages.Reference;
 using Fluxify.Dto.Uploads;
 
 namespace Fluxify.Dto.Channels.Text.Messages;

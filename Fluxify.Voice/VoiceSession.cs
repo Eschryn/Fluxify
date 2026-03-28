@@ -22,7 +22,7 @@ using LiveKit.Proto;
 using LiveKit.Rtc;
 using TrackPublishOptions = LiveKit.Rtc.TrackPublishOptions;
 
-namespace Silicon;
+namespace Fluxify.Voice;
 
 public class VoiceSession : IAsyncDisposable
 {

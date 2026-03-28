@@ -20,8 +20,10 @@ using Fluxify.Core;
 using Fluxify.Dto.Json;
 using Fluxify.Rest.Channel;
 using Fluxify.Rest.Guilds;
+using Fluxify.Rest.Invites;
 using Fluxify.Rest.Model;
 using Fluxify.Rest.OAuth2;
+using Fluxify.Rest.Packs;
 using Fluxify.Rest.Users;
 using Microsoft.Extensions.DependencyInjection;
 

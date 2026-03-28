@@ -14,7 +14,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Fluxify.Dto.Channels.Text.Messages.Embeds;
+namespace Fluxify.Dto.Channels.Text.Messages.Embeds.Request;
 
 public sealed record EmbedFieldRequest(
     bool Inline,

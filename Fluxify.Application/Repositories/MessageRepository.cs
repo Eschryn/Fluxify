@@ -20,8 +20,7 @@ using Fluxify.Application.Model.Messages;
 using Fluxify.Application.State;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
-using Fluxify.Gateway.Model.Data.Channel.Message;
-using Fluxify.Rest.Channel;
+using Fluxify.Rest.Channel.Messages;
 
 namespace Fluxify.Application.Repositories;
 

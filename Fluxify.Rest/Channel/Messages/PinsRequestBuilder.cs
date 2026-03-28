@@ -17,7 +17,7 @@ using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.Pin;
 
-namespace Fluxify.Rest.Channel;
+namespace Fluxify.Rest.Channel.Messages;
 
 public class PinsRequestBuilder(HttpClient client, Snowflake channelId)
 {

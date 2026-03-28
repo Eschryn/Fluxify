@@ -17,7 +17,7 @@ using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Users;
 
-namespace Fluxify.Rest.Channel;
+namespace Fluxify.Rest.Channel.Messages;
 
 public class MessageReactionRequestBuilder(HttpClient client, Snowflake channelId, Snowflake messageId, string emoji)
 {

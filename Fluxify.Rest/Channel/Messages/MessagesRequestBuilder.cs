@@ -19,7 +19,7 @@ using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 using Fluxify.Dto.Users.ScheduledMessages;
 
-namespace Fluxify.Rest.Channel;
+namespace Fluxify.Rest.Channel.Messages;
 
 public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
 {

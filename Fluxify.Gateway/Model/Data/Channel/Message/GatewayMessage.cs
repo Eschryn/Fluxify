@@ -17,8 +17,9 @@ using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
-using Fluxify.Dto.Channels.Text.Messages.Embeds;
+using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 using Fluxify.Dto.Channels.Text.Messages.Reactions;
+using Fluxify.Dto.Channels.Text.Messages.Reference;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Users;
 

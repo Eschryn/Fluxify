@@ -14,9 +14,9 @@
 
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
-using Fluxify.Dto.Channels.Text.Messages.Embeds;
+using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 
-namespace Fluxify.Dto.Channels.Text.Messages;
+namespace Fluxify.Dto.Channels.Text.Messages.Reference;
 
 public record MessageSnapshotResponse(
     string? Content,

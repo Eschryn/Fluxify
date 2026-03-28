@@ -14,10 +14,10 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Model.Channel;
 using Fluxify.Application.State;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
-using Fluxify.Dto.Channels.Text;
 using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
@@ -30,29 +30,60 @@ public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, C
     public async Task<IChannel> GetAsync(Snowflake id, bool bypassCache = false)
     {
         var channel = await Cache.GetOrCreateAsync(id, GetChannelRestAsync, bypassCache);
-        
+
         OnChange?.Invoke(channel, ChangeType.Update);
-        
+
         return channel;
     }
 
-    internal IChannel Insert(ChannelResponse response) => Cache.UpdateOrCreate(mapper.FromDto(response));
+    internal IChannel Insert(ChannelResponse response)
+    {
+        var updateOrCreate = Cache.UpdateOrCreate(mapper.FromDto(response));
+        if (updateOrCreate is IGuildChannel guildChannel)
+        {
+            guildChannel.Guild.GuildChannels.AddOrUpdate(
+                guildChannel.Id,
+                guildChannel,
+                (key, value) =>
+                {
+                    mapper.UpdateEntity(value, guildChannel);
+                    return value;
+                });
+        }
+
+        return updateOrCreate;
+    }
 
     internal T? GetCachedOrDefault<T>(Snowflake id) where T : IChannel => Cache.GetCachedOrDefault<T>(id);
-    
-    private async Task<IChannel> GetChannelRestAsync(Snowflake id) 
-        => await client.Channels[id].GetAsync() is {} channel 
-            ? await mapper.FromDtoAsync(channel) 
+
+    private async Task<IChannel> GetChannelRestAsync(Snowflake id)
+        => await client.Channels[id].GetAsync() is { } channel
+            ? await mapper.FromDtoAsync(channel)
             : throw new Exception($"Couldn't get channel with id {id}");
 
-    public async Task<IChannel?> CreateAsync(Snowflake guildId)
+    internal async Task<IGuildChannel> CreateAsync(Snowflake guildId, ChannelProperties textChannelRequest)
     {
-        var channelAsync = await client.Guilds[guildId].CreateChannelAsync(new ChannelCreateTextRequest("", null, null, null, null));
-        if (channelAsync is null) return null;
+        var channelCreateRequest = mapper.ToCreateRequest(textChannelRequest);
+        var channelAsync = await client.Guilds[guildId].CreateChannelAsync(channelCreateRequest);
 
-        var entity = await mapper.FromDtoAsync(channelAsync);
+        var entity = Insert(channelAsync ?? throw new Exception("Channel was not created"));
         OnChange?.Invoke(entity, ChangeType.Create);
-        return Cache.UpdateOrCreate(entity);
+        return (IGuildChannel)Cache.UpdateOrCreate(entity);
+    }
+
+    internal Task UpdateAsync<TChannel, TProperties>(
+        TChannel channel,
+        Action<TProperties> configure,
+        CancellationToken cancellationToken
+    )
+        where TProperties : ChannelProperties<TChannel>
+        where TChannel : IChannel
+    {
+
+        return client.Channels[id].UpdateAsync(
+            mapper.ToUpdateRequest(
+                ((TProperties)mapper.ToProperties(channel).Configure(configure))
+        ));
     }
 
     public async Task DeleteAsync(Snowflake id, bool silent = false)
@@ -60,6 +91,16 @@ public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, C
         await client.Channels[id].DeleteAsync(silent);
         Cache.Remove(id);
     }
-    
+
+    internal void Remove(Snowflake id)
+    {
+        if (Cache.GetCachedOrDefault<IGuildChannel>(id) is { Guild: { } guild })
+        {
+            guild.GuildChannels.Remove(id, out _);
+        }
+
+        Cache.Remove(id);
+    }
+
     internal void Reset() => Cache.Clear();
 }

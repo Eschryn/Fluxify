@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Dto.Channels.Text.Messages.Embeds;
+namespace Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 
 public record EmbedFieldResponse(
     bool Inline,
