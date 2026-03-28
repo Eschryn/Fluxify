@@ -14,6 +14,7 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Types;
@@ -22,7 +23,7 @@ using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 namespace Fluxify.Application.Entities.Channels;
 
 public class GuildTextChannel(FluxerApplication fluxerApplication)
-    : GuildNestedChannel(fluxerApplication), ITextChannel, INestedChannel
+    : GuildNestedChannel<TextChannelProperties>(fluxerApplication), ITextChannel, INestedChannel
 {
     internal MessageRepository MessageRepository => field ??= new MessageRepository(
         FluxerApplication,

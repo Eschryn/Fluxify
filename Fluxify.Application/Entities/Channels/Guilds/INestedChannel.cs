@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Guilds;
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Entities.Channels.Guild;
 
-namespace Fluxify.Application.Entities.Channels;
-
-public class GuildCategory(FluxerApplication fluxerApplication) : GuildChannel(fluxerApplication);
+public interface INestedChannel : IGuildChannel
+{
+    public GuildCategory? Parent { get; }
+}

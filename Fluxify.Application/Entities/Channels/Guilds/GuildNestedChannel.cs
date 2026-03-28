@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Model.Channel;
+
 namespace Fluxify.Application.Entities.Channels;
 
-public class GuildNestedChannel(FluxerApplication fluxerApplication) : GuildChannel(fluxerApplication), INestedChannel
+public class GuildNestedChannel<TProperties>(FluxerApplication fluxerApplication)
+    : GuildChannel<TProperties>(fluxerApplication), INestedChannel 
+    where TProperties : ChannelProperties
 {
     public required GuildCategory? Parent { get; init; }
 }

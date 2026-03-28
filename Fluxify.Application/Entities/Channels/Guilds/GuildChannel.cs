@@ -15,13 +15,15 @@
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Extensions;
+using Fluxify.Application.Model.Channel;
 using Fluxify.Core.Types;
 using Fluxify.Rest;
 using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public abstract class GuildChannel(FluxerApplication fluxerApplication) : IGuildChannel
+public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplication) : IGuildChannel
+    where TProperties : ChannelProperties
 {
     protected FluxerApplication FluxerApplication => fluxerApplication;
     internal ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
@@ -40,6 +42,17 @@ public abstract class GuildChannel(FluxerApplication fluxerApplication) : IGuild
             OverwritesDictionary = value?.ToDictionary(x => x.Id, x => x) ?? [];
         }
     }
+    
+    public Task UpdateAsync(
+        Action<TProperties> configure,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => fluxerApplication.Channels.UpdateAsync(
+        this, 
+        configure,
+        reason,
+        cancellationToken
+    );
     
     //public async Task CreateInviteAsync(CancellationToken cancellationToken = default) 
     //    => await Guild.RequestBuilder.
@@ -62,4 +75,6 @@ public abstract class GuildChannel(FluxerApplication fluxerApplication) : IGuild
     internal IUser? ResolveUser(Snowflake id) 
         => (IUser?)Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(id) 
            ?? fluxerApplication.Users.Cache.GetCachedOrDefault<GlobalUser>(id);
+    
+    public Task DeleteAsync() => FluxerApplication.Channels.DeleteAsync(Id);
 }
