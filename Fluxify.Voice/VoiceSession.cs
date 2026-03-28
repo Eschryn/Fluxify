@@ -14,7 +14,7 @@
 
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Core.Types;
 using Fluxify.Gateway;
 using Fluxify.Gateway.Model.Data.Voice;

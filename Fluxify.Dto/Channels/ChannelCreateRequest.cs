@@ -28,6 +28,5 @@ namespace Fluxify.Dto.Channels;
 [JsonDerivedType(typeof(ChannelCreateVoiceRequest), (int)ChannelType.VoiceChannel)]
 public abstract record ChannelCreateRequest(
     string Name,
-    Snowflake? ParentId,
     ChannelPermissionOverwrite[]? PermissionOverwrites
 );

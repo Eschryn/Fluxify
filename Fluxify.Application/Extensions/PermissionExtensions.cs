@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Model.Channel;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Extensions;
@@ -23,10 +25,18 @@ public static class PermissionExtensions
 {
     extension(IGuildChannel guildChannel)
     {
-        public Permissions CalculateUserPermissions(GuildUser user) => ((GuildChannel)guildChannel).CalculateUserPermissions(user);
+        public Permissions CalculateUserPermissions(GuildUser user) 
+            => guildChannel switch
+            {
+                GuildVoiceChannel voiceChannel => voiceChannel.CalculateUserPermissions(user),
+                GuildTextChannel textChannel => textChannel.CalculateUserPermissions(user),
+                GuildLinkChannel linkChannel => linkChannel.CalculateUserPermissions(user),
+                GuildCategory category => category.CalculateUserPermissions(user),
+                _ => throw new ArgumentOutOfRangeException()
+            };
     }
     
-    extension(GuildChannel guildChannel)
+    extension<TProperties>(GuildChannel<TProperties> guildChannel) where TProperties : ChannelProperties
     {
         internal Permissions CalculateUserPermissions(GuildUser user)
         {

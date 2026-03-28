@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Channels.Private;
 
 public class Dm(
     FluxerApplication fluxerApplication

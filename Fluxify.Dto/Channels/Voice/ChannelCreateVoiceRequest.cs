@@ -24,5 +24,4 @@ public record ChannelCreateVoiceRequest(
     int? UserLimit
 ) : ChannelCreateRequest(
     Name,
-    ParentId,
     PermissionOverwrites);

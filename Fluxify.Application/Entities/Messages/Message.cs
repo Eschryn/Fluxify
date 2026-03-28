@@ -15,6 +15,7 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;

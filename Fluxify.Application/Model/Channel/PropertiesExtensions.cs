@@ -12,9 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Channels.Guilds;
+using System.Runtime.CompilerServices;
 
-public interface INestedChannel : IGuildChannel
+namespace Fluxify.Application.Model.Channel;
+
+internal static class PropertiesExtensions
 {
-    public GuildCategory? Parent { get; }
+    public static T Configure<T>(this T properties, Action<T>? configure)
+    {
+        configure?.Invoke(properties);
+        return properties;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T Cast<T>(this ChannelProperties properties) where T : ChannelProperties => (T)properties;
 }

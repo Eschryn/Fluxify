@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Channels.Guilds;
+using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Model.Channel;
 using Fluxify.Dto.Channels;
+using Fluxify.Dto.Channels.Category;
+using Fluxify.Dto.Channels.LinkChannel;
+using Fluxify.Dto.Channels.Text;
+using Fluxify.Dto.Channels.Voice;
 using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Channels;
@@ -25,8 +32,8 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     public async Task<IChannel> FromDtoAsync(ChannelResponse dto)
         => FromDto(dto,
             parent: dto.ParentId is { } parentId
-                        ? (GuildCategory)await application.Channels.GetAsync(parentId)
-                        : null,
+                ? (GuildCategory)await application.Channels.GetAsync(parentId)
+                : null,
             guild: dto.GuildId is { } guildId ? await application.Guilds.GetAsync(guildId) : null);
 
     public IChannel FromDto(ChannelResponse dto)
@@ -35,7 +42,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
             ? (application.Guilds.Cache.GetCachedOrDefault<Guild>(gId) ?? new Guild(application)
                 { Id = gId, Name = string.Empty, Owner = null! })
             : null;
-        
+
         return FromDto(
             dto,
             dto.ParentId is { } pId
@@ -45,6 +52,77 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
             guild
         );
     }
+    
+    [MapperIgnoreSource(nameof(VoiceChannelProperties.RtcRegion))]
+    private partial ChannelCreateVoiceRequest ToCreateRequest(VoiceChannelProperties request);
+    
+    [MapDerivedType<VoiceChannelProperties, ChannelCreateVoiceRequest>]
+    [MapDerivedType<TextChannelProperties, ChannelCreateTextRequest>]
+    [MapDerivedType<LinkChannelProperties, ChannelCreateLinkRequest>]
+    [MapDerivedType<CategoryProperties, ChannelCreateCategoryRequest>]
+    public partial ChannelCreateRequest ToCreateRequest(ChannelProperties request);
+
+    [MapDerivedType<VoiceChannelProperties, ChannelUpdateVoiceRequest>]
+    [MapDerivedType<TextChannelProperties, ChannelUpdateTextRequest>]
+    [MapDerivedType<LinkChannelProperties, ChannelUpdateLinkRequest>]
+    [MapDerivedType<CategoryProperties, ChannelUpdateCategoryRequest>]
+    public partial ChannelUpdateRequest ToUpdateRequest(ChannelProperties request);
+    
+    public PermissionOverwrite ToPermissionOverwrite(ChannelPermissionOverwrite dto)
+        => dto.Type switch
+        {
+            PermissionOverwriteType.Member => new PermissionOverwrite.Member(dto.Id)
+            {
+                Allow = dto.Allow,
+                Deny = dto.Deny
+            },
+            PermissionOverwriteType.Role => new PermissionOverwrite.Role(dto.Id)
+            {
+                Allow = dto.Allow,
+                Deny = dto.Deny
+            },
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    
+    [MapperIgnoreSource(nameof(GuildChannel<>.Id))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.Guild))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.Position))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.RequestBuilder))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.OverwritesDictionary))]
+    [MapperIgnoreSource(nameof(GuildNestedChannel<>.Position))]
+    [MapperIgnoreSource(nameof(GuildTextChannel.MessageRepository))]
+    [MapperIgnoreSource(nameof(GuildTextChannel.LastMessageId))]
+    [MapperIgnoreSource(nameof(GuildTextChannel.LastPinTimestamp))]
+    [MapProperty(nameof(GuildChannel<>.Overwrites), nameof(GuildChannelProperties.PermissionOverwrites))]
+    private partial TextChannelProperties ToChannelProperties(GuildTextChannel request);
+
+    [MapDerivedType<GuildVoiceChannel, VoiceChannelProperties>]
+    [MapDerivedType<GuildTextChannel, TextChannelProperties>]
+    [MapDerivedType<GuildLinkChannel, LinkChannelProperties>]
+    [MapDerivedType<GuildCategory, CategoryProperties>]
+    [MapperIgnoreSource(nameof(GuildChannel<>.Id))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.Guild))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.Position))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.RequestBuilder))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.OverwritesDictionary))]
+    [MapperIgnoreSource(nameof(GuildNestedChannel<>.Position))]
+    [MapProperty(nameof(GuildChannel<>.Overwrites), nameof(GuildChannelProperties.PermissionOverwrites))]
+    private partial GuildChannelProperties ToProperties(IGuildChannel request);
+
+    [MapperIgnoreSource(nameof(GroupDm.Id))]
+    [MapperIgnoreSource(nameof(GroupDm.IconHash))]
+    [MapperIgnoreSource(nameof(ITextChannel.LastMessageId))]
+    [MapperIgnoreSource(nameof(ITextChannel.LastPinTimestamp))]
+    [MapperIgnoreSource(nameof(PrivateTextChannel.MessageRepository))]
+    [MapValue(nameof(GroupDmProperties.Icon), null)]
+    private partial GroupDmProperties ToProperties(GroupDm request);
+    
+    [MapDerivedType<GuildVoiceChannel, VoiceChannelProperties>]
+    [MapDerivedType<GuildTextChannel, TextChannelProperties>]
+    [MapDerivedType<GuildLinkChannel, LinkChannelProperties>]
+    [MapDerivedType<GuildCategory, CategoryProperties>]
+    [MapDerivedType<GroupDm, GroupDmProperties>]
+    public partial ChannelProperties ToProperties(IChannel request);
 
     public IChannel FromDto(ChannelResponse dto, GuildCategory? parent, Guild? guild)
     {
@@ -91,7 +169,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.Url))]
     [MapperIgnoreSource(nameof(ChannelResponse.ParentId))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
-    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
+    [MapperIgnoreTarget(nameof(GuildChannel<>.OverwritesDictionary))]
     private partial GuildTextChannel TextChannelFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,
@@ -111,7 +189,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.LastPinTimestamp))]
     [MapperIgnoreSource(nameof(ChannelResponse.ParentId))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
-    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
+    [MapperIgnoreTarget(nameof(GuildChannel<>.OverwritesDictionary))]
     private partial GuildVoiceChannel VoiceChannelFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,
@@ -136,10 +214,12 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
         ChannelResponse dto,
         IUser[]? recipients,
         FluxerApplication fluxerApplication);
-    
+
     private GroupDm GroupDmFromDto(
         ChannelResponse dto,
-        FluxerApplication fluxerApplication) => GroupDmFromDto(dto, dto.Recipients?.Select(u => (IUser?)application.Users.GetCachedOrDefault(u.Id) ?? application.Users.Insert(u)).ToArray(), fluxerApplication);
+        FluxerApplication fluxerApplication) => GroupDmFromDto(dto,
+        dto.Recipients?.Select(u => (IUser?)application.Users.GetCachedOrDefault(u.Id) ?? application.Users.Insert(u))
+            .ToArray(), fluxerApplication);
 
     [MapperIgnoreSource(nameof(ChannelResponse.Bitrate))]
     [MapperIgnoreSource(nameof(ChannelResponse.RtcRegion))]
@@ -156,7 +236,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.LastPinTimestamp))]
     [MapperIgnoreSource(nameof(ChannelResponse.ParentId))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
-    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
+    [MapperIgnoreTarget(nameof(GuildChannel<>.OverwritesDictionary))]
     private partial GuildLinkChannel LinkChannelFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,
@@ -179,11 +259,16 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.LastMessageId))]
     [MapperIgnoreSource(nameof(ChannelResponse.LastPinTimestamp))]
     [MapperIgnoreSource(nameof(ChannelResponse.GuildId))]
-    [MapperIgnoreTarget(nameof(GuildChannel.OverwritesDictionary))]
+    [MapperIgnoreTarget(nameof(GuildChannel<>.OverwritesDictionary))]
     private partial GuildCategory CategoryFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication,
         Guild guild);
 
+    [MapDerivedType<GuildVoiceChannel, GuildVoiceChannel>]
+    [MapDerivedType<GuildTextChannel, GuildTextChannel>]
+    [MapDerivedType<GuildLinkChannel, GuildLinkChannel>]
+    [MapDerivedType<GuildCategory, GuildCategory>]
+    [MapperIgnoreSource(nameof(GuildVoiceChannel.Id))]
     public partial void UpdateEntity([MappingTarget] IChannel data, IChannel update);
 }

@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Channels.Guilds;
+using Fluxify.Application.Entities.Users;
+using Fluxify.Core.Types;
 
-public interface INestedChannel : IGuildChannel
+namespace Fluxify.Application.Model.Channel;
+
+public class GroupDmProperties : ChannelProperties
 {
-    public GuildCategory? Parent { get; }
+    public Snowflake OwnerId { get; set; }
+    public List<IUser> Recipients { get; set; } = [];
+    public Dictionary<string, string> Nicks { get; set; } = [];
+    public string? Icon { get; set; }
 }

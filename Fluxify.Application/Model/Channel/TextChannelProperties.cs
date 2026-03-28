@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
-using Fluxify.Dto.Channels;
+namespace Fluxify.Application.Model.Channel;
 
-namespace Fluxify.Application.Entities;
-
-public class PermissionOverwrite
+public class TextChannelProperties : NestedChannelProperties
 {
-    public Snowflake Id { get; init; }
-    public PermissionOverwriteType Type { get; init; } 
-    public Permissions? Allow { get; init; }
-    public Permissions? Deny { get; init; }
+    public string? Topic { get; set; }
+    public bool? Nsfw { get; set; }
+    public int? RateLimitPerUser { get; set; }
 }

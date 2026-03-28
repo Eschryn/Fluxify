@@ -19,13 +19,14 @@ using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 using Fluxify.Rest.Channel;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Channels.Private;
 
 public abstract class PrivateTextChannel(
     FluxerApplication fluxerApplication
 ) : ITextChannel
 {
-    protected ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
+    protected ChannelRequestBuilder RequestBuilder => field ??= FluxerApplication.Rest.Channels[Id];
+    protected readonly FluxerApplication FluxerApplication = fluxerApplication;
 
     public required Snowflake Id { get; init; }
     public Snowflake? LastMessageId { get; internal set; }
@@ -33,16 +34,16 @@ public abstract class PrivateTextChannel(
     
     internal MessageRepository MessageRepository 
         => field ??= new MessageRepository(
-            fluxerApplication,
-            fluxerApplication.Rest.Channels[Id].Messages,
+            FluxerApplication,
+            FluxerApplication.Rest.Channels[Id].Messages,
             this,
-            fluxerApplication.CacheConfig,
+            FluxerApplication.CacheConfig,
             LastMessageId
         );
     
     public async Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default) 
-        => await fluxerApplication.MessageMapper.MapAsync(
-            await RequestBuilder.Messages.SendMessageAsync(fluxerApplication.MessageMapper.Map(message), cancellationToken)
+        => await FluxerApplication.MessageMapper.MapAsync(
+            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.Map(message), cancellationToken)
                 ?? throw new Exception("Message was not sent"));
 
     public async Task IndicateTypingAsync(CancellationToken cancellationToken = default)
@@ -85,7 +86,7 @@ public abstract class PrivateTextChannel(
         DateTimeOffset? before = null,
         CancellationToken cancellationToken = default
     ) => RequestBuilder.Messages.GetPinnedMessagesAsync(
-        fluxerApplication.MessageMapper,
+        FluxerApplication.MessageMapper,
         limit,
         limitPerPage,
         before,
@@ -106,7 +107,7 @@ public abstract class PrivateTextChannel(
         DateTimeOffset scheduledTime,
         CancellationToken cancellationToken = default
     ) => RequestBuilder.Messages.ScheduleMessageAsync(
-        fluxerApplication.MessageMapper.Map(
+        FluxerApplication.MessageMapper.Map(
             message,
             scheduledTime.LocalDateTime,
             TimeZoneInfo.Local.StandardName

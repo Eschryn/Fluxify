@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Channels.Guilds;
+namespace Fluxify.Application.Model.Channel;
 
-public interface INestedChannel : IGuildChannel
-{
-    public GuildCategory? Parent { get; }
-}
+public class CategoryProperties : GuildChannelProperties;

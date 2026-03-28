@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Extensions;
 using Fluxify.Commands.Model;

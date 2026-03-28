@@ -19,5 +19,4 @@ public record ChannelCreateCategoryRequest(
     ChannelPermissionOverwrite[]? PermissionOverwrites
 ) : ChannelCreateRequest(
     Name,
-    null,
     PermissionOverwrites);

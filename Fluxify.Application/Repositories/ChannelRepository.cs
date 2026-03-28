@@ -14,6 +14,7 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.State;
 using Fluxify.Core.Types;
@@ -61,35 +62,45 @@ public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, C
             ? await mapper.FromDtoAsync(channel)
             : throw new Exception($"Couldn't get channel with id {id}");
 
-    internal async Task<IGuildChannel> CreateAsync(Snowflake guildId, ChannelProperties textChannelRequest)
+    internal async Task<TChannel> CreateAsync<TChannel>(Snowflake guildId, ChannelProperties textChannelRequest)
+        where TChannel : IGuildChannel
     {
         var channelCreateRequest = mapper.ToCreateRequest(textChannelRequest);
         var channelAsync = await client.Guilds[guildId].CreateChannelAsync(channelCreateRequest);
 
         var entity = Insert(channelAsync ?? throw new Exception("Channel was not created"));
         OnChange?.Invoke(entity, ChangeType.Create);
-        return (IGuildChannel)Cache.UpdateOrCreate(entity);
+        return (TChannel)entity;
     }
 
-    internal Task UpdateAsync<TChannel, TProperties>(
+    internal async Task UpdateAsync<TChannel, TProperties>(
         TChannel channel,
         Action<TProperties> configure,
-        CancellationToken cancellationToken
+        string? reason = null,
+        CancellationToken cancellationToken = default
     )
-        where TProperties : ChannelProperties<TChannel>
+        where TProperties : ChannelProperties
         where TChannel : IChannel
     {
-
-        return client.Channels[id].UpdateAsync(
-            mapper.ToUpdateRequest(
-                ((TProperties)mapper.ToProperties(channel).Configure(configure))
-        ));
+        var properties = mapper
+                .ToProperties(channel)
+                .Cast<TProperties>()
+                .Configure(configure);
+        
+        var request = mapper.ToUpdateRequest(properties);
+        var response = await client.Channels[channel.Id].UpdateAsync(
+            request,
+            reason,
+            cancellationToken
+        ) ?? throw new Exception("Channel was not updated");
+        
+        Insert(response);
     }
 
     public async Task DeleteAsync(Snowflake id, bool silent = false)
     {
         await client.Channels[id].DeleteAsync(silent);
-        Cache.Remove(id);
+        Remove(id);
     }
 
     internal void Remove(Snowflake id)

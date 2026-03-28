@@ -23,5 +23,4 @@ public record ChannelCreateLinkRequest(
     string? Url
 ) : ChannelCreateRequest(
     Name,
-    ParentId,
     PermissionOverwrites);

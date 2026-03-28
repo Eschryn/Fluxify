@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Channels.Guilds;
+namespace Fluxify.Application.Model.Channel;
 
-public interface INestedChannel : IGuildChannel
+public class VoiceChannelProperties : NestedChannelProperties
 {
-    public GuildCategory? Parent { get; }
+    public int? Bitrate { get; set; }
+    public int? UserLimit { get; set; }
+    public string? RtcRegion { get; set; }
 }

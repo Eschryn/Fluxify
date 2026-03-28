@@ -13,15 +13,22 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Model.Channel;
 using Fluxify.Core.Types;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Channels.Private;
 
 public class GroupDm(FluxerApplication fluxerApplication) : PrivateTextChannel(fluxerApplication)
 {
     public string? IconHash { get; internal set; }
     public Snowflake OwnerId { get; internal set; }
     public IUser[] Recipients { get; internal set; } = [];
-    public Dictionary<string, string> Nicks { get; internal set; } = [];
+    public IReadOnlyDictionary<string, string> Nicks { get; internal set; } = new Dictionary<string, string>().AsReadOnly();
     public required string? Name { get; set; }
+    
+    public Task UpdateAsync(
+        Action<GroupDmProperties> configure,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => FluxerApplication.Channels.UpdateAsync(this, configure, reason, cancellationToken);
 }

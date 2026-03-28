@@ -20,7 +20,7 @@ using Fluxify.Core.Types;
 using Fluxify.Rest;
 using Fluxify.Rest.Channel;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Channels.Guilds;
 
 public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplication) : IGuildChannel
     where TProperties : ChannelProperties

@@ -14,7 +14,7 @@
 
 using Fluxify.Application.Model.Channel;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Channels.Guilds;
 
 public interface IGuildChannel : IGuildScopedEntity, IChannel
 {
