@@ -52,7 +52,6 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
     [MapperIgnoreTarget(nameof(GuildUser.IsMobile))]
     [MapperIgnoreTarget(nameof(GuildUser.Status))]
     [MapperIgnoreTarget(nameof(GuildUser.CustomStatus))]
-    [MapperIgnoreTarget(nameof(GuildUser.VoiceState))]
     [MapperIgnoreSource(nameof(GuildMemberResponse.User))]
     private partial GuildUser Map(GuildMemberResponse dto, GlobalUser user, Snowflake id, Guild guild);
     public GuildUser Map(GuildMemberResponse dto, GlobalUser user, Guild guild) => Map(dto, user, user.Id, guild);
@@ -79,8 +78,6 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
     [MapperIgnoreTarget(nameof(GlobalUser.CustomStatus))]
     [MapperIgnoreTarget(nameof(GlobalUser.IsAfk))]
     [MapperIgnoreTarget(nameof(GlobalUser.IsMobile))]
-    [MapperIgnoreSource(nameof(GuildUser.VoiceState))]
-    [MapperIgnoreTarget(nameof(GuildUser.VoiceState))]
     public partial void UpdateEntity([MappingTarget] GuildUser data, GuildUser update);
     
     [MapperIgnoreSource(nameof(VoiceStateResponse.GuildId))]

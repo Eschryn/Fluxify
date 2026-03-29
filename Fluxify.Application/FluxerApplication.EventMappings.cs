@@ -95,11 +95,13 @@ public partial class FluxerApplication
     private async Task HandleVoiceStateUpdate(VoiceStateResponse arg)
     {
         if (!arg.GuildId.HasValue
-            || Guilds.Cache.GetCachedOrDefault<Guild>(arg.GuildId.Value) is not { } guild
-            || guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(arg.UserId) is not { } user)
+            || Guilds.Cache.GetCachedOrDefault<Guild>(arg.GuildId.Value) is not { } guild)
         {
             return;
         }
+
+        var globalUser = Users.Insert(arg.Member!.User!);
+        var user = guild.MembersRepository.Insert(arg.Member, guild, globalUser);
         
         UpdateGuildUserVoiceState(arg, guild, user);
     }

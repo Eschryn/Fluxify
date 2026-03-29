@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
+using Fluxify.Dto.Guilds.Members;
 
 namespace Fluxify.Gateway.Model.Data.Voice;
 
@@ -26,5 +27,6 @@ public record UpdateVoiceState(
     bool SelfVideo = false,
     bool SelfStream = false,
     bool IsMobile = false,
-    string[]? ViewerStreamKeys = null
+    string[]? ViewerStreamKeys = null,
+    GuildMemberResponse? Member = null
 );

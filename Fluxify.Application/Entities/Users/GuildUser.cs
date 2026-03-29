@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
 using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
@@ -52,7 +53,8 @@ public class GuildUser : IUser, IEntity, IPresence
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;
     
-    public IVoiceState? VoiceState { get; internal set; }
+    internal readonly ConcurrentDictionary<string, VoiceState> VoiceStateList = [];
+    public IReadOnlyCollection<IVoiceState> VoiceStates => VoiceStateList.Values.Cast<IVoiceState>().ToArray();
 
     public Task AddRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
         => RequestBuilder.AddRoleAsync(role.Id, reason, cancellationToken);

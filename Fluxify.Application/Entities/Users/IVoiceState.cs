@@ -18,7 +18,16 @@ namespace Fluxify.Application.Entities.Users;
 
 public interface IVoiceState
 {
-    public GuildVoiceChannel VoiceChannel { get; }
-    public bool Mute { get; }
-    public bool Deaf { get; }
+    GuildVoiceChannel VoiceChannel { get; }
+    bool Mute { get; }
+    bool Deaf { get; }
+    bool? SelfStream { get; }
+    bool SelfDeaf { get; }
+    bool SelfMute { get; }
+    bool? SelfVideo { get; }
+    bool? IsMobile { get; }
+    string? SessionId { get; }
+    string ConnectionId { get; }
+    int Version { get; }
+    string[]? ViewerStreamKeys { get; }
 }

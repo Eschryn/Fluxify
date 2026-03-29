@@ -89,30 +89,35 @@ public partial class FluxerApplication
 
     private void UpdateGuildUserVoiceState(VoiceStateResponse voiceState, Guild guild, GuildUser guildUser)
     {
-        if (voiceState.ConnectionId != null)
+        if (voiceState.ConnectionId == null)
         {
-            if (guildUser.VoiceState?.VoiceChannel.Id != voiceState.ChannelId && voiceState.ChannelId.HasValue)
+            return;
+        }
+
+        if (voiceState.ChannelId == null)
+        {
+            guildUser.VoiceStateList.TryRemove(voiceState.ConnectionId, out _);
+            return;
+        }
+        
+        guildUser.VoiceStateList.AddOrUpdate(
+            voiceState.ConnectionId,
+            _ =>
             {
-                guildUser.VoiceState = new VoiceState
+                var state = new VoiceState
                 {
-                    VoiceChannel = (GuildVoiceChannel)guild.Channels[voiceState.ChannelId!.Value]
+                    VoiceChannel = (GuildVoiceChannel)guild.Channels[voiceState.ChannelId.Value]
                 };
+                _userMapper.UpdateVoiceState(state, voiceState);
                 
-                _userMapper.UpdateVoiceState((VoiceState)guildUser.VoiceState, voiceState);
-            } 
-            else if (voiceState.ChannelId != null && guildUser.VoiceState != null)
+                return state;
+            },
+            (_, target) =>
             {
-                _userMapper.UpdateVoiceState((VoiceState)guildUser.VoiceState, voiceState);
+                _userMapper.UpdateVoiceState(target, voiceState);
+                return target;
             }
-            else
-            {
-                guildUser.VoiceState = null;
-            }
-        }
-        else
-        {
-            guildUser.VoiceState = null;
-        }
+        );
     }
     
     private static void GuildInsertStickers(GuildStickerResponse[] stickers, Guild guild)
