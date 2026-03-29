@@ -39,12 +39,10 @@ bot.Commands.Command("hug", async (CommandContext ctx) =>
 {
     var userMention = ctx.Reader.GetNext<Mentionable.Member>();
 
-    var message = new MessageBuilder($"<@{userMention.Id}> you have been hugged!")
-            .WithEmbed(e => e
-                .WithImage("https://gifprovider/image.gif")
-            .Build());
-
-    await ctx.Message.Channel.SendMessageAsync(message);
+    await ctx.Message.Channel.SendMessageAsync(b =>
+        b.WithContent($"<@{userMention.Id}> you have been hugged!")
+         .WithEmbed(e => e
+                .WithImage("https://gifprovider/image.gif")));
 });
 
 // Subscribe to an event.
