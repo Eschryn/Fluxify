@@ -23,6 +23,9 @@ public partial class FluxerApplication
     private readonly HandlerContainer<MessageEventArgs> _messageUpdateHandlers = new();
     private readonly HandlerContainer<MessageDeletedEventArgs> _messageDeleteHandlers = new();
     private readonly HandlerContainer<MessagesBulkDeletedEventArgs> _messageBulkDeletedHandlers = new();
+    
+    private readonly HandlerContainer<ReactionEventArgs> _messageReactionAddHandlers = new();
+    
     private readonly HandlerContainer<GuildEventArgs> _guildCreatedHandlers = new();
     private readonly HandlerContainer<GuildEventArgs> _guildUpdatedHandlers = new();
     private readonly HandlerContainer<GuildDeletedEventArgs> _guildDeletedHandlers = new();
@@ -49,6 +52,12 @@ public partial class FluxerApplication
     {
         add => _messageBulkDeletedHandlers.InsertDelegate(value);
         remove => _messageBulkDeletedHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<ReactionEventArgs, Task> MessageReactionAdd
+    {
+        add => _messageReactionAddHandlers.InsertDelegate(value);
+        remove => _messageReactionAddHandlers.RemoveDelegate(value);
     }
     
     public event Func<GuildEventArgs, Task> GuildCreated

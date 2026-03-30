@@ -28,6 +28,7 @@ internal interface ICache<TData> where TData : class, IEntity
         bool bypassCache = false);
 
     TData UpdateOrCreate(TData data);
+    bool TryUpdate(Snowflake key, Action<TData> update, [NotNullWhen(true)] out TData? updated);
     bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data);
     void Clear();
 

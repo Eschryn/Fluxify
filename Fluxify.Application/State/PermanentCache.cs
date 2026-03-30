@@ -47,7 +47,21 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
 
         return await _transactions.BeginAsync(id, async () => UpdateOrCreate(await factory(id)));
     }
-
+    
+    public bool TryUpdate(Snowflake key, Action<TData> update, [NotNullWhen(true)] out TData? updated)
+    {
+        if (_dataContainer.TryGetValue(key, out var data))
+        {
+            updated = data;
+            update(updated);
+            
+            return _dataContainer.TryUpdate(key, updated, data);
+        }
+        
+        updated = null;
+        return false;
+    }
+    
     public TData UpdateOrCreate(TData data)
         => _dataContainer.AddOrUpdate(data.Id,
             _ => data,

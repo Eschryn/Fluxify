@@ -39,7 +39,7 @@ public partial class FluxerApplication
     private void InitializeEvents()
     {
         Gateway.Ready += HandleReady;
-        
+
         // Message events
         Gateway.MessageCreate += HandleMessageCreate;
         Gateway.MessageUpdate += HandleMessageUpdate;
@@ -87,9 +87,9 @@ public partial class FluxerApplication
         Gateway.GuildRoleUpdate += HandleGuildRoleUpdate;
         Gateway.GuildRoleUpdateBulk += HandleGuildRoleUpdate;
         Gateway.GuildRoleDelete += HandleGuildRoleDelete;
-        
+
         Gateway.PassiveUpdates += HandlePassiveUpdate;
-        
+
         Gateway.VoiceStateUpdate += HandleVoiceStateUpdate;
     }
 
@@ -103,14 +103,15 @@ public partial class FluxerApplication
 
         var globalUser = UsersRepository.Insert(arg.Member!.User!);
         var user = guild.MembersRepository.Insert(arg.Member, guild, globalUser);
-        
+
         UpdateGuildUserVoiceState(arg, guild, user);
     }
 
     private async Task HandlePassiveUpdate(GatewayPassiveUpdate arg)
     {
         var guild = await GuildsRepository.GetAsync(arg.GuildId);
-        foreach (var channelChanges in arg.CreatedChannels?.Concat(arg.UpdatedChannels ?? []) ?? arg.UpdatedChannels ?? [])
+        foreach (var channelChanges in arg.CreatedChannels?.Concat(arg.UpdatedChannels ?? []) ??
+                                       arg.UpdatedChannels ?? [])
         {
             ChannelsRepository.Insert(channelChanges);
         }
@@ -119,7 +120,7 @@ public partial class FluxerApplication
         {
             ChannelsRepository.Cache.Remove(argDeletedChannel, out _);
         }
-        
+
         // TODO: Handle voice state updates
         // arg.VoiceStates[0].
     }
@@ -132,12 +133,12 @@ public partial class FluxerApplication
         {
             ChannelsRepository.Insert(channels);
         }
-        
+
         foreach (var userPartialResponse in arg.Users)
         {
             UsersRepository.Insert(userPartialResponse);
         }
-        
+
         foreach (var guildReadyData in arg.Guilds)
         {
             if (guildReadyData.Unavailable.HasValue || guildReadyData.Properties is null)
@@ -156,7 +157,7 @@ public partial class FluxerApplication
                 guildReadyData.VoiceStates!
             );
         }
-        
+
         return Task.CompletedTask;
     }
 
@@ -190,10 +191,62 @@ public partial class FluxerApplication
         return Task.CompletedTask;
     }
 
-    private Task HandleMessageReactionAdd(GatewayReaction arg)
+    private async Task HandleMessageReactionAdd(GatewayReaction arg)
     {
+        IUser? user = null;
+        Guild? guild = null;
+        Message? message = null;
+        var emoji = CommonMapper.MapToEmoji(arg.Emoji);
         
-        return Task.CompletedTask;
+        if (arg.GuildId.HasValue)
+        {
+            guild = GuildsRepository.Cache.GetCachedOrDefault<Guild>(arg.GuildId.Value);
+        }
+
+        if (arg.Member is not null)
+        {
+            user = UsersRepository.Insert(arg.Member.User!);
+            if (guild is not null)
+            {
+                user = guild.MembersRepository.Insert(arg.Member, guild, (GlobalUser)user);
+            }
+        }
+        else
+        {
+            // hope
+            user = UsersRepository.GetCachedOrDefault(arg.UserId);
+        }
+
+        var channel = ChannelsRepository.Cache.GetCachedOrDefault<ITextChannel>(arg.ChannelId);
+        if (channel is not null)
+        {
+            var repo = channel switch
+            {
+                GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository,
+                PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository,
+                _ => null
+            };
+
+            if (repo is not null)
+            {
+                repo.Cache.TryUpdate(arg.MessageId, msg =>
+                {
+                    var reaction = msg.Reactions?.FirstOrDefault(r => r.Emoji == emoji);
+                    reaction?.Count += 1;
+                    reaction?.Me = reaction.Me || arg.UserId == CurrentUser.Id;
+                }, out message);
+            }
+        }
+        
+        await _messageReactionAddHandlers.CallHandlersAsync(new ReactionEventArgs(
+            emoji,
+            channel!,
+            arg.MessageId,
+            message,
+            guild,
+            user,
+            arg.SessionId
+        ));
     }
 
     private Task HandleChannelPinsUpdate(GatewayChannelPinsAck arg)
@@ -274,7 +327,7 @@ public partial class FluxerApplication
             GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository.InsertNew(arg, user),
             _ => await MessageMapper.MapAsync(arg, channel: channel, author: user)
         };
-        
+
         await _messageCreateHandlers.CallHandlersAsync(new MessageEventArgs(message));
     }
 
@@ -288,7 +341,7 @@ public partial class FluxerApplication
             GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository.Update(arg, user),
             _ => await MessageMapper.MapAsync(arg, author: user)
         };
-        
+
         await _messageUpdateHandlers.CallHandlersAsync(new MessageEventArgs(message));
     }
 
@@ -300,7 +353,7 @@ public partial class FluxerApplication
         {
             guildTextChannel.MessageRepository.Cache.Remove(arg.Id, out cachedMessage);
         }
-        
+
         await _messageDeleteHandlers.CallHandlersAsync(
             new MessageDeletedEventArgs(
                 channel!,
@@ -324,7 +377,7 @@ public partial class FluxerApplication
 
         Message[] messages = [];
         cache?.RemoveAll(arg.Ids, out messages);
-        
+
         await _messageBulkDeletedHandlers.CallHandlersAsync(
             new MessagesBulkDeletedEventArgs(
                 channel!,
@@ -347,7 +400,7 @@ public partial class FluxerApplication
             arg.VoiceStates
         );
         var user = await guild.MembersRepository.GetAsync(CurrentUser.Id);
-        
+
         await _guildCreatedHandlers.CallHandlersAsync(new GuildEventArgs(guild, user));
     }
 
@@ -355,7 +408,7 @@ public partial class FluxerApplication
     {
         var guild = GuildsRepository.Insert(arg);
         var user = await guild.MembersRepository.GetAsync(CurrentUser.Id);
-        
+
         await _guildUpdatedHandlers.CallHandlersAsync(new GuildEventArgs(guild, user));
     }
 
@@ -367,7 +420,7 @@ public partial class FluxerApplication
         {
             user = await guild.MembersRepository.GetAsync(CurrentUser.Id);
         }
-        
+
         await _guildDeletedHandlers.CallHandlersAsync(new GuildDeletedEventArgs(guild, user, arg.Id, arg.Unavailable));
     }
 

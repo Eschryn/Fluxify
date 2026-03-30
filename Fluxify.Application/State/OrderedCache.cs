@@ -167,6 +167,20 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
                 return existing;
             });
 
+    public bool TryUpdate(Snowflake key, Action<TData> update, [NotNullWhen(true)] out TData? updated)
+    {
+        if (_dataContainer.TryGetValue(key, out var data))
+        {
+            updated = data;
+            update(updated);
+            
+            return _dataContainer.TryUpdate(key, updated, data);
+        }
+        
+        updated = null;
+        return false;
+    }
+
     public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? message)
     {
         if (!_dataContainer.TryRemove(id, out message))

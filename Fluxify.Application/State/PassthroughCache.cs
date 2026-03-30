@@ -29,6 +29,12 @@ internal sealed class PassthroughCache<TData> : ICache<TData>
         => factory(id);
 
     public TData UpdateOrCreate(TData data) => data;
+    
+    public bool TryUpdate(Snowflake key, Action<TData> update, [NotNullWhen(true)] out TData? updated)
+    {
+        updated = null;
+        return false;
+    }
 
     public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data)
     {

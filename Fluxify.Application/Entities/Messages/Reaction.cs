@@ -19,6 +19,6 @@ namespace Fluxify.Application.Entities.Messages;
 public class Reaction
 {
     public required IEmoji Emoji { get; init; }
-    public int Count { get; set; }
-    public bool Me { get; set; }
+    public int Count { get; internal set; }
+    public bool Me { get; internal set; }
 }
