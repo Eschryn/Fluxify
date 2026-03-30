@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Channels.Text.Messages.Embeds;
 
-[JsonConverter(typeof(JsonStringEnumConverter<MessageEmbedType>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<MessageEmbedType>))]
 public enum MessageEmbedType
 {
     Rich,

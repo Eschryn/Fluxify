@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Users.DataHarvest;
 
-[JsonConverter(typeof(JsonStringEnumConverter<HarvestStatusEnum>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<HarvestStatusEnum>))]
 public enum HarvestStatusEnum
 {
     Pending,

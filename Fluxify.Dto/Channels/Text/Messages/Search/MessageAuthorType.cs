@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Channels.Text.Messages.Search;
 
-[JsonConverter(typeof(JsonStringEnumConverter<MessageContentType>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<MessageContentType>))]
 public enum MessageAuthorType
 {
     User,

@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Users;
 
-[JsonConverter(typeof(JsonStringEnumConverter<UserThemeType>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<UserThemeType>))]
 enum UserThemeType
 {
     Dark,

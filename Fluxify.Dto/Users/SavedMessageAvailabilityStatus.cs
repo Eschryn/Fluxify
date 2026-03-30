@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Users;
 
-[JsonConverter(typeof(JsonStringEnumConverter<SavedMessageAvailabilityStatus>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<SavedMessageAvailabilityStatus>))]
 public enum SavedMessageAvailabilityStatus
 {
     Available,

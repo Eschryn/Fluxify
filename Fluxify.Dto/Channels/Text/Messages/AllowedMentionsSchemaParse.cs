@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
 
-[JsonConverter(typeof(JsonStringEnumConverter<AllowedMentionsSchemaParse>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<AllowedMentionsSchemaParse>))]
 public enum AllowedMentionsSchemaParse
 {
     Users,

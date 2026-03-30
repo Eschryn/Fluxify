@@ -12,20 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Fluxify.Dto.Channels.Text.Messages;
+namespace Fluxify.Dto;
 
-[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<MessageContentType>))]
-public enum MessageContentType
-{
-    Image,
-    Sound,
-    Video,
-    File,
-    Sticker,
-    Embed,
-    Link,
-    Poll,
-    Snapshot
-}
+public class JsonLowerCaseStringEnumConverter<T>() 
+    : JsonStringEnumConverter<T>(JsonNamingPolicy.SnakeCaseLower) where T : struct, Enum;

@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Users;
 
-[JsonConverter(typeof(JsonStringEnumConverter<UserReportCategoryEnum>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<UserReportCategoryEnum>))]
 public enum UserReportCategoryEnum
 {
     Harassment,

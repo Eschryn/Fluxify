@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
 
-[JsonConverter(typeof(JsonStringEnumConverter<MessageReportCategoryEnum>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<MessageReportCategoryEnum>))]
 public enum MessageReportCategoryEnum
 {
     Harassment,

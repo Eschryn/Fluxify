@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto;
 
-[JsonConverter(typeof(JsonStringEnumConverter<MfaMethod>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<MfaMethod>))]
 public enum MfaMethod
 {
     Totp = 1,

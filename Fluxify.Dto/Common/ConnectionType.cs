@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Common;
 
-[JsonConverter(typeof(JsonStringEnumConverter<ConnectionType>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<ConnectionType>))]
 public enum ConnectionType
 {
     Bsky,

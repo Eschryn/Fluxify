@@ -16,7 +16,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Common;
 
-[JsonConverter(typeof(JsonStringEnumConverter<Locale>))]
+[JsonConverter(typeof(JsonLowerCaseStringEnumConverter<Locale>))]
 public enum Locale
 {
     [JsonStringEnumMemberName("ar")]
