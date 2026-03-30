@@ -33,7 +33,7 @@ public class FluxerConfig
     private const int ApiVersion  = 1;
     private const int GatewayVersion = 1;
     private static readonly CompositeFormat VersionPathFormat = CompositeFormat.Parse("v{0}/");
-    public Uri InstanceUri { get; init; } = new("https://api.fluxer.app/");
+    public Uri InstanceUri { get; set; } = new("https://api.fluxer.app/");
     public ILoggerFactory LoggerFactory { get; set; }
     public IServiceProvider ServiceProvider { get; set; }
     public Func<FluxerConfig, HttpClient> HttpClientFactory { get; set; } = DefaultHttpClientFactory;

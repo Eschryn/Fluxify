@@ -27,7 +27,15 @@ public class Bot(BotConfig config) : FluxerApplication(config)
     public Bot(string prefix, FluxerConfig config, GatewayConfig? gatewayConfig = null) 
         : this(new BotConfig(prefix)
         {
-            FluxerConfig = config,
+            FluxerConfig =
+            {
+                CredentialProvider = config.CredentialProvider,
+                LoggerFactory = config.LoggerFactory,
+                ServiceProvider = config.ServiceProvider,
+                Credentials = config.Credentials,
+                HttpClientFactory = config.HttpClientFactory,
+                InstanceUri = config.InstanceUri
+            },
             GatewayConfig = gatewayConfig ?? new GatewayConfig()
         }) {}
     

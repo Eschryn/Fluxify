@@ -22,7 +22,7 @@ namespace Fluxify.Application;
 public class ApplicationConfig
 {
     public CacheConfig CacheConfig { get; set; } = new();
-    public FluxerConfig FluxerConfig { get; set; } = new();
+    public FluxerConfig FluxerConfig { get; } = new();
     public GatewayConfig GatewayConfig { get; set; } = new();
     
     public ITokenCredentials? Credentials
