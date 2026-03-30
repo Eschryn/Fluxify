@@ -46,13 +46,18 @@ bot.Commands.Command("hug", async (CommandContext ctx) =>
 });
 
 // Subscribe to an event.
-bot.MessageUpdated += async message =>
+bot.MessageReactionAdd += async args =>
 {
-    Console.WriteLine(message.Content);
+    if (args.User is not GuildUser guildUser || args.MessageId != verificationMessageId)
+    {
+        return;
+    }
+    
+    await guildUser.AddRoleAsync(memberRoleId);
 };
 
 // Some events are not exposed on the Bot class yet. For those you have to check in bot.Gateway.
-bot.Gateway.MessageReactionAdd += async (reaction) =>
+bot.Gateway.FavoriteMemeCreate += async (meme) =>
 {
     ...
 };
