@@ -16,14 +16,37 @@ namespace Fluxify.Application.Common;
 
 public class CacheConfig
 {
-    // FIFO Cache
+    /// <summary>
+    /// The size of the message cache.
+    /// </summary>
+    /// <remarks>
+    /// When cache limits are reached, the oldest message in the cache will be removed.<br/><br/>
+    /// 0 => no cache
+    /// </remarks>
     public long MessageCacheSize { get; set; } = 0;
-    // LRU Cache
-    internal long UserCacheSize { get; set; } = long.MaxValue;
+    
+    /// <summary>
+    /// The size of the user cache.
+    /// </summary>
+    /// <remarks>
+    /// When cache limits are reached, the least recently used user will be removed.<br/><br/>
+    /// 0 => no cache<br/>
+    /// long.MaxValue => permanent cache
+    /// </remarks>
+    public long UserCacheSize { get; set; } = long.MaxValue;
+    
+    /// <summary>
+    /// The size of the guild user cache.
+    /// </summary>
+    /// <remarks>
+    /// When cache limits are reached, the least recently used guild user will be removed.<br/><br/>
+    /// 0 => no cache<br/>
+    /// long.MaxValue => permanent cache
+    /// </remarks>
+    public long GuildUserCacheSize { get; set; } = long.MaxValue;
+    
     // LRU Cache
     internal long GuildCacheSize { get; set; } = long.MaxValue;
     // LRU Cache
     internal long ChannelCacheSize { get; set; } = long.MaxValue;
-    // LRU Cache
-    internal long GuildUserCacheSize { get; set; } = long.MaxValue;
 }

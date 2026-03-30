@@ -22,11 +22,11 @@ namespace Fluxify.Commands.TextCommand;
 
 public class TextCommandDispatcher
 {
-    private readonly CommandConfiguration _config;
+    private readonly CommandConfig _config;
     private readonly CommandTreeNode _rootTreeNode;
 
     internal TextCommandDispatcher(
-        CommandConfiguration config,
+        CommandConfig config,
         CommandTreeNode rootTreeNode
     ) {
         _config = config;

@@ -29,7 +29,7 @@ namespace Fluxify.Application;
 
 public partial class FluxerApplication
 {
-    protected readonly FluxerConfig Config;
+    protected readonly ApplicationConfig Config;
     internal readonly MessageMapper MessageMapper;
     private readonly ChannelMapper _channelMapper;
     private readonly UserMapper _userMapper;
@@ -38,14 +38,14 @@ public partial class FluxerApplication
 
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
-    
+
     public PrivateUser CurrentUser { get; private set; }
-    
-    public FluxerApplication(FluxerConfig config, GatewayConfig? gatewayConfig = null)
+
+    public FluxerApplication(ApplicationConfig config)
     {
         Config = config;
-        Gateway = new GatewayClient(config, gatewayConfig);
-        Rest = new RestClient(config);
+        Gateway = new GatewayClient(config.FluxerConfig, config.GatewayConfig);
+        Rest = new RestClient(config.FluxerConfig);
 
         MessageMapper = new MessageMapper(this);
         _channelMapper = new ChannelMapper(this);
@@ -62,7 +62,7 @@ public partial class FluxerApplication
     public virtual async Task RunAsync(CancellationToken cancellationToken = default)
     {
         Uri gatewayUri;
-        var credentials = await Config.CredentialProvider();
+        var credentials = await Config.FluxerConfig.CredentialProvider();
         if (credentials is BotTokenCredentials botTokenCredentials)
         {
             var gatewayBotResponse = await Rest.Gateway.GetGatewayBotAsync(cancellationToken);
@@ -78,7 +78,7 @@ public partial class FluxerApplication
             // TODO: get from instance data
             gatewayUri = new Uri("wss://gateway.fluxer.app/");
         }
-        
+
         await Gateway.RunAsync(gatewayUri, cancellationToken);
     }
 

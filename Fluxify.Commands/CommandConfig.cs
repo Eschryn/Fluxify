@@ -18,8 +18,11 @@ using Fluxify.Commands.Exceptions;
 
 namespace Fluxify.Commands;
 
-public class CommandConfiguration(string prefix, IServiceProvider serviceProvider)
+public class CommandConfig(string prefix, IServiceProvider serviceProvider)
 {
+    /// <summary>
+    /// This is used to reply to the user with an error message.
+    /// </summary>
     public Func<CommandContext, CommandException, Task> CommandExceptionHandler { get; set; }
         = async (ctx, ex) =>
         {
@@ -34,9 +37,19 @@ public class CommandConfiguration(string prefix, IServiceProvider serviceProvide
                 .Build());
         };
     
+    /// <summary>
+    /// The default prefix that was specified in the constructor.
+    /// </summary>
     public string DefaultPrefix { get; } = prefix;
+    
+    /// <summary>
+    /// The service provider that is used to resolve services.
+    /// </summary>
     public IServiceProvider ServiceProvider { get; } = serviceProvider;
 
+    /// <summary>
+    /// Predicate used to determine if a message should be processed as a command.
+    /// </summary>
     public Predicate<Message> IsValidCommand { get; set; } = 
         m => m.Author.Bot is not true && m.Content.StartsWith(prefix); 
 }

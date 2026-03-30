@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Commands.Model;
-using Fluxify.Commands.TextCommand;
+using Fluxify.Application;
+using Fluxify.Commands;
 
-namespace Fluxify.Commands.CommandCollection;
+namespace Fluxify.Bot;
 
-public interface ICommandCollection
+public class BotConfig(string defaultPrefix) : ApplicationConfig
 {
-    ICommandCollection Command(CommandMeta meta, CommandDelegate handler, string[]? preconditions = null);
-    ICommandCollection Module(ModuleMeta meta, Action<ICommandCollection> configure, string[]? preconditions = null);
-    TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider serviceProvider);
-    ICommandCollection Precondition(Precondition precondition);
-    TextCommandDispatcher BuildDispatcher(CommandConfig config);
+    /// <summary>
+    /// Lets you configure how the command system behaves.
+    /// </summary>
+    public CommandConfig CommandConfig
+    {
+        get => field ??=  new CommandConfig(defaultPrefix, FluxerConfig.ServiceProvider);
+        set; 
+    }
 }

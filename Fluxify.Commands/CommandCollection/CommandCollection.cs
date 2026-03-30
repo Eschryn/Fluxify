@@ -47,12 +47,12 @@ public class CommandCollection : ICommandCollection
     }
 
     public TextCommandDispatcher BuildDispatcher(string prefix, IServiceProvider serviceProvider)
-        => BuildDispatcher(new CommandConfiguration(prefix, serviceProvider));
+        => BuildDispatcher(new CommandConfig(prefix, serviceProvider));
     
-    public TextCommandDispatcher BuildDispatcher(CommandConfiguration configuration)
+    public TextCommandDispatcher BuildDispatcher(CommandConfig config)
     {
         return new TextCommandDispatcher(
-            configuration,
+            config,
             CommandTreeNode.FromEntries(RegistrationEntries, Preconditions.Values.ToArray())
         );
     }

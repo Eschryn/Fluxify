@@ -61,7 +61,7 @@ public class FluxerConfig
     public Func<Task<ITokenCredentials>> CredentialProvider { get; set; } 
         = () => Task.FromException<ITokenCredentials>(new InvalidOperationException("No credentials provider set."));
 
-    // todo: move to bot config and mark obsolete
+    [Obsolete("Use BotConfig/FluxerConfig.Credentials instead", false)]
     public ITokenCredentials? Credentials
     {
         get;
