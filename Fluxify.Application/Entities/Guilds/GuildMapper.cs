@@ -15,6 +15,7 @@
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Dto.Guilds;
+using Fluxify.Dto.Users;
 using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Guilds;
@@ -61,6 +62,19 @@ public partial class GuildMapper(FluxerApplication app) : IUpdateEntity<Guild>
             response.SystemChannelId is { } systemId
                 ? app.ChannelsRepository.GetCachedOrDefault<GuildTextChannel>(systemId)
                 : null,
-            app.UsersRepository.GetCachedOrDefault(response.OwnerId) ?? new GlobalUser { Id = response.OwnerId }
+            app.UsersRepository.GetCachedOrDefault(response.OwnerId) ?? app.UsersRepository.Insert(CreateUserFromOwnerId(response))
+        );
+
+    private static UserPartialResponse CreateUserFromOwnerId(GuildResponse response)
+        => new(
+            Id: response.OwnerId,
+            Discriminator: "0000",
+            Username: "Unknown",
+            Avatar: null,
+            AvatarColor: null,
+            Bot: null,
+            Flags: 0,
+            GlobalName: null,
+            System: null
         );
 }
