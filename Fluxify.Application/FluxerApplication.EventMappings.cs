@@ -121,8 +121,10 @@ public partial class FluxerApplication
             ChannelsRepository.Cache.Remove(argDeletedChannel, out _);
         }
 
-        // TODO: Handle voice state updates
-        // arg.VoiceStates[0].
+        foreach (var voiceState in arg.VoiceStates ?? [])
+        {
+            await HandleVoiceStateUpdate(voiceState);
+        }
     }
 
 
@@ -178,17 +180,50 @@ public partial class FluxerApplication
 
     private Task HandleMessageReactionRemoveEmoji(GatewayReactionRemoveEmoji arg)
     {
-        return Task.CompletedTask;
+        var mapToEmoji = CommonMapper.MapToEmoji(arg.Emoji);
+        var channel = ChannelsRepository.Cache.GetCachedOrDefault<ITextChannel>(arg.ChannelId);
+        var message = channel switch
+        {
+            GuildTextChannel g => g.MessageRepository.Cache.GetCachedOrDefault<Message>(arg.MessageId),
+            PrivateTextChannel p => p.MessageRepository.Cache.GetCachedOrDefault<Message>(arg.MessageId),
+            _ => null
+        };
+        
+        var args = new ReactionRemoveEmojiEventArgs(
+            mapToEmoji,
+            channel!,
+            arg.MessageId,
+            message,
+            channel is GuildTextChannel guildTextChannel ? guildTextChannel.Guild : null
+        );
+        
+        return _messageReactionRemoveEmojiHandlers.CallHandlersAsync(args);
     }
 
     private Task HandleMessageReactionRemoveAll(GatewayReactionRemoveAll arg)
     {
-        return Task.CompletedTask;
+        var channel = ChannelsRepository.Cache.GetCachedOrDefault<ITextChannel>(arg.ChannelId);
+        var message = channel switch
+        {
+            GuildTextChannel g => g.MessageRepository.Cache.GetCachedOrDefault<Message>(arg.MessageId),
+            PrivateTextChannel p => p.MessageRepository.Cache.GetCachedOrDefault<Message>(arg.MessageId),
+            _ => null
+        };
+
+        
+        return _messageReactionRemoveAllHandlers.CallHandlersAsync(new ReactionRemoveAllEventArgs(
+            channel is GuildTextChannel guildTextChannel ? guildTextChannel.Guild : null,
+            channel!,
+            message,
+            arg.MessageId
+        ));
     }
 
-    private Task HandleMessageReactionAdd(GatewayReaction arg) => _messageReactionAddHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
+    private Task HandleMessageReactionAdd(GatewayReaction arg) 
+        => _messageReactionAddHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
 
-    private Task HandleMessageReactionRemove(GatewayReaction arg) => _messageReactionRemoveHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
+    private Task HandleMessageReactionRemove(GatewayReaction arg) 
+        => _messageReactionRemoveHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
 
 
     private Task HandleChannelPinsUpdate(GatewayChannelPinsAck arg)

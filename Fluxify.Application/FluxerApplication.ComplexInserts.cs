@@ -244,6 +244,8 @@ public partial class FluxerApplication
         return new ReactionEventArgs(
             emoji,
             channel!,
+            arg.UserId,
+            arg.GuildId,
             arg.MessageId,
             message,
             guild,

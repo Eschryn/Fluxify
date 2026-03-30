@@ -26,6 +26,8 @@ public partial class FluxerApplication
     
     private readonly HandlerContainer<ReactionEventArgs> _messageReactionAddHandlers = new();
     private readonly HandlerContainer<ReactionEventArgs> _messageReactionRemoveHandlers = new();
+    private readonly HandlerContainer<ReactionRemoveEmojiEventArgs> _messageReactionRemoveEmojiHandlers = new();
+    private readonly HandlerContainer<ReactionRemoveAllEventArgs> _messageReactionRemoveAllHandlers = new();
     
     private readonly HandlerContainer<GuildEventArgs> _guildCreatedHandlers = new();
     private readonly HandlerContainer<GuildEventArgs> _guildUpdatedHandlers = new();
@@ -66,7 +68,19 @@ public partial class FluxerApplication
         add => _messageReactionRemoveHandlers.InsertDelegate(value);
         remove => _messageReactionRemoveHandlers.RemoveDelegate(value);
     }
-    
+
+    public event Func<ReactionRemoveEmojiEventArgs, Task> MessageReactionRemoveEmoji
+    {
+        add => _messageReactionRemoveEmojiHandlers.InsertDelegate(value);
+        remove => _messageReactionRemoveEmojiHandlers.RemoveDelegate(value);
+    }
+
+    public event Func<ReactionRemoveAllEventArgs, Task> MessageReactionRemoveAll
+    {
+        add => _messageReactionRemoveAllHandlers.InsertDelegate(value);
+        remove => _messageReactionRemoveAllHandlers.RemoveDelegate(value);
+    }
+
     public event Func<GuildEventArgs, Task> GuildCreated
     {
         add => _guildCreatedHandlers.InsertDelegate(value);

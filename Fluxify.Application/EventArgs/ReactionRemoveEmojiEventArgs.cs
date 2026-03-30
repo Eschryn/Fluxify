@@ -16,30 +16,21 @@ using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
-using Fluxify.Application.Entities.Users;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.EventArgs;
 
 [method: SetsRequiredMembers]
-public class ReactionEventArgs(
+public class ReactionRemoveEmojiEventArgs(
     IEmoji emoji,
     ITextChannel channel,
-    Snowflake userId,
-    Snowflake? guildId,
     Snowflake messageId,
     Message? updated,
-    Guild? guild,
-    IUser? user,
-    string? sessionId
+    Guild? guild
 ) {
     public required IEmoji Emoji { get; init; } = emoji;
     public required Snowflake MessageId { get; init; } = messageId;
     public required ITextChannel Channel { get; init; } = channel;
     public Message? Message { get; init; } = updated;
-    public Snowflake UserId { get; init; } = userId;
-    public Snowflake? GuildId { get; init; } = guildId;
     public Guild? Guild { get; init; } = guild;
-    public IUser? User { get; init; } = user;
-    public string? SessionId { get; init; } = sessionId;
 }
