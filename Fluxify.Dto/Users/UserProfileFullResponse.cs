@@ -27,6 +27,6 @@ public record UserProfileFullResponse(
     int? PremiumLifetimeSequence,
     DateTimeOffset? PremiumSince,
     UserPremiumTypes? PremiumType,
-    UserPartialResponse UserPartial,
+    UserPartialResponse User,
     UserProfile UserProfile
 );

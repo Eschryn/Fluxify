@@ -27,7 +27,7 @@ public class UserRequestBuilder(HttpClient client, Snowflake userId)
     private static readonly CompositeFormat UserUrl = CompositeFormat.Parse("users/{0}");
     private static readonly CompositeFormat UserProfileUrl = CompositeFormat.Parse("users/{0}/profile");
 
-    public async Task<UserProfileFullResponse?> GetUserProfileAsync(
+    public async Task<UserProfileFullResponse?> GetProfileAsync(
         Snowflake? guildId = null,
         bool withMutualFriends = false,
         bool withMutualGuilds = false,
