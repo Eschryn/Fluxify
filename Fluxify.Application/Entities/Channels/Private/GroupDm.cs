@@ -30,5 +30,5 @@ public class GroupDm(FluxerApplication fluxerApplication) : PrivateTextChannel(f
         Action<GroupDmProperties> configure,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => FluxerApplication.Channels.UpdateAsync(this, configure, reason, cancellationToken);
+    ) => FluxerApplication.ChannelsRepository.UpdateAsync(this, configure, reason, cancellationToken);
 }

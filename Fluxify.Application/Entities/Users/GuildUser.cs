@@ -22,7 +22,7 @@ using Fluxify.Rest.Guilds;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GuildUser : IUser, IEntity, IPresence
+public class GuildUser : IUser, IPresence
 {
     private MemberRequestBuilder RequestBuilder => field ??= Guild.RequestBuilder.Members[Id];
     public Snowflake Id { get; init; }

@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Application;
-using Fluxify.Application.Entities.Channels;
-using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.EventArgs;
 using Fluxify.Commands.CommandCollection;
 using Fluxify.Commands.TextCommand;
 using Fluxify.Core;
@@ -39,8 +38,5 @@ public class Bot(string prefix, FluxerConfig config, GatewayConfig? gatewayConfi
         await base.RunAsync(cancellationToken);
     }
 
-    private async Task OnMessageReceived(Message message)
-    {
-        await Dispatcher.DispatchAsync(message);
-    }
+    private Task OnMessageReceived(MessageEventArgs args) => Dispatcher.DispatchAsync(args.Message);
 }

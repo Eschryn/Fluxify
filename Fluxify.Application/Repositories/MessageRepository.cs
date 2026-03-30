@@ -139,7 +139,7 @@ internal sealed class MessageRepository(
 
     public async Task DeleteMessageAsync(Snowflake id, CancellationToken cancellationToken = default)
     {
-        Cache.Remove(id);
+        Cache.Remove(id, out _);
         
         await _messages[id].DeleteMessageAsync(cancellationToken);
     }

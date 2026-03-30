@@ -24,10 +24,10 @@ public partial class GuildMapper(FluxerApplication app) : IUpdateEntity<Guild>
 {
     public async Task<Guild> MapAsync(GuildResponse dto)
         => Map(dto,
-            dto.AfkChannelId is { } afkId ? (GuildVoiceChannel)await app.Channels.GetAsync(afkId) : null,
-            dto.RulesChannelId is { } rulesId ? (GuildTextChannel)await app.Channels.GetAsync(rulesId) : null,
-            dto.SystemChannelId is { } systemId ? (GuildTextChannel)await app.Channels.GetAsync(systemId) : null,
-            await app.Users.GetAsync(dto.OwnerId)
+            dto.AfkChannelId is { } afkId ? (GuildVoiceChannel)await app.ChannelsRepository.GetAsync(afkId) : null,
+            dto.RulesChannelId is { } rulesId ? (GuildTextChannel)await app.ChannelsRepository.GetAsync(rulesId) : null,
+            dto.SystemChannelId is { } systemId ? (GuildTextChannel)await app.ChannelsRepository.GetAsync(systemId) : null,
+            await app.UsersRepository.GetAsync(dto.OwnerId)
         );
 
     [MapperIgnoreSource(nameof(GuildResponse.AfkChannelId))]
@@ -56,11 +56,11 @@ public partial class GuildMapper(FluxerApplication app) : IUpdateEntity<Guild>
     internal Guild MapCached(GuildResponse response)
         => Map(
             response,
-            response.AfkChannelId is { } afkId ? app.Channels.GetCachedOrDefault<GuildVoiceChannel>(afkId) : null,
-            response.RulesChannelId is { } rulesId ? app.Channels.GetCachedOrDefault<GuildTextChannel>(rulesId) : null,
+            response.AfkChannelId is { } afkId ? app.ChannelsRepository.GetCachedOrDefault<GuildVoiceChannel>(afkId) : null,
+            response.RulesChannelId is { } rulesId ? app.ChannelsRepository.GetCachedOrDefault<GuildTextChannel>(rulesId) : null,
             response.SystemChannelId is { } systemId
-                ? app.Channels.GetCachedOrDefault<GuildTextChannel>(systemId)
+                ? app.ChannelsRepository.GetCachedOrDefault<GuildTextChannel>(systemId)
                 : null,
-            app.Users.GetCachedOrDefault(response.OwnerId) ?? new GlobalUser { Id = response.OwnerId }
+            app.UsersRepository.GetCachedOrDefault(response.OwnerId) ?? new GlobalUser { Id = response.OwnerId }
         );
 }

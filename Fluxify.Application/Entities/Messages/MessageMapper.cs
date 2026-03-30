@@ -91,15 +91,15 @@ public partial class MessageMapper(
     
     public async Task<Message> MapAsync(MessageResponse message, ITextChannel? channel = null, IUser? author = null)
     {
-        channel ??= (ITextChannel)await application.Channels.GetAsync(message.ChannelId);
+        channel ??= (ITextChannel)await application.ChannelsRepository.GetAsync(message.ChannelId);
         author ??= channel switch
         {
             IGuildChannel guildChannel => await guildChannel.Guild.MembersRepository.GetAsync(message.Author.Id),
             _ when message is GatewayMessage { GuildId: {} guildId } 
                 => await (
-                    await application.Guilds.GetAsync(guildId)
+                    await application.GuildsRepository.GetAsync(guildId)
                 ).MembersRepository.GetAsync(message.Author.Id),
-            _ => await application.Users.GetAsync(message.Author.Id)
+            _ => await application.UsersRepository.GetAsync(message.Author.Id)
         };
         
         return Map(message, channel, author);
@@ -119,7 +119,7 @@ public partial class MessageMapper(
     private ITextChannel CreateMinimalChannel(MessageResponse response)
     {
         var guild = response is GatewayMessage { GuildId: { } guildId }
-            ? application.Guilds.Cache.GetCachedOrDefault<Guild>(guildId) ?? new Guild(application)
+            ? application.GuildsRepository.Cache.GetCachedOrDefault<Guild>(guildId) ?? new Guild(application)
             {
                 Id = guildId,
                 Name = string.Empty,
@@ -142,10 +142,10 @@ public partial class MessageMapper(
     }
     
     private IUser GetAuthor(MessageBaseResponse message) 
-        => (application.Channels.GetCachedOrDefault<IChannel>(message.ChannelId) is IGuildChannel guildChannel
+        => (application.ChannelsRepository.GetCachedOrDefault<IChannel>(message.ChannelId) is IGuildChannel guildChannel
             ? (IUser?)guildChannel.Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(message.Author.Id)
-            : application.Users.GetCachedOrDefault(message.Author.Id))
-           ?? application.Users.Insert(message.Author);
+            : application.UsersRepository.GetCachedOrDefault(message.Author.Id))
+           ?? application.UsersRepository.Insert(message.Author);
     
     [MapProperty(nameof(MessageCallResponse.EndedTimestamp), nameof(CallInfo.EndedAt))]
     private partial CallInfo MapCall(MessageCallResponse call);
@@ -155,7 +155,7 @@ public partial class MessageMapper(
     [MapProperty(nameof(MessageStickerResponse.Animated), nameof(Sticker.IsAnimated))]
     private partial Sticker MapSticker(MessageStickerResponse sticker);
 
-    private IUser MapUser(UserPartialResponse user) => application.Users.GetCachedOrDefault(user.Id) ?? application.Users.Insert(user);
+    private IUser MapUser(UserPartialResponse user) => application.UsersRepository.GetCachedOrDefault(user.Id) ?? application.UsersRepository.Insert(user);
     
     [MapProperty(nameof(MessageBaseResponse.Timestamp), nameof(Message.CreatedAt))]
     [MapProperty(nameof(MessageBaseResponse.EditedTimestamp), nameof(Message.EditedAt))]

@@ -110,7 +110,7 @@ public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, C
             guild.GuildChannels.Remove(id, out _);
         }
 
-        Cache.Remove(id);
+        Cache.Remove(id, out _);
     }
 
     internal void Reset() => Cache.Clear();

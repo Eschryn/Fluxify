@@ -32,21 +32,21 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     public async Task<IChannel> FromDtoAsync(ChannelResponse dto)
         => FromDto(dto,
             parent: dto.ParentId is { } parentId
-                ? (GuildCategory)await application.Channels.GetAsync(parentId)
+                ? (GuildCategory)await application.ChannelsRepository.GetAsync(parentId)
                 : null,
-            guild: dto.GuildId is { } guildId ? await application.Guilds.GetAsync(guildId) : null);
+            guild: dto.GuildId is { } guildId ? await application.GuildsRepository.GetAsync(guildId) : null);
 
     public IChannel FromDto(ChannelResponse dto)
     {
         var guild = dto.GuildId is { } gId
-            ? (application.Guilds.Cache.GetCachedOrDefault<Guild>(gId) ?? new Guild(application)
+            ? (application.GuildsRepository.Cache.GetCachedOrDefault<Guild>(gId) ?? new Guild(application)
                 { Id = gId, Name = string.Empty, Owner = null! })
             : null;
 
         return FromDto(
             dto,
             dto.ParentId is { } pId
-                ? application.Channels.Cache.GetCachedOrDefault<GuildCategory>(pId) ??
+                ? application.ChannelsRepository.Cache.GetCachedOrDefault<GuildCategory>(pId) ??
                   new GuildCategory(application) { Id = pId, Guild = guild! }
                 : null,
             guild
@@ -218,7 +218,7 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     private GroupDm GroupDmFromDto(
         ChannelResponse dto,
         FluxerApplication fluxerApplication) => GroupDmFromDto(dto,
-        dto.Recipients?.Select(u => (IUser?)application.Users.GetCachedOrDefault(u.Id) ?? application.Users.Insert(u))
+        dto.Recipients?.Select(u => (IUser?)application.UsersRepository.GetCachedOrDefault(u.Id) ?? application.UsersRepository.Insert(u))
             .ToArray(), fluxerApplication);
 
     [MapperIgnoreSource(nameof(ChannelResponse.Bitrate))]

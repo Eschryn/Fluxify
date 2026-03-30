@@ -14,12 +14,13 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Repositories;
-using Fluxify.Core;
 using Fluxify.Core.Credentials;
+using Fluxify.Core.Types;
 using Fluxify.Gateway;
 using Fluxify.Rest;
 using UserMapper = Fluxify.Application.Entities.Users.UserMapper;
@@ -50,11 +51,11 @@ public partial class FluxerApplication
         _channelMapper = new ChannelMapper(this);
         _userMapper = new UserMapper();
         _guildMapper = new GuildMapper(this);
-        
-        Channels = new ChannelRepository(Rest, _channelMapper, CacheConfig);
-        Users = new UserRepository(Rest, _userMapper, CacheConfig);
-        Guilds = new GuildRepository(Rest, _guildMapper, CacheConfig);
-        
+
+        ChannelsRepository = new ChannelRepository(Rest, _channelMapper, CacheConfig);
+        UsersRepository = new UserRepository(Rest, _userMapper, CacheConfig);
+        GuildsRepository = new GuildRepository(Rest, _guildMapper, CacheConfig);
+
         InitializeEvents();
     }
 
@@ -79,9 +80,29 @@ public partial class FluxerApplication
         }
         
         await Gateway.RunAsync(gatewayUri, cancellationToken);
-    } 
+    }
+
+    internal ChannelRepository ChannelsRepository { get; }
+    internal UserRepository UsersRepository { get; }
+    internal GuildRepository GuildsRepository { get; }
+
+    public IReadOnlyCollection<Guild> Guilds => GuildsRepository.Cache.GetAllCached();
+
+    public IReadOnlyCollection<PrivateTextChannel> PrivateChannels
+        => ChannelsRepository.Cache.GetAllCached().OfType<PrivateTextChannel>().ToArray();
+
+    public Task<Guild> GetGuildAsync(
+        Snowflake guildId,
+        bool bypassCache = false
+    ) => GuildsRepository.GetAsync(guildId, bypassCache);
+
+    public Task<IChannel> GetChannelAsync(
+        Snowflake channelId,
+        bool bypassCache = false
+    ) => ChannelsRepository.GetAsync(channelId, bypassCache);
     
-    public ChannelRepository Channels { get; }
-    public UserRepository Users { get; }
-    public GuildRepository Guilds { get; }
+    public Task<GlobalUser> GetUserAsync(
+        Snowflake userId,
+        bool bypassCache = false
+    ) => UsersRepository.GetAsync(userId, bypassCache);
 }

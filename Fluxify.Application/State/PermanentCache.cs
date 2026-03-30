@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities;
 using Fluxify.Core.Types;
 
@@ -34,7 +35,7 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
     public bool IsCached(Snowflake id) => _dataContainer.ContainsKey(id);
     public T? GetCachedOrDefault<T>(Snowflake id) where T : TData => (T?)_dataContainer.GetValueOrDefault(id);
 
-    public ICollection<TData> GetAllCached() => _dataContainer.Values;
+    public IReadOnlyCollection<TData> GetAllCached() => (IReadOnlyCollection<TData>)_dataContainer.Values;
 
     public async Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
         bool bypassCache = false)
@@ -57,6 +58,6 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
                 return existing;
             });
 
-    public void Remove(Snowflake id) => _dataContainer.TryRemove(id, out _);
+    public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data) => _dataContainer.TryRemove(id, out data);
     public void Clear() => _dataContainer.Clear();
 }

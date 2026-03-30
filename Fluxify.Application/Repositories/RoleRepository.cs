@@ -47,6 +47,6 @@ public sealed class RoleRepository(Snowflake guildId, RestClient client, RoleMap
 
     internal void Delete(Snowflake argRoleId)
     {
-        Cache.Remove(argRoleId);
+        Cache.Remove(argRoleId, out _);
     }
 }

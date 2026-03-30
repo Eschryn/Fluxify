@@ -12,47 +12,58 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Messages;
-using Fluxify.Application.Model.Events;
+using Fluxify.Application.EventArgs;
 using Fluxify.Core.Events;
 
 namespace Fluxify.Application;
 
 public partial class FluxerApplication
 {
-    private readonly HandlerContainer<Message> _messageCreateHandlers = new();
-    private readonly HandlerContainer<Message> _messageUpdateHandlers = new();
-    //private readonly HandlerContainer<MessageDeleteEvent> _messageDeleteHandlers = new();
-    private readonly HandlerContainer<Guild> _guildCreatedHandlers = new();
-    private readonly HandlerContainer<Guild> _guildUpdatedHandlers = new();
-    private readonly HandlerContainer<Guild> _guildDeletedHandlers = new();
+    private readonly HandlerContainer<MessageEventArgs> _messageCreateHandlers = new();
+    private readonly HandlerContainer<MessageEventArgs> _messageUpdateHandlers = new();
+    private readonly HandlerContainer<MessageDeletedEventArgs> _messageDeleteHandlers = new();
+    private readonly HandlerContainer<MessagesBulkDeletedEventArgs> _messageBulkDeletedHandlers = new();
+    private readonly HandlerContainer<GuildEventArgs> _guildCreatedHandlers = new();
+    private readonly HandlerContainer<GuildEventArgs> _guildUpdatedHandlers = new();
+    private readonly HandlerContainer<GuildDeletedEventArgs> _guildDeletedHandlers = new();
     
-    public event Func<Message, Task> MessageReceived
+    public event Func<MessageEventArgs, Task> MessageReceived
     {
         add => _messageCreateHandlers.InsertDelegate(value);
         remove => _messageCreateHandlers.RemoveDelegate(value);
     }
     
-    public event Func<Message, Task> MessageUpdated
+    public event Func<MessageEventArgs, Task> MessageUpdated
     {
         add => _messageUpdateHandlers.InsertDelegate(value);
         remove => _messageUpdateHandlers.RemoveDelegate(value);
     }
     
-    public event Func<Guild, Task> GuildCreated
+    public event Func<MessageDeletedEventArgs, Task> MessageDeleted
+    {
+        add => _messageDeleteHandlers.InsertDelegate(value);
+        remove => _messageDeleteHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<MessagesBulkDeletedEventArgs, Task> MessageBulkDeleted
+    {
+        add => _messageBulkDeletedHandlers.InsertDelegate(value);
+        remove => _messageBulkDeletedHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<GuildEventArgs, Task> GuildCreated
     {
         add => _guildCreatedHandlers.InsertDelegate(value);
         remove => _guildCreatedHandlers.RemoveDelegate(value);
     }
     
-    public event Func<Guild, Task> GuildUpdated
+    public event Func<GuildEventArgs, Task> GuildUpdated
     {
         add => _guildUpdatedHandlers.InsertDelegate(value);
         remove => _guildUpdatedHandlers.RemoveDelegate(value);
     }
     
-    public event Func<Guild, Task> GuildDeleted
+    public event Func<GuildDeletedEventArgs, Task> GuildDeleted
     {
         add => _guildDeletedHandlers.InsertDelegate(value);
         remove => _guildDeletedHandlers.RemoveDelegate(value);

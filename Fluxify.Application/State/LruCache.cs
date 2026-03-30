@@ -63,7 +63,7 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
         }
     }
 
-    public ICollection<TData> GetAllCached() => _dataContainer.Values;
+    public IReadOnlyCollection<TData> GetAllCached() => (IReadOnlyCollection<TData>)_dataContainer.Values;
 
     public async Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
         bool bypassCache = false)
@@ -112,9 +112,9 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
         _dataContainer.TryRemove(key, out _);
     }
 
-    public void Remove(Snowflake id)
+    public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data)
     {
-        _dataContainer.TryRemove(id, out _);
+        var result = _dataContainer.TryRemove(id, out data);
         lock (_keyOrder)
         {
             if (_keyContainer.TryRemove(id, out var entryNode))
@@ -122,6 +122,8 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
                 _keyOrder.Remove(entryNode);
             }
         }
+        
+        return result;
     }
 
     public void Clear()

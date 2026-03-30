@@ -147,7 +147,7 @@ public class Message(
                 );
 
             lastId = userPartialResponses?.LastOrDefault()?.Id;
-            yield return userPartialResponses?.Select(application.Users.Insert).ToArray() ?? [];
+            yield return userPartialResponses?.Select(application.UsersRepository.Insert).ToArray() ?? [];
         } while (lastId != null);
     }
 

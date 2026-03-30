@@ -12,8 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Model.Events;
+using System.Diagnostics.CodeAnalysis;
+using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Users;
 
-public class MessageDeleteEvent
+namespace Fluxify.Application.EventArgs;
+
+[method: SetsRequiredMembers]
+public class GuildEventArgs(Guild guild, GuildUser self)
 {
+    public required Guild Guild { get; init; } = guild;
+    public required GuildUser Self { get; init; } = self;
 }

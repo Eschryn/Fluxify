@@ -29,11 +29,11 @@ namespace Fluxify.Application.Entities.Guilds;
 public class Guild(FluxerApplication app) : IEntity
 {
     internal RoleRepository RolesRepository
-        => field ??= new RoleRepository(Id, app.Rest, new RoleMapper(), app.Guilds);
+        => field ??= new RoleRepository(Id, app.Rest, new RoleMapper(), app.GuildsRepository);
 
     internal GuildMemberRepository MembersRepository
         => field ??=
-            new GuildMemberRepository(this, app.Rest, new UserMapper(), app.Users, app.Guilds, app.CacheConfig);
+            new GuildMemberRepository(this, app.Rest, new UserMapper(), app.UsersRepository, app.GuildsRepository, app.CacheConfig);
 
     internal GuildRequestBuilder RequestBuilder => field ??= app.Rest.Guilds[Id];
 
@@ -78,12 +78,13 @@ public class Guild(FluxerApplication app) : IEntity
     public GuildTextChannel? SystemChannel { get; internal set; }
     public string? VanityUrlCode { get; internal set; }
     public GuildVerificationLevel VerificationLevel { get; internal set; }
+    public int MemberCount { get; internal set; }
 
     public Task<GuildTextChannel> CreateTextChannelAsync(
         string name,
         Action<TextChannelProperties>? configure = null,
         CancellationToken cancellationToken = default
-    ) => app.Channels.CreateAsync<GuildTextChannel>(Id, new TextChannelProperties
+    ) => app.ChannelsRepository.CreateAsync<GuildTextChannel>(Id, new TextChannelProperties
     {
         Name = name
     }.Configure(configure));
@@ -91,7 +92,7 @@ public class Guild(FluxerApplication app) : IEntity
     public Task<GuildVoiceChannel> CreateVoiceChannelAsync(
         string name,
         Action<VoiceChannelProperties>? configure = null
-    ) => app.Channels.CreateAsync<GuildVoiceChannel>(Id, new VoiceChannelProperties
+    ) => app.ChannelsRepository.CreateAsync<GuildVoiceChannel>(Id, new VoiceChannelProperties
     {
         Name = name
     }.Configure(configure));
@@ -100,7 +101,7 @@ public class Guild(FluxerApplication app) : IEntity
         string name,
         string url,
         Action<LinkChannelProperties>? configure = null
-    ) => app.Channels.CreateAsync<GuildLinkChannel>(Id, new LinkChannelProperties
+    ) => app.ChannelsRepository.CreateAsync<GuildLinkChannel>(Id, new LinkChannelProperties
     {
         Name = name,
         Url = url
@@ -109,7 +110,7 @@ public class Guild(FluxerApplication app) : IEntity
     public Task<GuildCategory> CreateCategoryAsync(
         string name,
         Action<CategoryProperties>? configure = null
-    ) => app.Channels.CreateAsync<GuildCategory>(Id, new CategoryProperties
+    ) => app.ChannelsRepository.CreateAsync<GuildCategory>(Id, new CategoryProperties
     {
         Name = name
     }.Configure(configure));

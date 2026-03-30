@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities;
 using Fluxify.Core.Types;
 
@@ -22,12 +23,17 @@ internal sealed class PassthroughCache<TData> : ICache<TData>
 {
     public bool IsCached(Snowflake id) => false;
     public T? GetCachedOrDefault<T>(Snowflake id) where T : TData => default;
-    public ICollection<TData> GetAllCached() => [];
+    public IReadOnlyCollection<TData> GetAllCached() => [];
 
     public Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory, bool bypassCache = false)
         => factory(id);
 
     public TData UpdateOrCreate(TData data) => data;
-    public void Remove(Snowflake id) { }
+
+    public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data)
+    {
+        data = null;
+        return false;
+    }
     public void Clear() { }
 }

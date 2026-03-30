@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Core.Types;
@@ -38,7 +39,7 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
     public bool IsCached(Snowflake id) => _dataContainer.ContainsKey(id);
     public T? GetCachedOrDefault<T>(Snowflake id) where T : TData => (T?)_dataContainer.GetValueOrDefault(id);
 
-    public ICollection<TData> GetAllCached() => _dataContainer.Values;
+    public IReadOnlyCollection<TData> GetAllCached() => (IReadOnlyCollection<TData>)_dataContainer.Values;
     public IReadOnlyList<TData>? GetPaged(Snowflake? key, Direction direction, int pageSize)
     {
         pageSize = Math.Clamp(pageSize, 0, 100);
@@ -166,11 +167,11 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
                 return existing;
             });
 
-    public void Remove(Snowflake id)
+    public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? message)
     {
-        if (!_dataContainer.TryRemove(id, out _))
+        if (!_dataContainer.TryRemove(id, out message))
         {
-            return;
+            return false;
         }
         _queueReplaceLock.EnterWriteLock();
         // rebuild queue 
@@ -182,16 +183,23 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
         {
             _queueReplaceLock.ExitWriteLock();
         }
+        
+        return true;
     }
     
     
-    public void RemoveAll(Snowflake[] id)
+    public void RemoveAll(Snowflake[] id, out TData[] removedMessages)
     {
         _queueReplaceLock.EnterWriteLock();
         // rebuild queue 
         try
         {
-            var hashSet = id.Where(key => _dataContainer.TryRemove(key, out _)).ToHashSet();
+            removedMessages = _dataContainer
+                .Select(key => _dataContainer.TryRemove(key.Key, out var message) ? message : null)
+                .OfType<TData>()
+                .ToArray();
+            
+            var hashSet = id.ToHashSet();
             _keyOrder = new ConcurrentQueue<Snowflake>(_keyOrder.Where(key => !hashSet.Contains(key)));
         }
         finally

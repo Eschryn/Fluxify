@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities;
 using Fluxify.Core.Types;
 
@@ -21,13 +22,13 @@ internal interface ICache<TData> where TData : class, IEntity
 {
     bool IsCached(Snowflake id);
     T? GetCachedOrDefault<T>(Snowflake id) where T : TData;
-    ICollection<TData> GetAllCached();
+    IReadOnlyCollection<TData> GetAllCached();
 
     Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
         bool bypassCache = false);
 
     TData UpdateOrCreate(TData data);
-    void Remove(Snowflake id);
+    bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data);
     void Clear();
 
     public static ICache<TData> CreateOrdered<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData>

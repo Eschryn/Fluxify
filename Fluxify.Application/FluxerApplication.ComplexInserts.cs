@@ -41,7 +41,7 @@ public partial class FluxerApplication
         VoiceStateResponse[] voiceStates
     )
     {
-        var guild = Guilds.Insert(response);
+        var guild = GuildsRepository.Insert(response);
         foreach (var guildRoleResponse in roles)
         {
             guild.RolesRepository.Insert(guildRoleResponse, guild);
@@ -50,7 +50,7 @@ public partial class FluxerApplication
         foreach (var guildMemberResponse in members)
         {
             guild.MembersRepository.Insert(guildMemberResponse, guild,
-                Users.GetCachedOrDefault(guildMemberResponse.User!.Id) ?? Users.Insert(guildMemberResponse.User));
+                UsersRepository.GetCachedOrDefault(guildMemberResponse.User!.Id) ?? UsersRepository.Insert(guildMemberResponse.User));
         }
 
         foreach (var channelResponse in channels)
@@ -81,7 +81,7 @@ public partial class FluxerApplication
 
     private void UpdateUserPresence(PresenceResponse presence)
     {
-        if (Users.GetCachedOrDefault(presence.UserPartial.Id) is {} user)
+        if (UsersRepository.GetCachedOrDefault(presence.User.Id) is {} user)
         {
             _userMapper.UpdateStatus(user, presence);
         }
@@ -152,7 +152,7 @@ public partial class FluxerApplication
 
     private void InsertChannel(ChannelResponse arg, Guild? guild = null)
     {
-        var channel = Channels.Insert(arg);
+        var channel = ChannelsRepository.Insert(arg);
         if (channel is IGuildChannel guildChannel)
         {
             guild ??= guildChannel.Guild;
@@ -177,13 +177,13 @@ public partial class FluxerApplication
         }
         else if (arg.GuildId.HasValue)
         {
-            var guild = await Guilds.GetAsync(arg.GuildId.Value);
-            var globalUser = Users.Insert(arg.Author);
+            var guild = await GuildsRepository.GetAsync(arg.GuildId.Value);
+            var globalUser = UsersRepository.Insert(arg.Author);
             user = guild.MembersRepository.Insert(arg.Member!, guild, globalUser);
         }
         else
         {
-            user = Users.Insert(arg.Author);
+            user = UsersRepository.Insert(arg.Author);
         }
 
         return user;

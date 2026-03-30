@@ -47,7 +47,7 @@ public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplicat
         Action<TProperties> configure,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => fluxerApplication.Channels.UpdateAsync(
+    ) => fluxerApplication.ChannelsRepository.UpdateAsync(
         this, 
         configure,
         reason,
@@ -74,7 +74,7 @@ public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplicat
     
     internal IUser? ResolveUser(Snowflake id) 
         => (IUser?)Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(id) 
-           ?? fluxerApplication.Users.Cache.GetCachedOrDefault<GlobalUser>(id);
+           ?? fluxerApplication.UsersRepository.Cache.GetCachedOrDefault<GlobalUser>(id);
     
-    public Task DeleteAsync() => FluxerApplication.Channels.DeleteAsync(Id);
+    public Task DeleteAsync() => FluxerApplication.ChannelsRepository.DeleteAsync(Id);
 }

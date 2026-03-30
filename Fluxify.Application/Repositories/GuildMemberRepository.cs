@@ -50,6 +50,6 @@ internal sealed class GuildMemberRepository(
 
     internal void Delete(Snowflake memberId)
     {
-        Cache.Remove(memberId);
+        Cache.Remove(memberId, out _);
     }
 }
