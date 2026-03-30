@@ -23,5 +23,5 @@ public record GuildStickerWithUserResponse(
     Snowflake Id,
     string Name,
     string[] Tags,
-    UserPartialResponse UserPartial
+    UserPartialResponse User
 ) : GuildStickerResponse(Animated, Description, Id, Name, Tags);

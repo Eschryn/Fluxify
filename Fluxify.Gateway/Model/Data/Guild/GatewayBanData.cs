@@ -19,5 +19,5 @@ namespace Fluxify.Gateway.Model.Data.Guild;
 
 public record GatewayBanData(
     Snowflake GuildId,
-    UserPartialResponse UserPartial
+    UserPartialResponse User
 );

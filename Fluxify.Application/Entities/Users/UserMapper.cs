@@ -95,7 +95,7 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
     [MapperIgnoreTarget(nameof(GlobalUser.Username))]
     [MapperIgnoreTarget(nameof(GlobalUser.GlobalName))]
     [MapperIgnoreTarget(nameof(GlobalUser.Flags))]
-    [MapperIgnoreSource(nameof(PresenceResponse.UserPartial))]
+    [MapperIgnoreSource(nameof(PresenceResponse.User))]
     [MapProperty(nameof(PresenceResponse.Status), nameof(GlobalUser.Status))]
     [MapProperty(nameof(PresenceResponse.Mobile), nameof(GlobalUser.IsMobile))]
     [MapProperty(nameof(PresenceResponse.Afk), nameof(GlobalUser.IsAfk))]

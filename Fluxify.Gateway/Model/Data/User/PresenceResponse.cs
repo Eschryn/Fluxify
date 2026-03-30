@@ -17,7 +17,7 @@ using Fluxify.Dto.Users;
 namespace Fluxify.Gateway.Model.Data.User;
 
 public record PresenceResponse(
-    UserPartialResponse UserPartial,
+    UserPartialResponse User,
     UserStatus Status,
     bool Mobile,
     bool Afk,

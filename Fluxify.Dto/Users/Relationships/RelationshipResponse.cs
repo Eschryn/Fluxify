@@ -21,5 +21,5 @@ public record RelationshipResponse(
     string? Nickname,
     DateTimeOffset? Since,
     RelationshipTypes Type,
-    UserPartialResponse UserPartial
+    UserPartialResponse User
 );

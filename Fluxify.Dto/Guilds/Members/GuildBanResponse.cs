@@ -22,4 +22,4 @@ public record GuildBanResponse(
     DateTimeOffset ExpiresAt,
     Snowflake ModeratorId,
     string? Reason,
-    UserPartialResponse UserPartial);
+    UserPartialResponse User);
