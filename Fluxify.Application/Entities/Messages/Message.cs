@@ -38,6 +38,7 @@ public class Message(
     public Snowflake? WebhookId { get; internal set; }
     public required IUser Author { get; init; }
     public required ITextChannel Channel { get; init; }
+    public Guild? Guild => Channel is IGuildChannel guildChannel ? guildChannel.Guild : null;
     public Attachment[]? Attachments { get; internal set; }
     public Embed[]? Embeds { get; internal set; }
     public bool MentionsEveryone { get; internal set; }

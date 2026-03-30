@@ -85,6 +85,7 @@ public partial class MessageMapper(
     [MapperIgnoreSource(nameof(Message.IsPinned))] 
     [MapperIgnoreSource(nameof(Message.Nonce))] 
     [MapperIgnoreSource(nameof(Message.Type))] 
+    [MapperIgnoreSource(nameof(Message.Guild))] 
     [MapValue(nameof(MessageEdit.AllowedMentions), null)]
     public partial MessageEdit MapToEdit(Message message);
     public partial UpdateMessageRequest Map(MessageEdit message);
