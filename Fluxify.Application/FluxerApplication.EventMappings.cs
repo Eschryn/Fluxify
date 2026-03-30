@@ -186,68 +186,10 @@ public partial class FluxerApplication
         return Task.CompletedTask;
     }
 
-    private Task HandleMessageReactionRemove(GatewayReaction arg)
-    {
-        return Task.CompletedTask;
-    }
+    private Task HandleMessageReactionAdd(GatewayReaction arg) => _messageReactionAddHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
 
-    private async Task HandleMessageReactionAdd(GatewayReaction arg)
-    {
-        IUser? user = null;
-        Guild? guild = null;
-        Message? message = null;
-        var emoji = CommonMapper.MapToEmoji(arg.Emoji);
-        
-        if (arg.GuildId.HasValue)
-        {
-            guild = GuildsRepository.Cache.GetCachedOrDefault<Guild>(arg.GuildId.Value);
-        }
+    private Task HandleMessageReactionRemove(GatewayReaction arg) => _messageReactionRemoveHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
 
-        if (arg.Member is not null)
-        {
-            user = UsersRepository.Insert(arg.Member.User!);
-            if (guild is not null)
-            {
-                user = guild.MembersRepository.Insert(arg.Member, guild, (GlobalUser)user);
-            }
-        }
-        else
-        {
-            // hope
-            user = UsersRepository.GetCachedOrDefault(arg.UserId);
-        }
-
-        var channel = ChannelsRepository.Cache.GetCachedOrDefault<ITextChannel>(arg.ChannelId);
-        if (channel is not null)
-        {
-            var repo = channel switch
-            {
-                GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository,
-                PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository,
-                _ => null
-            };
-
-            if (repo is not null)
-            {
-                repo.Cache.TryUpdate(arg.MessageId, msg =>
-                {
-                    var reaction = msg.Reactions?.FirstOrDefault(r => r.Emoji == emoji);
-                    reaction?.Count += 1;
-                    reaction?.Me = reaction.Me || arg.UserId == CurrentUser.Id;
-                }, out message);
-            }
-        }
-        
-        await _messageReactionAddHandlers.CallHandlersAsync(new ReactionEventArgs(
-            emoji,
-            channel!,
-            arg.MessageId,
-            message,
-            guild,
-            user,
-            arg.SessionId
-        ));
-    }
 
     private Task HandleChannelPinsUpdate(GatewayChannelPinsAck arg)
     {

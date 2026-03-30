@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
+using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.EventArgs;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Emoji;
@@ -22,6 +26,7 @@ using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Dto.Guilds.Stickers;
 using Fluxify.Gateway.Model.Data.Channel.Message;
+using Fluxify.Gateway.Model.Data.Channel.Reaction;
 using Fluxify.Gateway.Model.Data.User;
 using Fluxify.Gateway.Model.Data.Voice;
 using UserStatus = Fluxify.Gateway.Model.Data.UserStatus;
@@ -187,5 +192,63 @@ public partial class FluxerApplication
         }
 
         return user;
+    }
+
+    private ReactionEventArgs CreateReactionEventArgs(GatewayReaction arg)
+    {
+        IUser? user;
+        Guild? guild = null;
+        Message? message = null;
+        var emoji = CommonMapper.MapToEmoji(arg.Emoji);
+
+        if (arg.GuildId.HasValue)
+        {
+            guild = GuildsRepository.Cache.GetCachedOrDefault<Guild>(arg.GuildId.Value);
+        }
+
+        if (arg.Member is not null)
+        {
+            user = UsersRepository.Insert(arg.Member.User!);
+            if (guild is not null)
+            {
+                user = guild.MembersRepository.Insert(arg.Member, guild, (GlobalUser)user);
+            }
+        }
+        else
+        {
+            // hope
+            user = UsersRepository.GetCachedOrDefault(arg.UserId);
+        }
+
+        var channel = ChannelsRepository.Cache.GetCachedOrDefault<ITextChannel>(arg.ChannelId);
+        if (channel is not null)
+        {
+            var repo = channel switch
+            {
+                GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository,
+                PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository,
+                _ => null
+            };
+
+            if (repo is not null)
+            {
+                repo.Cache.TryUpdate(arg.MessageId, msg =>
+                {
+                    var reaction = msg.Reactions?.FirstOrDefault(r => r.Emoji == emoji);
+                    reaction?.Count += 1;
+                    reaction?.Me = reaction.Me || arg.UserId == CurrentUser.Id;
+                }, out message);
+            }
+        }
+
+        return new ReactionEventArgs(
+            emoji,
+            channel!,
+            arg.MessageId,
+            message,
+            guild,
+            user,
+            arg.SessionId
+        );
     }
 }
