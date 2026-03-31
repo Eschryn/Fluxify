@@ -18,7 +18,7 @@ using Fluxify.Gateway.Model.Data;
 
 namespace Fluxify.Application.Entities.Users;
 
-public interface IUser : IEntity
+public interface IUser : IEntity, IFormattable
 {
     public bool? Bot { get; }
     public string Username { get; }

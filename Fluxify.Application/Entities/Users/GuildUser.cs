@@ -70,4 +70,7 @@ public class GuildUser : IUser, IPresence
     
     public Task KickAsync(string? reason = null, CancellationToken cancellationToken = default) 
         => RequestBuilder.KickAsync(reason, cancellationToken);
+    
+    
+    public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);
 }

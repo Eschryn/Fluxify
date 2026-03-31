@@ -17,7 +17,7 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Roles;
 
-public interface IRole : IEntity, IGuildScopedEntity
+public interface IRole : IEntity, IGuildScopedEntity, IFormattable
 {
     public string Name { get; }
     public long Position { get; }

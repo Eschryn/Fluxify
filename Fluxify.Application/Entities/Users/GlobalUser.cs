@@ -33,4 +33,10 @@ public class GlobalUser : IUser, IPresence
     public Color? AvatarColor { get; internal set; }
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }
+    
+    public string ToString(string? format, IFormatProvider? formatProvider) => format switch
+    {
+        "i" or "I" => ((long)Id).ToString(),
+        _ or "m" or "M" => $"<#{Id}>"
+    };
 }

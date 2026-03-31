@@ -14,4 +14,4 @@
 
 namespace Fluxify.Application.Entities.Channels;
 
-public interface IChannel : IEntity;
+public interface IChannel : IEntity, IFormattable;

@@ -114,4 +114,10 @@ public abstract class PrivateTextChannel(
         ),
         cancellationToken
     );
+    
+    public string ToString(string? format, IFormatProvider? formatProvider) => format switch
+    {
+        "i" or "I" => ((long)Id).ToString(),
+        _ or "m" or "M" => $"<#{Id}>"
+    };
 }

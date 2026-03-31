@@ -30,4 +30,10 @@ public class Role : IRole
     public Color Color { get; internal set; }
     public Permissions Permissions { get; internal set; }
     public required Guild Guild { get; init; }
+    
+    public string ToString(string? format, IFormatProvider? formatProvider) => format switch
+    {
+        "i" or "I" => ((long)Id).ToString(),
+        _ or "m" or "M" => $"<@&{Id}>"
+    };
 }
