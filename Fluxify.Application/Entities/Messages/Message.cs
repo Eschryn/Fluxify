@@ -113,6 +113,10 @@ public class Message(
     public async Task ReactAsync(IEmoji emoji, CancellationToken cancellationToken = default)
         => await RequestBuilder.Reactions[GetEmojiString(emoji)]
             .ReactAsync(application.Gateway.SessionId!, cancellationToken);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task ReactAsync(UnicodeEmoji emoji, CancellationToken cancellationToken = default) 
+        => ReactAsync((IEmoji)emoji, cancellationToken);
 
     public async Task RemoveReactionAsync(IEmoji emoji, IUser user,
         CancellationToken cancellationToken = default)
@@ -130,7 +134,18 @@ public class Message(
                 cancellationToken);
         }
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task RemoveReactionAsync(UnicodeEmoji emoji, IUser user, CancellationToken cancellationToken = default) 
+        => RemoveReactionAsync((IEmoji)emoji, user, cancellationToken);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IAsyncEnumerable<ICollection<IUser>> GetReactionUsersAsync(
+        UnicodeEmoji emoji,
+        int limit = 100,
+        CancellationToken cancellationToken = default
+    ) => GetReactionUsersAsync((IEmoji)emoji, limit, cancellationToken);
+    
     public async IAsyncEnumerable<ICollection<IUser>> GetReactionUsersAsync(
         IEmoji emoji,
         int limit = 100,
@@ -152,6 +167,10 @@ public class Message(
         } while (lastId != null);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task RemoveAllReactionsAsync(UnicodeEmoji emoji, CancellationToken cancellationToken = default)
+        => RemoveAllReactionsAsync((IEmoji)emoji, cancellationToken);
+    
     public async Task RemoveAllReactionsAsync(IEmoji emoji, CancellationToken cancellationToken = default)
         => await RequestBuilder.Reactions[GetEmojiString(emoji)].RemoveAllAsync(cancellationToken);
 
