@@ -78,8 +78,8 @@ public readonly struct Snowflake(ulong value) : IConvertible,
     public static bool operator <(Snowflake left, Snowflake right) => !(left == right);
     public static implicit operator Snowflake(ulong u64) => new(u64);
     public static implicit operator Snowflake(long u64) => new((ulong)u64);
-    public static explicit operator ulong(Snowflake s) => s._value;
-    public static explicit operator long(Snowflake s) => (long)s._value;
+    public static implicit operator ulong(Snowflake s) => s._value;
+    public static implicit operator long(Snowflake s) => (long)s._value;
     public static Snowflake Parse(string s, IFormatProvider? provider) => new(ulong.Parse(s, provider));
 
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Snowflake result)
