@@ -30,7 +30,9 @@ using Fluxify.Dto.Guilds.Members.Search;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Dto.Guilds.Settings;
 using Fluxify.Dto.Guilds.Stickers;
+using Fluxify.Dto.Invites;
 using Fluxify.Dto.OAuth2;
+using Fluxify.Dto.Packs;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.DataHarvest;
@@ -45,6 +47,10 @@ using Fluxify.Dto.Users.Settings.PhoneChange;
 using Fluxify.Dto.Users.Settings.Security;
 using Fluxify.Dto.Users.Settings.Security.Mfa;
 using Fluxify.Dto.Users.Settings.Security.Webauth;
+using Fluxify.Dto.Webhooks;
+using Fluxify.Dto.Webhooks.GitHub;
+using Fluxify.Dto.Webhooks.Sentry;
+using Fluxify.Dto.Webhooks.Slack;
 
 namespace Fluxify.Dto.Json;
 
@@ -185,4 +191,17 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(BotProfileUpdateRequest))]
 [JsonSerializable(typeof(BotTokenResetResponse))]
 [JsonSerializable(typeof(ApplicationPublicResponse))]
+[JsonSerializable(typeof(WebhookCreateRequest))]
+[JsonSerializable(typeof(WebhookResponse))]
+[JsonSerializable(typeof(WebhookUpdateRequest))]
+[JsonSerializable(typeof(WebhookTokenUpdateRequest))]
+[JsonSerializable(typeof(WebhookTokenResponse))]
+[JsonSerializable(typeof(GitHubWebhook))]
+[JsonSerializable(typeof(SentryWebhook))]
+[JsonSerializable(typeof(SlackWebhookRequest))]
+[JsonSerializable(typeof(InviteResponseSchema))]
+[JsonSerializable(typeof(InviteMetadataResponseSchema))]
+[JsonSerializable(typeof(ChannelInviteCreateRequest))]
+[JsonSerializable(typeof(PackInviteCreateRequest))]
+[JsonSerializable(typeof(CreateWebhookMessageRequest))]
 public partial class DtoJsonContext : JsonSerializerContext;

@@ -12,18 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Dto.Common;
+namespace Fluxify.Dto.Webhooks.Slack;
 
-namespace Fluxify.Dto.Guilds.Stickers;
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="Description"></param>
-/// <param name="Image">Base64 encoded image</param>
-public record GuildStickerCreateRequest(
-    string? Description,
-    Base64Image Image,
-    string Name,
-    string[]? Tags
+public record SlackWebhookRequestAttachmentsItemField(
+    string Title,
+    string Value,
+    bool Short
 );

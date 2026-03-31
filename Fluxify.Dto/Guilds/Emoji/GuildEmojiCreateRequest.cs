@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Dto.Common;
+
 namespace Fluxify.Dto.Guilds.Emoji;
 
 /// <summary>
@@ -19,4 +21,4 @@ namespace Fluxify.Dto.Guilds.Emoji;
 /// </summary>
 /// <param name="Image">Base64ImageType</param>
 /// <param name="Name"></param>
-public record GuildEmojiCreateRequest(string Image, string Name);
+public record GuildEmojiCreateRequest(Base64Image Image, string Name);

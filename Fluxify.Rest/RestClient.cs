@@ -25,6 +25,7 @@ using Fluxify.Rest.Model;
 using Fluxify.Rest.OAuth2;
 using Fluxify.Rest.Packs;
 using Fluxify.Rest.Users;
+using Fluxify.Rest.Webhooks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fluxify.Rest;
@@ -46,6 +47,7 @@ public class RestClient
         Invites = new InvitesRequestBuilder(_httpClient);
         OAuth2 = new OAuth2RequestBuilder(_httpClient);
         Packs = new PacksRequestBuilder(_httpClient);
+        Webhooks = new WebhooksRequestBuilder(_httpClient);
     }
 
     internal static JsonSerializerOptions DefaultJsonOptions { get; } = new()
@@ -62,5 +64,5 @@ public class RestClient
     public OAuth2RequestBuilder OAuth2 { get; }
     public InvitesRequestBuilder Invites { get; }
     public PacksRequestBuilder Packs { get; }
-    
+    public WebhooksRequestBuilder Webhooks { get; }
 }

@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Dto.Common;
+using Fluxify.Core.Types;
 
-namespace Fluxify.Dto.Guilds.Stickers;
+namespace Fluxify.Rest.Webhooks;
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="Description"></param>
-/// <param name="Image">Base64 encoded image</param>
-public record GuildStickerCreateRequest(
-    string? Description,
-    Base64Image Image,
-    string Name,
-    string[]? Tags
-);
+public class WebhooksRequestBuilder(HttpClient httpClient)
+{
+    public WebhookRequestBuilder this[Snowflake id] => new(httpClient, id);
+    public AuthenticatedWebhookRequestBuilder this[Snowflake id, string token] => new(httpClient, id, token);
+}

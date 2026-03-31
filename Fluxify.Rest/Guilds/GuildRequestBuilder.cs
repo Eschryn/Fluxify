@@ -23,6 +23,7 @@ using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Guilds.Settings;
 using Fluxify.Dto.Invites;
 using Fluxify.Dto.Users.Settings.Security;
+using Fluxify.Dto.Webhooks;
 using Fluxify.Rest.Channel;
 
 namespace Fluxify.Rest.Guilds;
@@ -40,6 +41,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     private static readonly CompositeFormat BanUrl = CompositeFormat.Parse("guilds/{0}/bans/{1}");
     private static readonly CompositeFormat FlexibleTextChannelNamesUrl = CompositeFormat.Parse("guilds/{0}/text-channel-flexible-names");
     private static readonly CompositeFormat InvitesUrl = CompositeFormat.Parse("guilds/{0}/invites");
+    private static readonly CompositeFormat WebhooksUrl = CompositeFormat.Parse("guilds/{0}/webhooks");
 
     public EmojisRequestBuilder Emojis { get; } = new(client, guildId);
     public MembersRequestBuilder Members { get; } = new(client, guildId);
@@ -210,6 +212,14 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     ) => client.JsonRequestAsync<InviteMetadataResponseSchema[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, InvitesUrl, guildId),
+        cancellationToken: cancellationToken
+    );
+    
+    public Task<WebhookResponse[]?> GetWebhooksAsync(
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<WebhookResponse[]>(
+        HttpMethod.Get,
+        string.Format(FormatProvider, WebhooksUrl, guildId),
         cancellationToken: cancellationToken
     );
 }

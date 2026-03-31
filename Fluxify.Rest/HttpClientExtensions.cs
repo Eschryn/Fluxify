@@ -42,41 +42,78 @@ internal static class HttpClientExtensions
                     cancellationToken: cancellationToken);
             }
 
-            var content = new MultipartFormDataContent();
-            var jsonContent = JsonContent.Create(request, options: RestClient.DefaultJsonOptions);
-            jsonContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-            {
-                Name = "payload_json"
-            };
-
-            content.Add(jsonContent);
-
-            foreach (var attachment in request.Files)
-            {
-                var partContent = attachment switch
-                {
-                    StreamFileUpload streamed => (HttpContent)new StreamContent(streamed.Stream),
-                    ArrayFileUpload array => new ByteArrayContent(array.Data),
-                    _ => throw new ArgumentException("Unsupported file upload type", nameof(request)),
-                };
-                partContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                {
-                    Name = string.Format(CultureInfo.InvariantCulture, FileFormat, attachment.SendId),
-                    FileName = attachment.FileName
-                };
-                partContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
-
-                content.Add(partContent);
-            }
-
-            using var httpRequestMessage = new HttpRequestMessage(method, url);
-            httpRequestMessage.Content = content;
+            using var httpResponseMessage = await client.MultipartJsonRequestImpl(method, url, request, cancellationToken);
             
-            using var httpResponseMessage = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken);
-
             return await httpResponseMessage
                 .Content
                 .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: RestClient.DefaultJsonOptions);
+        }
+
+        public async Task MultipartJsonRequestAsync<TRequest>(
+            HttpMethod method,
+            string url,
+            TRequest request,
+            CancellationToken cancellationToken = default)
+            where TRequest : MultipartDto
+        {
+            if (request.Files is not { Length: > 0 })
+            { 
+                await client.JsonRequestAsync(method, url, request, reason: null, cancellationToken: cancellationToken);
+                
+                return;
+            }
+
+            using var httpResponseMessage = await client.MultipartJsonRequestImpl(method, url, request, cancellationToken);
+        }
+
+        private async Task<HttpResponseMessage> MultipartJsonRequestImpl<TRequest>(
+            HttpMethod method,
+            string url,
+            TRequest request,
+            CancellationToken cancellationToken
+        ) where TRequest : MultipartDto 
+        {
+            HttpResponseMessage? httpResponseMessage = null;
+            try
+            {
+                var content = new MultipartFormDataContent();
+                var jsonContent = JsonContent.Create(request, options: RestClient.DefaultJsonOptions);
+                jsonContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                {
+                    Name = "payload_json"
+                };
+
+                content.Add(jsonContent);
+
+                foreach (var attachment in request.Files)
+                {
+                    var partContent = attachment switch
+                    {
+                        StreamFileUpload streamed => (HttpContent)new StreamContent(streamed.Stream),
+                        ArrayFileUpload array => new ByteArrayContent(array.Data),
+                        _ => throw new ArgumentException("Unsupported file upload type", nameof(request)),
+                    };
+                    partContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                    {
+                        Name = string.Format(CultureInfo.InvariantCulture, FileFormat, attachment.SendId),
+                        FileName = attachment.FileName
+                    };
+                    partContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
+
+                    content.Add(partContent);
+                }
+
+                using var httpRequestMessage = new HttpRequestMessage(method, url);
+                httpRequestMessage.Content = content;
+            
+                httpResponseMessage = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken);
+                return httpResponseMessage;
+            }
+            catch
+            {
+                httpResponseMessage?.Dispose();
+                throw;
+            }
         }
 
         public async Task<TResult?> JsonRequestAsync<TRequest, TResult>(
