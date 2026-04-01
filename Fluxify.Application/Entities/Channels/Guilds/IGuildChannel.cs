@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Application.Model.Channel;
+using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
@@ -21,4 +22,14 @@ public interface IGuildChannel : IGuildScopedEntity, IChannel
     public string Name { get; }
     public int? Position { get; }
     public PermissionOverwrite[]? Overwrites { get; }
+
+    Task SetPermissionOverwriteAsync(
+        PermissionOverwrite overwrite,
+        CancellationToken cancellationToken = default
+    );
+
+    Task RemovePermissionOverwriteAsync(
+        Snowflake targetId,
+        CancellationToken cancellationToken = default
+    );
 }

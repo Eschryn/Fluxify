@@ -15,5 +15,6 @@
 namespace Fluxify.Dto.Channels.Category;
 
 public record ChannelUpdateCategoryRequest(
-    string? Name
+    string? Name,
+    ChannelPermissionOverwrite[]? PermissionOverwrites
 ) : ChannelUpdateRequest;

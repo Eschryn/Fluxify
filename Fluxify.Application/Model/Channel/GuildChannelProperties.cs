@@ -14,4 +14,7 @@
 
 namespace Fluxify.Application.Model.Channel;
 
-public abstract class GuildChannelProperties : ChannelProperties;
+public abstract class GuildChannelProperties : ChannelProperties
+{
+    public List<PermissionOverwrite>? PermissionOverwrites { get; set; }
+}

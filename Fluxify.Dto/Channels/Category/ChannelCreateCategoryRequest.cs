@@ -15,5 +15,6 @@
 namespace Fluxify.Dto.Channels.Category;
 
 public record ChannelCreateCategoryRequest(
-    string Name
-) : ChannelCreateRequest(Name);
+    string Name,
+    ChannelPermissionOverwrite[]? PermissionOverwrites
+) : ChannelCreateRequest(Name, PermissionOverwrites);

@@ -20,6 +20,7 @@ public record ChannelCreateTextRequest(
     string Name,
     bool? Nsfw,
     Snowflake? ParentId,
+    ChannelPermissionOverwrite[]? PermissionOverwrites,
     int? RateLimitPerUser,
     string? Topic
-) : ChannelCreateRequest(Name);
+) : ChannelCreateRequest(Name, PermissionOverwrites);

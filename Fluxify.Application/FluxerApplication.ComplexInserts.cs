@@ -167,7 +167,7 @@ public partial class FluxerApplication
                 _ => guildChannel,
                 (_, target) =>
                 {
-                    _channelMapper.UpdateEntity(target, guildChannel);
+                    ChannelMapper.UpdateEntity(target, guildChannel);
                     return target;
                 });
         }

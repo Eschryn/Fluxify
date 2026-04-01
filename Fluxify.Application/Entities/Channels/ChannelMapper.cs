@@ -87,17 +87,19 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
             },
             _ => throw new ArgumentOutOfRangeException()
         };
+
+    public partial ChannelPermissionOverwrite FromPermissionOverwrite(PermissionOverwrite overwrite);
     
     [MapperIgnoreSource(nameof(GuildChannel<>.Id))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Guild))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Position))]
-    [MapperIgnoreSource(nameof(GuildChannel<>.Overwrites))]
     [MapperIgnoreSource(nameof(GuildChannel<>.RequestBuilder))]
     [MapperIgnoreSource(nameof(GuildChannel<>.OverwritesDictionary))]
     [MapperIgnoreSource(nameof(GuildNestedChannel<>.Position))]
     [MapperIgnoreSource(nameof(GuildTextChannel.MessageRepository))]
     [MapperIgnoreSource(nameof(GuildTextChannel.LastMessageId))]
     [MapperIgnoreSource(nameof(GuildTextChannel.LastPinTimestamp))]
+    [MapProperty(nameof(GuildChannel<>.Overwrites), nameof(TextChannelProperties.PermissionOverwrites))]
     private partial TextChannelProperties ToChannelProperties(GuildTextChannel request);
 
     [MapDerivedType<GuildVoiceChannel, VoiceChannelProperties>]
@@ -107,10 +109,10 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(GuildChannel<>.Id))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Guild))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Position))]
-    [MapperIgnoreSource(nameof(GuildChannel<>.Overwrites))]
     [MapperIgnoreSource(nameof(GuildChannel<>.RequestBuilder))]
     [MapperIgnoreSource(nameof(GuildChannel<>.OverwritesDictionary))]
     [MapperIgnoreSource(nameof(GuildNestedChannel<>.Position))]
+    [MapProperty(nameof(GuildChannel<>.Overwrites), nameof(TextChannelProperties.PermissionOverwrites))]
     private partial GuildChannelProperties ToProperties(IGuildChannel request);
 
     [MapperIgnoreSource(nameof(GroupDm.Id))]

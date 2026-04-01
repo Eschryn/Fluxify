@@ -53,6 +53,19 @@ public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplicat
         reason,
         cancellationToken
     );
+
+    public Task SetPermissionOverwriteAsync(
+        PermissionOverwrite overwrite,
+        CancellationToken cancellationToken = default
+     ) => RequestBuilder.SetPermissionsOverwriteAsync(
+        fluxerApplication.ChannelMapper.FromPermissionOverwrite(overwrite),
+        cancellationToken
+    );
+    
+    public Task RemovePermissionOverwriteAsync(
+        Snowflake targetId,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.RemovePermissionsOverwriteAsync(targetId, cancellationToken);
     
     //public async Task CreateInviteAsync(CancellationToken cancellationToken = default) 
     //    => await Guild.RequestBuilder.

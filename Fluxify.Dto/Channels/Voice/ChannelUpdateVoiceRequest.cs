@@ -20,6 +20,7 @@ public record ChannelUpdateVoiceRequest(
     int? Bitrate,
     string? Name,
     Snowflake? ParentId,
+    ChannelPermissionOverwrite[]? PermissionOverwrites,
     string? RtcRegion,
     int? UserLimit
 ) : ChannelUpdateRequest;

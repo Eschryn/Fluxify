@@ -33,7 +33,7 @@ public partial class FluxerApplication
 {
     protected readonly ApplicationConfig Config;
     internal readonly MessageMapper MessageMapper;
-    private readonly ChannelMapper _channelMapper;
+    internal readonly ChannelMapper ChannelMapper;
     internal readonly UserMapper UserMapper;
     private readonly GuildMapper _guildMapper;
     internal readonly CacheConfig CacheConfig = new();
@@ -54,11 +54,11 @@ public partial class FluxerApplication
 
         WebhookMapper = new WebhookMapper(this);
         MessageMapper = new MessageMapper(this);
-        _channelMapper = new ChannelMapper(this);
+        ChannelMapper = new ChannelMapper(this);
         UserMapper = new UserMapper(this);
         _guildMapper = new GuildMapper(this);
 
-        ChannelsRepository = new ChannelRepository(Rest, _channelMapper, CacheConfig);
+        ChannelsRepository = new ChannelRepository(Rest, ChannelMapper, CacheConfig);
         UsersRepository = new UserRepository(Rest, UserMapper, CacheConfig);
         GuildsRepository = new GuildRepository(Rest, _guildMapper, CacheConfig);
 
