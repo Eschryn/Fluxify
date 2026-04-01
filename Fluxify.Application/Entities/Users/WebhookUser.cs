@@ -18,21 +18,4 @@ using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class WebhookUser : IUser
-{
-    public required Snowflake Id { get; init; }
-    public bool? Bot { get; internal set; }
-    public required string Username { get; init; }
-    public string? Discriminator { get; internal set; }
-    public string? GlobalName { get; internal set; }
-    public MediaHash? AvatarHash { get; internal set; }
-    public Color? AvatarColor { get; internal set; }
-    public bool? System { get; internal set; }
-    public PublicUserFlags Flags { get; internal set; }
-    
-    public string ToString(string? format, IFormatProvider? formatProvider) => format switch
-    {
-        "i" or "I" => ((long)Id).ToString(),
-        _ or "m" or "M" => $"<#{Id}>"
-    };
-}
+public class WebhookUser(FluxerApplication fluxerApplication) : GlobalUser(fluxerApplication);

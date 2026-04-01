@@ -124,7 +124,7 @@ public partial class MessageMapper(
             {
                 Id = guildId,
                 Name = string.Empty,
-                Owner = new GlobalUser()
+                Owner = null!
             }
             : null;
         

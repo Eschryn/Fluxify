@@ -20,7 +20,7 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class PrivateUser : GlobalUser
+public class PrivateUser(FluxerApplication fluxerApplication) : GlobalUser(fluxerApplication)
 {
     public int? AccentColor { get; set;  }
     public string[] Acls { get; set;  }

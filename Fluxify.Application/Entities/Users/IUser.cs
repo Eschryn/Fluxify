@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
+using Fluxify.Application.Model;
 using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Entities.Users;
@@ -23,8 +25,20 @@ public interface IUser : IEntity, IFormattable
     public string Username { get; }
     public string? Discriminator { get; }
     public string? GlobalName { get; }
-    public MediaHash? AvatarHash { get; }
+    internal MediaHash? AvatarHash { get; }
     public Color? AvatarColor { get; }
     public bool? System { get; }
     public PublicUserFlags Flags { get; }
+
+    public Uri GetAvatarUri(
+        [AllowedValues(
+            16, 20, 22, 24, 28, 32, 40, 44, 48, 56, 60, 64,
+            80, 96, 100, 128, 160, 240, 256, 300, 320, 480,
+            512, 600, 640, 1024, 1280, 1536, 2048, 3072, 4096
+        )]
+        int size = 128,
+        ImageFormat format = ImageFormat.Webp,
+        ImageQuality quality = ImageQuality.High,
+        bool animated = false
+    );
 }

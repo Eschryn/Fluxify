@@ -13,14 +13,19 @@
 // limitations under the License.
 
 using System.Drawing;
+using System.Globalization;
+using System.Text;
+using Fluxify.Application.Model;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
-using Fluxify.Dto.Users;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GlobalUser : IUser, IPresence
+public class GlobalUser(FluxerApplication fluxerApplication) : IUser, IPresence
 {
+    private static readonly CompositeFormat AvatarUriFormat =
+        CompositeFormat.Parse("/avatars/{0}/{1}.{2}?size={3}&format={2}&quality={4}&animated={5}");
+
     public UserStatus Status { get; internal set; } = UserStatus.Offline;
     public bool IsMobile { get; internal set; } = false;
     public bool IsAfk { get; internal set; } = false;
@@ -34,7 +39,26 @@ public class GlobalUser : IUser, IPresence
     public Color? AvatarColor { get; internal set; }
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }
-    
+
+    public Uri GetAvatarUri(
+        int size = 128,
+        ImageFormat format = ImageFormat.Webp,
+        ImageQuality quality = ImageQuality.High,
+        bool animated = false
+    ) => new(
+        fluxerApplication.InstanceInfo!.Endpoints.Media,
+        string.Format(
+            CultureInfo.InvariantCulture,
+            AvatarUriFormat,
+            Id,
+            AvatarHash?.Hash,
+            format.ToString().ToLowerInvariant(),
+            size,
+            quality.ToString().ToLowerInvariant(),
+            animated.ToString().ToLowerInvariant()
+        )
+    );
+
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch
     {
         "i" or "I" => ((long)Id).ToString(),

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Members;
@@ -24,27 +25,36 @@ namespace Fluxify.Application.Entities.Users;
 
 [Mapper]
 [UseStaticMapper(typeof(CommonMapper))]
-public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<GuildMember>
+public partial class UserMapper(FluxerApplication application) : IUpdateEntity<GlobalUser>, IUpdateEntity<GuildMember>
 {
     [MapProperty(nameof(UserPartialResponse.Avatar), nameof(GlobalUser.AvatarHash))]
     [MapValue(nameof(GlobalUser.Status), UserStatus.Offline)]
     [MapValue(nameof(GlobalUser.IsAfk), false)]
     [MapValue(nameof(GlobalUser.IsMobile), false)]
     [MapValue(nameof(GlobalUser.CustomStatus), null)]
-    public partial GlobalUser Map(UserPartialResponse dto);
+    private partial GlobalUser Map(UserPartialResponse dto, FluxerApplication fluxerApplication);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GlobalUser Map(UserPartialResponse dto) => Map(dto, application);
     
     [MapValue(nameof(GlobalUser.Status), UserStatus.Offline)]
     [MapValue(nameof(GlobalUser.IsAfk), false)]
     [MapValue(nameof(GlobalUser.IsMobile), false)]
     [MapValue(nameof(GlobalUser.CustomStatus), null)]
-    public partial PrivateUser Map(UserPrivateReponse dto);
+    private partial PrivateUser Map(UserPrivateReponse dto, FluxerApplication fluxerApplication);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public PrivateUser Map(UserPrivateReponse dto) => Map(dto, application);
     
     [MapProperty(nameof(UserPartialResponse.Avatar), nameof(GlobalUser.AvatarHash))]
     [MapValue(nameof(GlobalUser.Status), UserStatus.Offline)]
     [MapValue(nameof(GlobalUser.IsAfk), false)]
     [MapValue(nameof(GlobalUser.IsMobile), false)]
     [MapValue(nameof(GlobalUser.CustomStatus), null)]
-    public partial WebhookUser MapWebhook(UserPartialResponse dto);
+    private partial WebhookUser MapWebhook(UserPartialResponse dto, FluxerApplication fluxerApplication);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public WebhookUser MapWebhook(UserPartialResponse dto) => MapWebhook(dto, application);
     
     [MapProperty(nameof(GuildMemberResponse.Roles), nameof(GuildMember.AssignedRoleIds))]
     [MapperIgnoreTarget(nameof(GuildMember.Roles))]
@@ -53,8 +63,8 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
     [MapperIgnoreTarget(nameof(GuildMember.Status))]
     [MapperIgnoreTarget(nameof(GuildMember.CustomStatus))]
     [MapperIgnoreSource(nameof(GuildMemberResponse.User))]
-    private partial GuildMember Map(GuildMemberResponse dto, GlobalUser user, Snowflake id, Guild guild);
-    public GuildMember Map(GuildMemberResponse dto, GlobalUser user, Guild guild) => Map(dto, user, user.Id, guild);
+    private partial GuildMember Map(GuildMemberResponse dto, GlobalUser user, Snowflake id, Guild guild, FluxerApplication fluxerApplication);
+    public GuildMember Map(GuildMemberResponse dto, GlobalUser user, Guild guild) => Map(dto, user, user.Id, guild, application);
 
     [MapperIgnoreTarget(nameof(GlobalUser.Id))]
     [MapperIgnoreSource(nameof(GlobalUser.Id))]

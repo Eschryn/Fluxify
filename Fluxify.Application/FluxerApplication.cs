@@ -21,6 +21,8 @@ using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Credentials;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Instance;
+using Fluxify.Dto.Users;
 using Fluxify.Gateway;
 using Fluxify.Rest;
 using UserMapper = Fluxify.Application.Entities.Users.UserMapper;
@@ -32,7 +34,7 @@ public partial class FluxerApplication
     protected readonly ApplicationConfig Config;
     internal readonly MessageMapper MessageMapper;
     private readonly ChannelMapper _channelMapper;
-    private readonly UserMapper _userMapper;
+    internal readonly UserMapper UserMapper;
     private readonly GuildMapper _guildMapper;
     internal readonly CacheConfig CacheConfig = new();
 
@@ -40,6 +42,8 @@ public partial class FluxerApplication
     public RestClient Rest { get; }
 
     public PrivateUser CurrentUser { get; private set; }
+
+    internal WellKnownFluxerResponse? InstanceInfo { get; private set; }
 
     public FluxerApplication(ApplicationConfig config)
     {
@@ -49,11 +53,11 @@ public partial class FluxerApplication
 
         MessageMapper = new MessageMapper(this);
         _channelMapper = new ChannelMapper(this);
-        _userMapper = new UserMapper();
+        UserMapper = new UserMapper(this);
         _guildMapper = new GuildMapper(this);
 
         ChannelsRepository = new ChannelRepository(Rest, _channelMapper, CacheConfig);
-        UsersRepository = new UserRepository(Rest, _userMapper, CacheConfig);
+        UsersRepository = new UserRepository(Rest, UserMapper, CacheConfig);
         GuildsRepository = new GuildRepository(Rest, _guildMapper, CacheConfig);
 
         InitializeEvents();
@@ -61,6 +65,8 @@ public partial class FluxerApplication
 
     public virtual async Task RunAsync(CancellationToken cancellationToken = default)
     {
+        InstanceInfo = await Rest.GetWellKnownAsync();
+
         Uri gatewayUri;
         var credentials = await Config.FluxerConfig.CredentialProvider();
         if (credentials is BotTokenCredentials botTokenCredentials)
@@ -75,8 +81,7 @@ public partial class FluxerApplication
         }
         else
         {
-            // TODO: get from instance data
-            gatewayUri = new Uri("wss://gateway.fluxer.app/");
+            gatewayUri = InstanceInfo!.Endpoints.Gateway;
         }
 
         await Gateway.RunAsync(gatewayUri, cancellationToken);

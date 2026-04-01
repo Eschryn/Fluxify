@@ -14,8 +14,11 @@
 
 using System.Collections.Concurrent;
 using System.Drawing;
+using System.Globalization;
+using System.Text;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
+using Fluxify.Application.Model;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Members;
@@ -23,14 +26,22 @@ using Fluxify.Rest.Guilds;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GuildMember : IGuildMember
+public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
 {
+    private static readonly CompositeFormat AvatarUriFormat = CompositeFormat.Parse("/guilds/{0}/users/{1}/avatars/{2}.{3}?size={4}&format={3}&quality={5}&animated={6}");
+    
     private MemberRequestBuilder RequestBuilder => field ??= Guild.RequestBuilder.Members[Id];
     public Snowflake Id { get; init; }
 
     public Snowflake[] AssignedRoleIds { get; set; } = [];
     public Color? AccentColor { get; internal set;  }
-    public MediaHash? AvatarHash { get; internal set;  }
+
+    public MediaHash? AvatarHash
+    {
+        get => field ?? User.AvatarHash;
+        internal set;
+    }
+    
     public MediaHash? BannerHash { get; internal set;  } 
     public DateTimeOffset? JoinedAt { get; internal set;  }
     public DateTimeOffset? CommunicationsDisabledUntil { get; internal set;  }
@@ -53,7 +64,35 @@ public class GuildMember : IGuildMember
     public Color? AvatarColor => User.AvatarColor;
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;
-    
+
+    public Uri GetAvatarUri(
+        int size = 128,
+        ImageFormat format = ImageFormat.Webp,
+        ImageQuality quality = ImageQuality.High,
+        bool animated = false
+    )
+    {
+        if (User.AvatarHash == AvatarHash)
+        {
+            return User.GetAvatarUri(size, format, quality, animated);
+        }
+
+        return new Uri(
+            fluxerApplication.InstanceInfo!.Endpoints.Media,
+            string.Format(
+                CultureInfo.InvariantCulture,
+                AvatarUriFormat,
+                Guild.Id,
+                Id,
+                AvatarHash?.Hash,
+                format.ToString().ToLowerInvariant(),
+                size,
+                quality.ToString().ToLowerInvariant(),
+                animated.ToString().ToLowerInvariant()
+            )
+        );
+    }
+
     internal readonly ConcurrentDictionary<string, VoiceState> VoiceStateList = [];
     public IReadOnlyCollection<IVoiceState> VoiceStates => VoiceStateList.Values.Cast<IVoiceState>().ToArray();
 

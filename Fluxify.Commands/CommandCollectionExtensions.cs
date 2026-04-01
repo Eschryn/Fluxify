@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Commands.CommandCollection;
 using Fluxify.Commands.Model;
 
-namespace Fluxify.Commands.CommandCollection;
+namespace Fluxify.Commands;
 
 public static class CommandCollectionExtensions
 {

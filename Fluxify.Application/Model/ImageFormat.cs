@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
+namespace Fluxify.Application.Model;
 
-namespace Fluxify.Dto.Common;
-
-[JsonConverter(typeof(Base64ImageConverter))]
-public readonly struct Base64Image(byte[] data, string mimeType, string? charset = null)
+public enum ImageFormat
 {
-    public byte[] Data { get; } = data;
-    public string MimeType { get; } = mimeType;
-    public string? Charset { get; } = charset;
+    Png,
+    Jpg,
+    Jpeg,
+    Webp,
+    Gif
 }
