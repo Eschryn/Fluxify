@@ -16,6 +16,7 @@ using System.Collections.Concurrent;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
+using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Model;
@@ -29,6 +30,7 @@ namespace Fluxify.Application.Entities.Users;
 public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
 {
     private static readonly CompositeFormat AvatarUriFormat = CompositeFormat.Parse("/guilds/{0}/users/{1}/avatars/{2}.{3}?size={4}&format={3}&quality={5}&animated={6}");
+    private static readonly CompositeFormat BannerUriFormat = CompositeFormat.Parse("/guilds/{0}/users/{1}/banners/{2}.{3}?size={4}&format={3}&quality={5}&animated={6}");
     
     private MemberRequestBuilder RequestBuilder => field ??= Guild.RequestBuilder.Members[Id];
     public Snowflake Id { get; init; }
@@ -41,8 +43,12 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
         get => field ?? User.AvatarHash;
         internal set;
     }
-    
-    public MediaHash? BannerHash { get; internal set;  } 
+
+    public MediaHash? BannerHash
+    {
+        get => field ??= User.BannerHash;
+        internal set;
+    } 
     public DateTimeOffset? JoinedAt { get; internal set;  }
     public DateTimeOffset? CommunicationsDisabledUntil { get; internal set;  }
     public bool Deaf { get; internal set;  }
@@ -65,6 +71,27 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;
 
+    internal readonly ConcurrentDictionary<string, VoiceState> VoiceStateList = [];
+    public IReadOnlyCollection<IVoiceState> VoiceStates => VoiceStateList.Values.Cast<IVoiceState>().ToArray();
+
+    public Task AddRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
+        => RequestBuilder.AddRoleAsync(role.Id, reason, cancellationToken);
+    
+    public Task AddRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default) 
+        => RequestBuilder.AddRoleAsync(roleId, reason, cancellationToken);
+
+    public Task RemoveRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
+        => RequestBuilder.RemoveRoleAsync(role.Id, reason, cancellationToken);
+    
+    public Task RemoveRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default) 
+        => RequestBuilder.RemoveRoleAsync(roleId, reason, cancellationToken);
+    
+    public Task KickAsync(string? reason = null, CancellationToken cancellationToken = default) 
+        => RequestBuilder.KickAsync(reason, cancellationToken);
+    
+    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
+        => fluxerApplication.GetOrCreateDmAsync(Id, cancellationToken);
+    
     public Uri GetAvatarUri(
         int size = 128,
         ImageFormat format = ImageFormat.Webp,
@@ -92,25 +119,34 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
             )
         );
     }
+    
+    public Uri? GetBannerUri(
+        int size = 128,
+        ImageFormat format = ImageFormat.Webp,
+        ImageQuality quality = ImageQuality.High,
+        bool animated = false
+    )
+    {
+        if (User.BannerHash == BannerHash)
+        {
+            return User.GetBannerUri(size, format, quality, animated);
+        }
 
-    internal readonly ConcurrentDictionary<string, VoiceState> VoiceStateList = [];
-    public IReadOnlyCollection<IVoiceState> VoiceStates => VoiceStateList.Values.Cast<IVoiceState>().ToArray();
-
-    public Task AddRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
-        => RequestBuilder.AddRoleAsync(role.Id, reason, cancellationToken);
-    
-    public Task AddRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default) 
-        => RequestBuilder.AddRoleAsync(roleId, reason, cancellationToken);
-
-    public Task RemoveRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default)
-        => RequestBuilder.RemoveRoleAsync(role.Id, reason, cancellationToken);
-    
-    public Task RemoveRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default) 
-        => RequestBuilder.RemoveRoleAsync(roleId, reason, cancellationToken);
-    
-    public Task KickAsync(string? reason = null, CancellationToken cancellationToken = default) 
-        => RequestBuilder.KickAsync(reason, cancellationToken);
-    
+        return new Uri(
+            fluxerApplication.InstanceInfo!.Endpoints.Media,
+            string.Format(
+                CultureInfo.InvariantCulture,
+                BannerUriFormat,
+                Guild.Id,
+                Id,
+                AvatarHash?.Hash,
+                format.ToString().ToLowerInvariant(),
+                size,
+                quality.ToString().ToLowerInvariant(),
+                animated.ToString().ToLowerInvariant()
+            )
+        );
+    }
     
     public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);
 }

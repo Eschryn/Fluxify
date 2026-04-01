@@ -20,8 +20,5 @@ public record ChannelCreateVoiceRequest(
     int? Bitrate,
     string Name,
     Snowflake? ParentId,
-    ChannelPermissionOverwrite[]? PermissionOverwrites,
     int? UserLimit
-) : ChannelCreateRequest(
-    Name,
-    PermissionOverwrites);
+) : ChannelCreateRequest(Name);

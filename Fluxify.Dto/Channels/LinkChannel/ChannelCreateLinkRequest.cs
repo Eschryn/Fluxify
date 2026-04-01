@@ -19,8 +19,5 @@ namespace Fluxify.Dto.Channels.LinkChannel;
 public record ChannelCreateLinkRequest(
     string Name,
     Snowflake? ParentId,
-    ChannelPermissionOverwrite[]? PermissionOverwrites,
     string? Url
-) : ChannelCreateRequest(
-    Name,
-    PermissionOverwrites);
+) : ChannelCreateRequest(Name);

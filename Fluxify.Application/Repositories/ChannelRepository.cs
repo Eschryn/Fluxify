@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
+using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.State;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
+using Fluxify.Dto.Users;
 using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
@@ -27,16 +31,29 @@ public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, C
 {
     internal event Action<IChannel, ChangeType>? OnChange;
     internal readonly ICache<IChannel> Cache = ICache<IChannel>.CreateLru(config.ChannelCacheSize, mapper);
+    private readonly ConcurrentDictionary<Snowflake, PrivateTextChannel> _privateChannels = new();
 
-    public async Task<IChannel> GetAsync(Snowflake id, bool bypassCache = false)
+    public async Task<IChannel> GetAsync(Snowflake guildId, bool bypassCache = false)
     {
-        var channel = await Cache.GetOrCreateAsync(id, GetChannelRestAsync, bypassCache);
+        var channel = await Cache.GetOrCreateAsync(guildId, GetChannelRestAsync, bypassCache);
 
         OnChange?.Invoke(channel, ChangeType.Update);
-
+        
         return channel;
     }
 
+    internal async Task<TChannel> CreateOrGetPrivateChannelAsync<TChannel>(CreatePrivateChannelRequest request, CancellationToken cancellationToken)
+        where TChannel : PrivateTextChannel
+    {
+        if (request.RecipientId.HasValue && _privateChannels.TryGetValue(request.RecipientId.Value, out var channel))
+        {
+            return (TChannel)channel;
+        }
+        
+        var result = await client.Users.Me.PrivateChannels.CreateAsync(request, cancellationToken);
+        return (TChannel)Insert(result!);
+    }
+    
     internal IChannel Insert(ChannelResponse response)
     {
         var updateOrCreate = Cache.UpdateOrCreate(mapper.FromDto(response));
@@ -50,6 +67,12 @@ public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, C
                     mapper.UpdateEntity(value, guildChannel);
                     return value;
                 });
+        }
+
+        if (updateOrCreate is Dm dmChannel)
+        {
+            var snowflake = dmChannel.Recipients!.Single().Id;
+            _privateChannels.TryAdd(snowflake, dmChannel);
         }
 
         return updateOrCreate;
@@ -100,17 +123,23 @@ public sealed class ChannelRepository(RestClient client, ChannelMapper mapper, C
     public async Task DeleteAsync(Snowflake id, bool silent = false)
     {
         await client.Channels[id].DeleteAsync(silent);
-        Remove(id);
+        Remove(id, out _);
     }
 
-    internal void Remove(Snowflake id)
+    internal bool Remove(Snowflake id, [NotNullWhen(true)] out IChannel? removedChannel)
     {
         if (Cache.GetCachedOrDefault<IGuildChannel>(id) is { Guild: { } guild })
         {
             guild.GuildChannels.Remove(id, out _);
         }
 
-        Cache.Remove(id, out _);
+        if (Cache.Remove(id, out removedChannel) && removedChannel is Dm { Recipients: {} recipients })
+        {
+            var recipient = recipients.Single();
+            _privateChannels.TryRemove(recipient.Id, out _);
+        }
+        
+        return removedChannel != null;
     }
 
     internal void Reset() => Cache.Clear();

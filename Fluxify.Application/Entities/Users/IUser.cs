@@ -14,6 +14,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
+using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Model;
 using Fluxify.Dto.Common;
 
@@ -30,12 +31,21 @@ public interface IUser : IEntity, IFormattable
     public bool? System { get; }
     public PublicUserFlags Flags { get; }
 
+    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default);
+    
     public Uri GetAvatarUri(
         [AllowedValues(
             16, 20, 22, 24, 28, 32, 40, 44, 48, 56, 60, 64,
             80, 96, 100, 128, 160, 240, 256, 300, 320, 480,
             512, 600, 640, 1024, 1280, 1536, 2048, 3072, 4096
         )]
+        int size = 128,
+        ImageFormat format = ImageFormat.Webp,
+        ImageQuality quality = ImageQuality.High,
+        bool animated = false
+    );
+
+    Uri? GetBannerUri(
         int size = 128,
         ImageFormat format = ImageFormat.Webp,
         ImageQuality quality = ImageQuality.High,

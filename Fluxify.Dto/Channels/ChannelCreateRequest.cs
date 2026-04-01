@@ -27,6 +27,5 @@ namespace Fluxify.Dto.Channels;
 [JsonDerivedType(typeof(ChannelCreateLinkRequest), (int)ChannelType.LinkChannel)]
 [JsonDerivedType(typeof(ChannelCreateVoiceRequest), (int)ChannelType.VoiceChannel)]
 public abstract record ChannelCreateRequest(
-    string Name,
-    ChannelPermissionOverwrite[]? PermissionOverwrites
+    string Name
 );

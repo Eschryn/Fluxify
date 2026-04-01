@@ -22,6 +22,7 @@ using Fluxify.Dto.Channels.Category;
 using Fluxify.Dto.Channels.LinkChannel;
 using Fluxify.Dto.Channels.Text;
 using Fluxify.Dto.Channels.Voice;
+using Fluxify.Dto.Users;
 using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Channels;
@@ -52,6 +53,9 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
             guild
         );
     }
+    
+    private IUser MapUser(UserPartialResponse response) 
+        => application.UsersRepository.Insert(response);
     
     [MapperIgnoreSource(nameof(VoiceChannelProperties.RtcRegion))]
     private partial ChannelCreateVoiceRequest ToCreateRequest(VoiceChannelProperties request);
@@ -87,13 +91,13 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(GuildChannel<>.Id))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Guild))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Position))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.Overwrites))]
     [MapperIgnoreSource(nameof(GuildChannel<>.RequestBuilder))]
     [MapperIgnoreSource(nameof(GuildChannel<>.OverwritesDictionary))]
     [MapperIgnoreSource(nameof(GuildNestedChannel<>.Position))]
     [MapperIgnoreSource(nameof(GuildTextChannel.MessageRepository))]
     [MapperIgnoreSource(nameof(GuildTextChannel.LastMessageId))]
     [MapperIgnoreSource(nameof(GuildTextChannel.LastPinTimestamp))]
-    [MapProperty(nameof(GuildChannel<>.Overwrites), nameof(GuildChannelProperties.PermissionOverwrites))]
     private partial TextChannelProperties ToChannelProperties(GuildTextChannel request);
 
     [MapDerivedType<GuildVoiceChannel, VoiceChannelProperties>]
@@ -103,10 +107,10 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(GuildChannel<>.Id))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Guild))]
     [MapperIgnoreSource(nameof(GuildChannel<>.Position))]
+    [MapperIgnoreSource(nameof(GuildChannel<>.Overwrites))]
     [MapperIgnoreSource(nameof(GuildChannel<>.RequestBuilder))]
     [MapperIgnoreSource(nameof(GuildChannel<>.OverwritesDictionary))]
     [MapperIgnoreSource(nameof(GuildNestedChannel<>.Position))]
-    [MapProperty(nameof(GuildChannel<>.Overwrites), nameof(GuildChannelProperties.PermissionOverwrites))]
     private partial GuildChannelProperties ToProperties(IGuildChannel request);
 
     [MapperIgnoreSource(nameof(GroupDm.Id))]
@@ -145,7 +149,6 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
     [MapperIgnoreSource(nameof(ChannelResponse.OwnerId))]
     [MapperIgnoreSource(nameof(ChannelResponse.Nicks))]
     [MapperIgnoreSource(nameof(ChannelResponse.IconHash))]
-    [MapperIgnoreSource(nameof(ChannelResponse.Recipients))]
     [MapperIgnoreSource(nameof(ChannelResponse.Type))]
     [MapperIgnoreSource(nameof(ChannelResponse.Nsfw))]
     [MapperIgnoreSource(nameof(ChannelResponse.Topic))]
@@ -265,6 +268,8 @@ public partial class ChannelMapper(FluxerApplication application) : IUpdateEntit
         FluxerApplication fluxerApplication,
         Guild guild);
 
+    [MapDerivedType<Dm, Dm>]
+    [MapDerivedType<GroupDm, GroupDm>]
     [MapDerivedType<GuildVoiceChannel, GuildVoiceChannel>]
     [MapDerivedType<GuildTextChannel, GuildTextChannel>]
     [MapDerivedType<GuildLinkChannel, GuildLinkChannel>]

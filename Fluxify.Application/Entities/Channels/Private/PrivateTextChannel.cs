@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Types;
@@ -31,6 +32,7 @@ public abstract class PrivateTextChannel(
     public required Snowflake Id { get; init; }
     public Snowflake? LastMessageId { get; internal set; }
     public DateTimeOffset? LastPinTimestamp { get; internal set; }
+    public IUser[]? Recipients { get; internal set; }
     
     internal MessageRepository MessageRepository 
         => field ??= new MessageRepository(

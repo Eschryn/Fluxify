@@ -32,6 +32,7 @@ public partial class UserMapper(FluxerApplication application) : IUpdateEntity<G
     [MapValue(nameof(GlobalUser.IsAfk), false)]
     [MapValue(nameof(GlobalUser.IsMobile), false)]
     [MapValue(nameof(GlobalUser.CustomStatus), null)]
+    [MapValue(nameof(GlobalUser.BannerHash), null)]
     private partial GlobalUser Map(UserPartialResponse dto, FluxerApplication fluxerApplication);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,6 +52,7 @@ public partial class UserMapper(FluxerApplication application) : IUpdateEntity<G
     [MapValue(nameof(GlobalUser.IsAfk), false)]
     [MapValue(nameof(GlobalUser.IsMobile), false)]
     [MapValue(nameof(GlobalUser.CustomStatus), null)]
+    [MapValue(nameof(GlobalUser.BannerHash), null)]
     private partial WebhookUser MapWebhook(UserPartialResponse dto, FluxerApplication fluxerApplication);
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,6 +107,7 @@ public partial class UserMapper(FluxerApplication application) : IUpdateEntity<G
     [MapperIgnoreTarget(nameof(GlobalUser.Username))]
     [MapperIgnoreTarget(nameof(GlobalUser.GlobalName))]
     [MapperIgnoreTarget(nameof(GlobalUser.Flags))]
+    [MapperIgnoreTarget(nameof(GlobalUser.BannerHash))]
     [MapperIgnoreSource(nameof(PresenceResponse.User))]
     [MapProperty(nameof(PresenceResponse.Status), nameof(GlobalUser.Status))]
     [MapProperty(nameof(PresenceResponse.Mobile), nameof(GlobalUser.IsMobile))]

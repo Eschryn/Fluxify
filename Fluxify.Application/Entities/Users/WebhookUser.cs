@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Drawing;
-using Fluxify.Core.Types;
-using Fluxify.Dto.Common;
-
 namespace Fluxify.Application.Entities.Users;
 
 public class WebhookUser(FluxerApplication fluxerApplication) : GlobalUser(fluxerApplication);

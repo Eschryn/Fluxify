@@ -88,7 +88,7 @@ public partial class FluxerApplication
     {
         if (UsersRepository.GetCachedOrDefault(presence.User.Id) is {} user)
         {
-            _userMapper.UpdateStatus(user, presence);
+            UserMapper.UpdateStatus(user, presence);
         }
     }
 
@@ -113,13 +113,13 @@ public partial class FluxerApplication
                 {
                     VoiceChannel = (GuildVoiceChannel)guild.Channels[voiceState.ChannelId.Value]
                 };
-                _userMapper.UpdateVoiceState(state, voiceState);
+                UserMapper.UpdateVoiceState(state, voiceState);
                 
                 return state;
             },
             (_, target) =>
             {
-                _userMapper.UpdateVoiceState(target, voiceState);
+                UserMapper.UpdateVoiceState(target, voiceState);
                 return target;
             }
         );
@@ -178,7 +178,7 @@ public partial class FluxerApplication
         IUser user;
         if (arg.WebhookId.HasValue)
         {
-            user = _userMapper.MapWebhook(arg.Author);
+            user = UserMapper.MapWebhook(arg.Author);
         }
         else if (arg.GuildId.HasValue)
         {

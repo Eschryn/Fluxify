@@ -118,7 +118,7 @@ public partial class FluxerApplication
 
         foreach (var argDeletedChannel in arg.DeletedChannels ?? [])
         {
-            ChannelsRepository.Cache.Remove(argDeletedChannel, out _);
+            ChannelsRepository.Remove(argDeletedChannel, out _);
         }
 
         foreach (var voiceState in arg.VoiceStates ?? [])
@@ -431,7 +431,7 @@ public partial class FluxerApplication
             guildChannel.Guild.GuildChannels.Remove(guildChannel.Id, out _);
         }
 
-        ChannelsRepository.Cache.Remove(arg.Id, out _);
+        ChannelsRepository.Remove(arg.Id, out _);
 
         return Task.CompletedTask;
     }
