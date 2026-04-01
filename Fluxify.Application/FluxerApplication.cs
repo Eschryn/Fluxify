@@ -18,6 +18,7 @@ using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Credentials;
 using Fluxify.Core.Types;
@@ -25,7 +26,6 @@ using Fluxify.Dto.Instance;
 using Fluxify.Dto.Users;
 using Fluxify.Gateway;
 using Fluxify.Rest;
-using UserMapper = Fluxify.Application.Entities.Users.UserMapper;
 
 namespace Fluxify.Application;
 
@@ -37,6 +37,7 @@ public partial class FluxerApplication
     internal readonly UserMapper UserMapper;
     private readonly GuildMapper _guildMapper;
     internal readonly CacheConfig CacheConfig = new();
+    internal readonly WebhookMapper WebhookMapper;
 
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
@@ -51,6 +52,7 @@ public partial class FluxerApplication
         Gateway = new GatewayClient(config.FluxerConfig, config.GatewayConfig);
         Rest = new RestClient(config.FluxerConfig);
 
+        WebhookMapper = new WebhookMapper(this);
         MessageMapper = new MessageMapper(this);
         _channelMapper = new ChannelMapper(this);
         UserMapper = new UserMapper(this);

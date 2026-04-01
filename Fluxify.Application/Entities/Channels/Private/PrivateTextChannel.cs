@@ -76,6 +76,11 @@ public abstract class PrivateTextChannel(
         CancellationToken cancellationToken = default
     ) => MessageRepository.DeleteMessageAsync(id, cancellationToken);
     
+    public Task DeleteMessagesAsync(
+        Snowflake[] ids,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.Messages.BulkDeleteAsync(new BulkDeleteMessagesRequest(ids), cancellationToken);
+    
     public Task<Message> EditMessageAsync(
         Message message,
         Action<MessageEdit> edit,

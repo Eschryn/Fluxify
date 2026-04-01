@@ -26,6 +26,7 @@ using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 using Fluxify.Dto.Channels.Text.Messages.Reference;
 using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.ScheduledMessages;
+using Fluxify.Dto.Webhooks;
 using Fluxify.Gateway.Model.Data.Channel.Message;
 using Riok.Mapperly.Abstractions;
 
@@ -63,6 +64,7 @@ public partial class MessageMapper(
     private partial MessageAttachmentRequest Map(Attachment attachment);
     
     public partial CreateMessageRequest Map(MessageCreate message);
+    public partial CreateWebhookMessageRequest Map(MessageCreate message, string? username, string? avatarUrl);
     public partial ScheduledMessageSchema Map(MessageCreate messageCreate, DateTime scheduledLocalAt, string timezone);
     
     [MapperIgnoreSource(nameof(Message.Id))] 

@@ -17,6 +17,7 @@ using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Types;
@@ -33,7 +34,8 @@ public class Guild(FluxerApplication app) : IEntity
 
     internal GuildMemberRepository MembersRepository
         => field ??=
-            new GuildMemberRepository(this, app.Rest, app.UserMapper, app.UsersRepository, app.GuildsRepository, app.CacheConfig);
+            new GuildMemberRepository(this, app.Rest, app.UserMapper, app.UsersRepository, app.GuildsRepository,
+                app.CacheConfig);
 
     internal GuildRequestBuilder RequestBuilder => field ??= app.Rest.Guilds[Id];
 
@@ -46,7 +48,7 @@ public class Guild(FluxerApplication app) : IEntity
     public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels => GuildChannels.AsReadOnly();
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
-    
+
 
     public GuildVoiceChannel? AfkChannel { get; internal set; }
     public int AfkTimeout { get; internal set; }
@@ -78,8 +80,9 @@ public class Guild(FluxerApplication app) : IEntity
     public string? VanityUrlCode { get; internal set; }
     public GuildVerificationLevel VerificationLevel { get; internal set; }
     public int MemberCount { get; internal set; }
-    
-    public IUser CurrentMember => field ??= MembersRepository.Cache.GetCachedOrDefault<GuildMember>(app.CurrentUser.Id)!;
+
+    public IUser CurrentMember =>
+        field ??= MembersRepository.Cache.GetCachedOrDefault<GuildMember>(app.CurrentUser.Id)!;
 
     public Task<GuildTextChannel> CreateTextChannelAsync(
         string name,
@@ -115,6 +118,17 @@ public class Guild(FluxerApplication app) : IEntity
     {
         Name = name
     }.Configure(configure));
+
+    public async Task<Webhook[]> GetWebhooksAsync(
+        CancellationToken cancellationToken = default
+    ) => (await RequestBuilder.GetWebhooksAsync(cancellationToken))
+        .Select(app.WebhookMapper.FromResponse)
+        .ToArray();
+
+    public async Task<Webhook> GetWebhookAsync(
+        Snowflake id,
+        CancellationToken cancellationToken = default
+    ) => app.WebhookMapper.FromResponse(await app.Rest.Webhooks[id].GetAsync(cancellationToken));
 
     public Task<GuildMember> GetMemberAsync(Snowflake id) => MembersRepository.GetAsync(id);
 }

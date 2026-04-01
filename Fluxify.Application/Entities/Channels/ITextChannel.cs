@@ -66,4 +66,5 @@ public interface ITextChannel : IChannel
     );
 
     Task AckPinnedMessagesAsync(CancellationToken cancellationToken = default);
+    Task DeleteMessagesAsync(Snowflake[] ids, CancellationToken cancellationToken = default);
 }
