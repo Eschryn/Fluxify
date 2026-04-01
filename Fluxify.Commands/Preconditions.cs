@@ -31,28 +31,28 @@ public static class Preconditions
             $"Requires permissions: {Enum.Format(PermissionEnumType, permissions, "F")}",
             RequirePermissionTemplate(
                 permissions,
-                static ctx => (GuildUser)ctx.Author,
+                static ctx => (IGuildMember)ctx.Author,
                 failMessage,
                 guildFailMessage ?? "You do not have the required permissions to use this command."
             )
         );
 
-    /*public static Precondition RequireBotPermissions(Permissions permissions, string? failMessage = null,
+    public static Precondition RequireBotPermissions(Permissions permissions, string? failMessage = null,
         string? guildFailMessage = null)
         => new(
             $"require_bot_permissions${Enum.Format(PermissionEnumType, permissions, "X")}",
             $"Requires permissions: {Enum.Format(PermissionEnumType, permissions, "F")}",
             RequirePermissionTemplate(
                 permissions,
-                static ctx => ctx.Guild!.CurrentUser,
+                static ctx => (IGuildMember)ctx.Guild!.CurrentMember,
                 failMessage,
                 guildFailMessage ?? "The bot does not have the required permissions to use this command."
             )
-        );*/
+        );
 
     private static PreconditionDelegate RequirePermissionTemplate(
         Permissions permissions,
-        Func<CommandContext, GuildUser> target,
+        Func<CommandContext, IGuildMember> target,
         string? failMessage,
         string guildFailMessage
     ) => ctx =>

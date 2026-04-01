@@ -14,6 +14,7 @@
 
 using System.Drawing;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Entities.Users;
 
@@ -24,7 +25,7 @@ public class WebhookUser : IUser
     public required string Username { get; init; }
     public string? Discriminator { get; internal set; }
     public string? GlobalName { get; internal set; }
-    public string? AvatarHash { get; internal set; }
+    public MediaHash? AvatarHash { get; internal set; }
     public Color? AvatarColor { get; internal set; }
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }

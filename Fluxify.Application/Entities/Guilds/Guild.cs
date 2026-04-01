@@ -42,12 +42,11 @@ public class Guild(FluxerApplication app) : IEntity
     internal ConcurrentDictionary<Snowflake, Sticker> GuildStickers { get; } = new();
 
     public IReadOnlyCollection<IRole> Roles => [..RolesRepository.Cache.GetAllCached()];
-    public IReadOnlyCollection<GuildUser> Members => [..MembersRepository.Cache.GetAllCached()];
+    public IReadOnlyCollection<GuildMember> Members => [..MembersRepository.Cache.GetAllCached()];
     public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels => GuildChannels.AsReadOnly();
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
-
-    //public GuildUser CurrentUser => MembersRepository.Cache.GetCachedOrDefault<GuildUser>(app.CurrentUser.Id)!;
+    
 
     public GuildVoiceChannel? AfkChannel { get; internal set; }
     public int AfkTimeout { get; internal set; }
@@ -79,6 +78,8 @@ public class Guild(FluxerApplication app) : IEntity
     public string? VanityUrlCode { get; internal set; }
     public GuildVerificationLevel VerificationLevel { get; internal set; }
     public int MemberCount { get; internal set; }
+    
+    public IUser CurrentMember => field ??= MembersRepository.Cache.GetCachedOrDefault<GuildMember>(app.CurrentUser.Id)!;
 
     public Task<GuildTextChannel> CreateTextChannelAsync(
         string name,
@@ -115,5 +116,5 @@ public class Guild(FluxerApplication app) : IEntity
         Name = name
     }.Configure(configure));
 
-    public Task<GuildUser> GetMemberAsync(Snowflake id) => MembersRepository.GetAsync(id);
+    public Task<GuildMember> GetMemberAsync(Snowflake id) => MembersRepository.GetAsync(id);
 }

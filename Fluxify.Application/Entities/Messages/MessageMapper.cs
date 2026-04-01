@@ -144,7 +144,7 @@ public partial class MessageMapper(
     
     private IUser GetAuthor(MessageBaseResponse message) 
         => (application.ChannelsRepository.GetCachedOrDefault<IChannel>(message.ChannelId) is IGuildChannel guildChannel
-            ? (IUser?)guildChannel.Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(message.Author.Id)
+            ? (IUser?)guildChannel.Guild.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(message.Author.Id)
             : application.UsersRepository.GetCachedOrDefault(message.Author.Id))
            ?? application.UsersRepository.Insert(message.Author);
     

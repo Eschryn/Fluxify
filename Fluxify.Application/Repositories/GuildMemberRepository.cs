@@ -32,11 +32,11 @@ internal sealed class GuildMemberRepository(
     CacheConfig config
 ) {
     internal UserRepository UserRepository { get; } = userRepository;
-    internal ICache<GuildUser> Cache = ICache<GuildUser>.CreateLru(config.GuildUserCacheSize, mapper);
+    internal ICache<GuildMember> Cache = ICache<GuildMember>.CreateLru(config.GuildUserCacheSize, mapper);
 
-    public async Task<GuildUser> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
+    public async Task<GuildMember> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 
-    private async Task<GuildUser> Factory(Snowflake memberId)
+    private async Task<GuildMember> Factory(Snowflake memberId)
     {
         var guildMemberResponse = await client.Guilds[guild.Id].Members[memberId].GetAsync();
 
@@ -45,7 +45,7 @@ internal sealed class GuildMemberRepository(
             : Insert(guildMemberResponse, await guildRepository.GetAsync(guild.Id), await userRepository.GetAsync(memberId));
     }
 
-    internal GuildUser Insert(GuildMemberResponse member, Guild guild, GlobalUser user) 
+    internal GuildMember Insert(GuildMemberResponse member, Guild guild, GlobalUser user) 
         => Cache.UpdateOrCreate(mapper.Map(member, user, guild));
 
     internal void Delete(Snowflake memberId)

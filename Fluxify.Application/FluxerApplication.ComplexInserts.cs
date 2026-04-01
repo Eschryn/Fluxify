@@ -65,7 +65,7 @@ public partial class FluxerApplication
 
         foreach (var voiceStateResponse in voiceStates)
         {
-            if (guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(voiceStateResponse.UserId) is not { } user)
+            if (guild.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(voiceStateResponse.UserId) is not { } user)
             {
                 continue;
             }
@@ -92,7 +92,7 @@ public partial class FluxerApplication
         }
     }
 
-    private void UpdateGuildUserVoiceState(VoiceStateResponse voiceState, Guild guild, GuildUser guildUser)
+    private void UpdateGuildUserVoiceState(VoiceStateResponse voiceState, Guild guild, GuildMember guildMember)
     {
         if (voiceState.ConnectionId == null)
         {
@@ -101,11 +101,11 @@ public partial class FluxerApplication
 
         if (voiceState.ChannelId == null)
         {
-            guildUser.VoiceStateList.TryRemove(voiceState.ConnectionId, out _);
+            guildMember.VoiceStateList.TryRemove(voiceState.ConnectionId, out _);
             return;
         }
         
-        guildUser.VoiceStateList.AddOrUpdate(
+        guildMember.VoiceStateList.AddOrUpdate(
             voiceState.ConnectionId,
             _ =>
             {

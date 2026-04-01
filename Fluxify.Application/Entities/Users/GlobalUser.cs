@@ -14,6 +14,7 @@
 
 using System.Drawing;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Application.Entities.Users;
@@ -29,7 +30,7 @@ public class GlobalUser : IUser, IPresence
     public string Username { get; internal set; } = string.Empty;
     public string? Discriminator { get; internal set; }
     public string? GlobalName { get; internal set; }
-    public string? AvatarHash { get; internal set; }
+    public MediaHash? AvatarHash { get; internal set; }
     public Color? AvatarColor { get; internal set; }
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }

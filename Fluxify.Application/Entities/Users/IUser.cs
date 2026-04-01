@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using System.Drawing;
-using Fluxify.Dto.Users;
-using Fluxify.Gateway.Model.Data;
+using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Entities.Users;
 
@@ -24,16 +23,8 @@ public interface IUser : IEntity, IFormattable
     public string Username { get; }
     public string? Discriminator { get; }
     public string? GlobalName { get; }
-    public string? AvatarHash { get; }
+    public MediaHash? AvatarHash { get; }
     public Color? AvatarColor { get; }
     public bool? System { get; }
     public PublicUserFlags Flags { get; }
-}
-
-public interface IPresence
-{
-    public UserStatus Status { get; }
-    public bool IsMobile { get; }
-    public bool IsAfk { get; }
-    public CustomStatus? CustomStatus { get; }
 }

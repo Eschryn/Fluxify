@@ -25,22 +25,22 @@ public static class PermissionExtensions
 {
     extension(IGuildChannel guildChannel)
     {
-        public Permissions CalculateUserPermissions(GuildUser user) 
+        public Permissions CalculateUserPermissions(IGuildMember member) 
             => guildChannel switch
             {
-                GuildVoiceChannel voiceChannel => voiceChannel.CalculateUserPermissions(user),
-                GuildTextChannel textChannel => textChannel.CalculateUserPermissions(user),
-                GuildLinkChannel linkChannel => linkChannel.CalculateUserPermissions(user),
-                GuildCategory category => category.CalculateUserPermissions(user),
+                GuildVoiceChannel voiceChannel => voiceChannel.CalculateUserPermissions(member),
+                GuildTextChannel textChannel => textChannel.CalculateUserPermissions(member),
+                GuildLinkChannel linkChannel => linkChannel.CalculateUserPermissions(member),
+                GuildCategory category => category.CalculateUserPermissions(member),
                 _ => throw new ArgumentOutOfRangeException()
             };
     }
     
     extension<TProperties>(GuildChannel<TProperties> guildChannel) where TProperties : ChannelProperties
     {
-        internal Permissions CalculateUserPermissions(GuildUser user)
+        internal Permissions CalculateUserPermissions(IGuildMember member)
         {
-            if (guildChannel.Guild.Owner.Id == user.Id)
+            if (guildChannel.Guild.Owner.Id == member.Id)
             {
                 return (Permissions)ulong.MaxValue;
             }
@@ -58,7 +58,7 @@ public static class PermissionExtensions
         
             denied = Permissions.None;
             allowed = Permissions.None;
-            foreach (var role in user.Roles)
+            foreach (var role in member.Roles)
             {
                 permissionResult |= role.Permissions;
 
@@ -71,7 +71,7 @@ public static class PermissionExtensions
         
             permissionResult = permissionResult & ~denied | allowed;
 
-            if (guildChannel.OverwritesDictionary.TryGetValue(user.Id, out overwrite))
+            if (guildChannel.OverwritesDictionary.TryGetValue(member.Id, out overwrite))
             {
                 allowed = overwrite.Allow ?? Permissions.None;
                 denied = overwrite.Deny ?? Permissions.None;

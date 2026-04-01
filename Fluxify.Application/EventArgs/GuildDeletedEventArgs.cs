@@ -20,10 +20,10 @@ using Fluxify.Core.Types;
 namespace Fluxify.Application.EventArgs;
 
 [method: SetsRequiredMembers]
-public class GuildDeletedEventArgs(Guild? guild, GuildUser? self, Snowflake guildId, bool? unavailable)
+public class GuildDeletedEventArgs(Guild? guild, GuildMember? self, Snowflake guildId, bool? unavailable)
 {
     public required Snowflake GuildId { get; init; } = guildId;
     public required bool? Unavailable { get; init; } = unavailable;
     public required Guild? CachedGuild { get; init; } = guild;
-    public required GuildUser? CachedSelf { get; init; } = self;
+    public required GuildMember? CachedSelf { get; init; } = self;
 }

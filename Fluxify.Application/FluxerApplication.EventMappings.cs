@@ -392,7 +392,7 @@ public partial class FluxerApplication
     private async Task HandleGuildDelete(GatewayGuildDelete arg)
     {
         GuildsRepository.Cache.Remove(arg.Id, out var guild);
-        GuildUser? user = null;
+        GuildMember? user = null;
         if (guild is not null)
         {
             user = await guild.MembersRepository.GetAsync(CurrentUser.Id);

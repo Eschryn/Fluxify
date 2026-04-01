@@ -19,8 +19,8 @@ using Fluxify.Application.Entities.Users;
 namespace Fluxify.Application.EventArgs;
 
 [method: SetsRequiredMembers]
-public class GuildEventArgs(Guild guild, GuildUser self)
+public class GuildEventArgs(Guild guild, GuildMember self)
 {
     public required Guild Guild { get; init; } = guild;
-    public required GuildUser Self { get; init; } = self;
+    public required GuildMember Self { get; init; } = self;
 }

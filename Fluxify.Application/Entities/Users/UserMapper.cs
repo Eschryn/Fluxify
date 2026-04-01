@@ -24,7 +24,7 @@ namespace Fluxify.Application.Entities.Users;
 
 [Mapper]
 [UseStaticMapper(typeof(CommonMapper))]
-public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<GuildUser>
+public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<GuildMember>
 {
     [MapProperty(nameof(UserPartialResponse.Avatar), nameof(GlobalUser.AvatarHash))]
     [MapValue(nameof(GlobalUser.Status), UserStatus.Offline)]
@@ -46,15 +46,15 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
     [MapValue(nameof(GlobalUser.CustomStatus), null)]
     public partial WebhookUser MapWebhook(UserPartialResponse dto);
     
-    [MapProperty(nameof(GuildMemberResponse.Roles), nameof(GuildUser.AssignedRoleIds))]
-    [MapperIgnoreTarget(nameof(GuildUser.Roles))]
-    [MapperIgnoreTarget(nameof(GuildUser.IsAfk))]
-    [MapperIgnoreTarget(nameof(GuildUser.IsMobile))]
-    [MapperIgnoreTarget(nameof(GuildUser.Status))]
-    [MapperIgnoreTarget(nameof(GuildUser.CustomStatus))]
+    [MapProperty(nameof(GuildMemberResponse.Roles), nameof(GuildMember.AssignedRoleIds))]
+    [MapperIgnoreTarget(nameof(GuildMember.Roles))]
+    [MapperIgnoreTarget(nameof(GuildMember.IsAfk))]
+    [MapperIgnoreTarget(nameof(GuildMember.IsMobile))]
+    [MapperIgnoreTarget(nameof(GuildMember.Status))]
+    [MapperIgnoreTarget(nameof(GuildMember.CustomStatus))]
     [MapperIgnoreSource(nameof(GuildMemberResponse.User))]
-    private partial GuildUser Map(GuildMemberResponse dto, GlobalUser user, Snowflake id, Guild guild);
-    public GuildUser Map(GuildMemberResponse dto, GlobalUser user, Guild guild) => Map(dto, user, user.Id, guild);
+    private partial GuildMember Map(GuildMemberResponse dto, GlobalUser user, Snowflake id, Guild guild);
+    public GuildMember Map(GuildMemberResponse dto, GlobalUser user, Guild guild) => Map(dto, user, user.Id, guild);
 
     [MapperIgnoreTarget(nameof(GlobalUser.Id))]
     [MapperIgnoreSource(nameof(GlobalUser.Id))]
@@ -78,7 +78,7 @@ public partial class UserMapper : IUpdateEntity<GlobalUser>, IUpdateEntity<Guild
     [MapperIgnoreTarget(nameof(GlobalUser.CustomStatus))]
     [MapperIgnoreTarget(nameof(GlobalUser.IsAfk))]
     [MapperIgnoreTarget(nameof(GlobalUser.IsMobile))]
-    public partial void UpdateEntity([MappingTarget] GuildUser data, GuildUser update);
+    public partial void UpdateEntity([MappingTarget] GuildMember data, GuildMember update);
     
     [MapperIgnoreSource(nameof(VoiceStateResponse.GuildId))]
     [MapperIgnoreSource(nameof(VoiceStateResponse.ChannelId))]

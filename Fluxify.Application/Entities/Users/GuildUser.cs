@@ -17,20 +17,21 @@ using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Rest.Guilds;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GuildUser : IUser, IPresence
+public class GuildMember : IGuildMember
 {
     private MemberRequestBuilder RequestBuilder => field ??= Guild.RequestBuilder.Members[Id];
     public Snowflake Id { get; init; }
 
-    internal Snowflake[] AssignedRoleIds { get; set; } = [];
-    public int? AccentColor { get; internal set;  }
-    public string? AvatarHash { get; internal set;  }
-    public string? BannerHash { get; internal set;  } 
+    public Snowflake[] AssignedRoleIds { get; set; } = [];
+    public Color? AccentColor { get; internal set;  }
+    public MediaHash? AvatarHash { get; internal set;  }
+    public MediaHash? BannerHash { get; internal set;  } 
     public DateTimeOffset? JoinedAt { get; internal set;  }
     public DateTimeOffset? CommunicationsDisabledUntil { get; internal set;  }
     public bool Deaf { get; internal set;  }
@@ -48,7 +49,7 @@ public class GuildUser : IUser, IPresence
     public string Username => User.Username;
     public string? Discriminator => User.Discriminator;
     public string? GlobalName => User.GlobalName;
-    public string? GlobalAvatarHash => User.AvatarHash;
+    MediaHash? IUser.AvatarHash => User.AvatarHash;
     public Color? AvatarColor => User.AvatarColor;
     public bool? System => User.System;
     public PublicUserFlags Flags => User.Flags;

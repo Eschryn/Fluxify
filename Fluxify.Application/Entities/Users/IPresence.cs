@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Entities.Users;
 
-namespace Fluxify.Application.Entities;
-
-public interface IEntity
+public interface IPresence
 {
-    public Snowflake Id { get; }
+    public UserStatus Status { get; }
+    public bool IsMobile { get; }
+    public bool IsAfk { get; }
+    public CustomStatus? CustomStatus { get; }
 }
