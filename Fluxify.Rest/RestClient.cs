@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Fluxify.Core;
+using Fluxify.Dto.Instance;
 using Fluxify.Dto.Json;
 using Fluxify.Rest.Channel;
 using Fluxify.Rest.Guilds;
@@ -65,4 +66,7 @@ public class RestClient
     public InvitesRequestBuilder Invites { get; }
     public PacksRequestBuilder Packs { get; }
     public WebhooksRequestBuilder Webhooks { get; }
+    
+    public Task<WellKnownFluxerResponse?> GetWellKnownAsync() 
+        => _httpClient.GetFromJsonAsync<WellKnownFluxerResponse>("/.well-known/fluxer", DefaultJsonOptions);
 }

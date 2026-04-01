@@ -30,6 +30,7 @@ using Fluxify.Dto.Guilds.Members.Search;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Dto.Guilds.Settings;
 using Fluxify.Dto.Guilds.Stickers;
+using Fluxify.Dto.Instance;
 using Fluxify.Dto.Invites;
 using Fluxify.Dto.OAuth2;
 using Fluxify.Dto.Packs;
@@ -204,4 +205,5 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(ChannelInviteCreateRequest))]
 [JsonSerializable(typeof(PackInviteCreateRequest))]
 [JsonSerializable(typeof(CreateWebhookMessageRequest))]
+[JsonSerializable(typeof(WellKnownFluxerResponse))]
 public partial class DtoJsonContext : JsonSerializerContext;
