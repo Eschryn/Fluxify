@@ -14,7 +14,7 @@
 
 namespace Fluxify.Core.Credentials;
 
-public class UserTokenCredentials(string token) : ITokenCredentials
+public class SessionTokenCredentials(string token) : ITokenCredentials
 {
     public string Token { get; } = token;
     
