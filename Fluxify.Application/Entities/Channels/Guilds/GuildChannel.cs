@@ -59,7 +59,7 @@ public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplicat
 
     protected void AssertPermission(Permissions permissions)
     {
-        if (Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(FluxerApplication.CurrentUser.Id) is not {} guildUser)
+        if (Guild.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(FluxerApplication.CurrentUser.Id) is not {} guildUser)
         {
             return;
         }
@@ -73,7 +73,7 @@ public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplicat
     }
     
     internal IUser? ResolveUser(Snowflake id) 
-        => (IUser?)Guild.MembersRepository.Cache.GetCachedOrDefault<GuildUser>(id) 
+        => (IUser?)Guild.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(id) 
            ?? fluxerApplication.UsersRepository.Cache.GetCachedOrDefault<GlobalUser>(id);
     
     public Task DeleteAsync() => FluxerApplication.ChannelsRepository.DeleteAsync(Id);
