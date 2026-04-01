@@ -18,5 +18,5 @@ namespace Fluxify.Dto.Uploads;
 
 public abstract record FileUpload(
     string FileName,
-    string ContentType,
+    string? ContentType,
     Snowflake SendId);
