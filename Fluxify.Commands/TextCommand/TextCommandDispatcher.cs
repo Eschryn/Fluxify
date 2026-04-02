@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Messages;
-using Fluxify.Commands.CommandCollection;
 using Fluxify.Commands.Exceptions;
 using Fluxify.Commands.Model;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,13 +34,13 @@ public class TextCommandDispatcher
 
     public async Task DispatchAsync(Message message)
     {
-        if (!_config.IsValidCommand(message))
+        if (_config.DetermineCommandStart(message) is not (> 0 and var start))
         {
             return;
         }
 
         using var scope = _config.ServiceProvider.CreateScope();
-        var commandContext = new CommandContext(_config.DefaultPrefix, message, scope.ServiceProvider);
+        var commandContext = new CommandContext(start, message, scope.ServiceProvider);
         var currentTreeNode = _rootTreeNode;
 
         while (true)

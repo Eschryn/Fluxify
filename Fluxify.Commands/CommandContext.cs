@@ -25,11 +25,11 @@ namespace Fluxify.Commands;
 
 public class CommandContext
 {
-    public CommandContext(string prefix, Message message, IServiceProvider services)
+    public CommandContext(int skip, Message message, IServiceProvider services)
     {
         Message = message;
         Services = services;
-        Tokenizer = CommandTokenizer.WithoutPrefix(prefix, message.Content);
+        Tokenizer = new CommandTokenizer(message.Content.AsMemory()[skip..], skip);
         Reader = new CommandReader(Tokenizer);
     }
 

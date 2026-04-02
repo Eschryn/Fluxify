@@ -50,6 +50,9 @@ public class CommandConfig(string prefix, IServiceProvider serviceProvider)
     /// <summary>
     /// Predicate used to determine if a message should be processed as a command.
     /// </summary>
-    public Predicate<Message> IsValidCommand { get; set; } = 
-        m => m.Author.Bot is not true && m.Content.StartsWith(prefix); 
+    /// <remarks>Returns null if the message does not start with the prefix or if the author is a bot.</remarks>
+    public Func<Message, int?> DetermineCommandStart { get; set; } = 
+        m => m.Author.Bot is not true && m.Content != null && m.Content.StartsWith(prefix) 
+            ? prefix.Length
+            : null; 
 }

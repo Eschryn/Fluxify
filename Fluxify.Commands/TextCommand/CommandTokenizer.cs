@@ -146,7 +146,4 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
             SetNewPosition(nextIndex);
         }
     }
-
-    public static CommandTokenizer WithoutPrefix(string prefix, string messageContent)
-        => new(messageContent.AsMemory(prefix.Length), prefix.Length);
 }
