@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Guilds.AuditLog;
 
-public record GuildAuditLogEntryResponseOptions(
-    Snowflake? ChannelId,
-    int? Count,
-    string? DeleteMemberDays,
-    Snowflake? Id,
-    int? IntegrationType,
-    Snowflake? InviterId,
-    double? MaxAge,
-    int? MaxUses,
-    int? MembersRemoved,
-    Snowflake? MessageId,
-    string? RoleName,
-    [property: JsonConverter(typeof(StringBoolConverter))] bool? Temporary,
-    string? Type,
-    int? Uses
-);
+public class StringBoolConverter : JsonConverter<bool>
+{
+    public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            return reader.GetString() == "true";
+        }
+        return reader.GetBoolean();
+    }
+
+    public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value ? "true" : "false");
+    }
+}
