@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;

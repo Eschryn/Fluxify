@@ -15,6 +15,7 @@
 using System.Collections.Concurrent;
 using Fluxify.Application.Entities;
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;

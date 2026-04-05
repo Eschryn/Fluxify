@@ -15,10 +15,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Fluxify.Core.Types;
 
-namespace Fluxify.Application.State;
+namespace Fluxify.Application.State.Ref;
 
 // maybe implement INotifyPropertyChanged?
-public struct CacheRef<T>(Snowflake id, T? initialValue) : IEquatable<CacheRef<T>> where T : class, ICloneable<T>
+public struct CacheRef<T>(Snowflake id, T? initialValue) : IEquatable<CacheRef<T>>, ICacheRef<T> where T : class, ICloneable<T>
 {
     private T? _value = initialValue;
     
