@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
-internal interface ICache<TData> where TData : class, IEntity
+internal interface ICache<TData> where TData : class, IEntity, ICloneable<TData>
 {
     bool IsCached(Snowflake id);
-    T? GetCachedOrDefault<T>(Snowflake id) where T : TData;
-    IReadOnlyCollection<TData> GetAllCached();
+    CacheRef<TData> GetCachedOrDefault(Snowflake id);
+    IReadOnlyCollection<CacheRef<TData>> GetAllCached();
 
-    Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
+    Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
         bool bypassCache = false);
 
-    TData UpdateOrCreate(TData data);
-    bool TryUpdate(Snowflake key, Action<TData> update, [NotNullWhen(true)] out TData? updated);
-    bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data);
+    CacheRef<TData> UpdateOrCreate(TData data);
+    bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated);
+    bool Remove(Snowflake id, out CacheRef<TData> data);
     void Clear();
 
     public static ICache<TData> CreateOrdered<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData>

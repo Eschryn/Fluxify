@@ -13,12 +13,20 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
+
+internal record struct LruCacheEntry<T>(
+    CacheRef<T> Data,
+    LinkedListNode<Snowflake> Node
+) where T : class, IEntity, ICloneable<T>
+{
+    public readonly LinkedListNode<Snowflake> Node = Node;
+}
 
 /// <summary>
 /// Cache with LRU purge strategy
@@ -28,44 +36,45 @@ namespace Fluxify.Application.State;
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TMapper"></typeparam>
 internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize) : ICache<TData>
-    where TData : class, IEntity
+    where TData : class, IEntity, ICloneable<TData>
     where TMapper : IUpdateEntity<TData>
 {
-    private readonly ConcurrentDictionary<Snowflake, TData> _dataContainer = new();
-    private readonly ConcurrentDictionary<Snowflake, LinkedListNode<Snowflake>> _keyContainer = new();
+    private readonly ConcurrentDictionary<Snowflake, LruCacheEntry<TData>> _dataContainer = new();
     private readonly LinkedList<Snowflake> _keyOrder = new();
-    private readonly ResourceTransactions<TData> _transactions = new();
+    private readonly ResourceTransactions<CacheRef<TData>> _transactions = new();
 
     public bool IsCached(Snowflake id) => _dataContainer.ContainsKey(id);
 
-    public T? GetCachedOrDefault<T>(Snowflake id) where T : TData
-        => TryGet(id, out var data) ? (T?)data : default;
+    public CacheRef<TData> GetCachedOrDefault(Snowflake id)
+        => TryGet(id, out var data) ? data : default;
 
-    private bool TryGet(Snowflake key, [NotNullWhen(true)] out TData? data)
+    private bool TryGet(Snowflake key, out CacheRef<TData> data)
     {
-        if (_dataContainer.TryGetValue(key, out data))
+        if (_dataContainer.TryGetValue(key, out var container))
         {
-            RenewEntry(key);
+            data = container.Data;
+            RenewEntry(container.Node);
             return true;
         }
 
+        data = new CacheRef<TData>(key, null);
         return false;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void RenewEntry(Snowflake key)
+    private void RenewEntry(LinkedListNode<Snowflake> entry)
     {
         lock (_keyOrder)
         {
-            var entry = _keyContainer[key];
             _keyOrder.Remove(entry);
             _keyOrder.AddFirst(entry);
         }
     }
 
-    public IReadOnlyCollection<TData> GetAllCached() => (IReadOnlyCollection<TData>)_dataContainer.Values;
+    public IReadOnlyCollection<CacheRef<TData>> GetAllCached()
+        => _dataContainer.Values.Select(e => e.Data).ToImmutableArray().AsReadOnly();
 
-    public async Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
+    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
         bool bypassCache = false)
     {
         if (!bypassCache && TryGet(id, out var data))
@@ -76,66 +85,72 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
         return await _transactions.BeginAsync(id, async () => UpdateOrCreate(await factory(id)));
     }
 
-    public TData UpdateOrCreate(TData data)
+    public CacheRef<TData> UpdateOrCreate(TData data)
         => _dataContainer.AddOrUpdate(data.Id,
-            key =>
+            key => new LruCacheEntry<TData>(
+                new CacheRef<TData>(key, data),
+                InsertNewEntry(key)),
+            (_, existing) =>
             {
-                InsertNewEntry(key);
-                return data;
-            },
-            (key, existing) =>
-            {
-                RenewEntry(key);
-                mapper.UpdateEntity(existing, data);
+                RenewEntry(existing.Node);
+                if (existing.Data.Value?.Clone() is { } cloned)
+                {
+                    mapper.UpdateEntity(cloned, data);
+                }
+                else
+                {
+                    cloned = data;
+                }
 
+                existing.Data.Swap(cloned);
                 return existing;
-            });
+            }).Data;
 
-    public bool TryUpdate(Snowflake key, Action<TData> update, [NotNullWhen(true)] out TData? updated)
+    public bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated)
     {
-        if (_dataContainer.TryGetValue(key, out var data))
+        if (_dataContainer.TryGetValue(key, out var entry)
+            && entry.Data.Value?.Clone() is {} cloned)
         {
-            updated = data;
-            update(updated);
-            RenewEntry(key);
+            update(cloned);
+            RenewEntry(entry.Node);
+            entry.Data.Swap(cloned);
+            updated = entry.Data;
 
-            return _dataContainer.TryUpdate(key, updated, data);
+            return true;
         }
 
-        updated = null;
+        updated = new CacheRef<TData>(key, null);
         return false;
     }
 
-    private void InsertNewEntry(Snowflake key)
+    private LinkedListNode<Snowflake> InsertNewEntry(Snowflake key)
     {
+        var newEntry = new LinkedListNode<Snowflake>(key);
+        
         lock (_keyOrder)
         {
-            var newEntry = new LinkedListNode<Snowflake>(key);
-            _keyContainer.TryAdd(key, newEntry);
             _keyOrder.AddFirst(newEntry);
 
             if (_keyOrder.Count < maxCacheSize || _keyOrder.First is not { } entry)
             {
-                return;
+                return newEntry;
             }
 
             key = entry.Value;
             _keyOrder.RemoveLast();
-            _keyContainer.TryRemove(key, out _);
         }
 
         _dataContainer.TryRemove(key, out _);
+        return newEntry;
     }
 
-    public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data)
+    public bool Remove(Snowflake id, out CacheRef<TData> data)
     {
-        var result = _dataContainer.TryRemove(id, out data);
+        var result = _dataContainer.TryRemove(id, out var entry);
         lock (_keyOrder)
         {
-            if (_keyContainer.TryRemove(id, out var entryNode))
-            {
-                _keyOrder.Remove(entryNode);
-            }
+            data = entry.Data;
+            _keyOrder.Remove(entry.Node);
         }
 
         return result;
@@ -146,7 +161,6 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
         _dataContainer.Clear();
         lock (_keyOrder)
         {
-            _keyContainer.Clear();
             _keyOrder.Clear();
         }
     }

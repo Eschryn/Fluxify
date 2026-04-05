@@ -12,33 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
 internal sealed class PassthroughCache<TData> : ICache<TData>
-    where TData : class, IEntity
+    where TData : class, IEntity, ICloneable<TData>
 {
     public bool IsCached(Snowflake id) => false;
-    public T? GetCachedOrDefault<T>(Snowflake id) where T : TData => default;
-    public IReadOnlyCollection<TData> GetAllCached() => [];
+    public CacheRef<TData> GetCachedOrDefault(Snowflake id) => new(id, null);
+    public IReadOnlyCollection<CacheRef<TData>> GetAllCached() => [];
 
-    public Task<TData> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory, bool bypassCache = false)
-        => factory(id);
+    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
+        bool bypassCache = false) => new(id, await factory(id));
 
-    public TData UpdateOrCreate(TData data) => data;
+    public CacheRef<TData> UpdateOrCreate(TData data) => new(data.Id, data);
     
-    public bool TryUpdate(Snowflake key, Action<TData> update, [NotNullWhen(true)] out TData? updated)
+    public bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated)
     {
-        updated = null;
+        updated = new CacheRef<TData>(key, null);
         return false;
     }
 
-    public bool Remove(Snowflake id, [NotNullWhen(true)] out TData? data)
+    public bool Remove(Snowflake id, out CacheRef<TData> data)
     {
-        data = null;
+        data = new CacheRef<TData>(id, null);
         return false;
     }
     public void Clear() { }
