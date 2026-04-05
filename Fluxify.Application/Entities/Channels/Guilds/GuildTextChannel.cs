@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
+using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 using Fluxify.Dto.Common;
@@ -24,8 +27,8 @@ using Fluxify.Dto.Webhooks;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildTextChannel(FluxerApplication fluxerApplication)
-    : GuildNestedChannel<TextChannelProperties>(fluxerApplication), ITextChannel, INestedChannel
+public class GuildTextChannel(FluxerApplication fluxerApplication, CacheRef<Guild> guildRef)
+    : GuildNestedChannel<TextChannelProperties>(fluxerApplication, guildRef), ITextChannel, ICloneable<GuildTextChannel>
 {
     internal MessageRepository MessageRepository => field ??= new MessageRepository(
         FluxerApplication,
@@ -138,4 +141,6 @@ public class GuildTextChannel(FluxerApplication fluxerApplication)
         => (await RequestBuilder.GetWebhooksAsync())!
             .Select(FluxerApplication.WebhookMapper.FromResponse)
             .ToArray();
+
+    public object Clone() => MemberwiseClone();
 }

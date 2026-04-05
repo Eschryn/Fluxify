@@ -16,6 +16,7 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 using Fluxify.Rest.Channel;
@@ -32,7 +33,8 @@ public abstract class PrivateTextChannel(
     public required Snowflake Id { get; init; }
     public Snowflake? LastMessageId { get; internal set; }
     public DateTimeOffset? LastPinTimestamp { get; internal set; }
-    public IUser[]? Recipients { get; internal set; }
+    internal CacheRef<GlobalUser>[] RecipientsRef { get; set; }
+    public GlobalUser[] Recipients => RecipientsRef.Select(x => x.Value).OfType<GlobalUser>().ToArray();
     
     internal MessageRepository MessageRepository 
         => field ??= new MessageRepository(

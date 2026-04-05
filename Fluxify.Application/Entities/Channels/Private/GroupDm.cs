@@ -22,7 +22,6 @@ public class GroupDm(FluxerApplication fluxerApplication) : PrivateTextChannel(f
 {
     public string? IconHash { get; internal set; }
     public Snowflake OwnerId { get; internal set; }
-    public IUser[] Recipients { get; internal set; } = [];
     public IReadOnlyDictionary<string, string> Nicks { get; internal set; } = new Dictionary<string, string>().AsReadOnly();
     public required string? Name { get; set; }
     

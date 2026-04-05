@@ -16,21 +16,27 @@ using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Extensions;
 using Fluxify.Application.Model.Channel;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Rest;
 using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplication) : IGuildChannel
+public abstract class GuildChannel<TProperties>(
+    FluxerApplication fluxerApplication,
+    CacheRef<Guild> guildRef
+) : IGuildChannel
     where TProperties : ChannelProperties
 {
     protected FluxerApplication FluxerApplication => fluxerApplication;
     internal ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
     internal Dictionary<Snowflake, PermissionOverwrite> OverwritesDictionary = new();
+    internal readonly CacheRef<Guild> GuildRef = guildRef;
+    
     public required Snowflake Id { get; init; }
     public string Name { get; internal set; } = string.Empty;
-    public required Guild Guild { get; init; }
+    public Guild? Guild => GuildRef.Value;
     public int? Position { get; internal set; }
 
     public PermissionOverwrite[]? Overwrites
@@ -72,7 +78,7 @@ public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplicat
 
     protected void AssertPermission(Permissions permissions)
     {
-        if (Guild.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(FluxerApplication.CurrentUser.Id) is not {} guildUser)
+        if (Guild?.MembersRepository.Cache.GetCachedOrDefault(FluxerApplication.CurrentUser.Id).Value is not {} guildUser)
         {
             return;
         }
@@ -86,14 +92,14 @@ public abstract class GuildChannel<TProperties>(FluxerApplication fluxerApplicat
     }
     
     internal IUser? ResolveUser(Snowflake id) 
-        => (IUser?)Guild.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(id) 
-           ?? fluxerApplication.UsersRepository.Cache.GetCachedOrDefault<GlobalUser>(id);
+        => (IUser?)Guild?.MembersRepository.Cache.GetCachedOrDefault(id).Value 
+           ?? fluxerApplication.UsersRepository.Cache.GetCachedOrDefault(id).Value;
     
     public Task DeleteAsync() => FluxerApplication.ChannelsRepository.DeleteAsync(Id);
 
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch
     {
         "i" or "I" => ((long)Id).ToString(),
-        _ or "m" or "M" => $"<#{Id}>"
+        _ => $"<#{Id}>"
     };
 }

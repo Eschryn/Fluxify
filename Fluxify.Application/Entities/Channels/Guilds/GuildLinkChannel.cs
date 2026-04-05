@@ -12,11 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Model.Channel;
+using Fluxify.Application.State.Ref;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildLinkChannel(FluxerApplication fluxerApplication) : GuildNestedChannel<LinkChannelProperties>(fluxerApplication), INestedChannel
+public class GuildLinkChannel(
+    FluxerApplication fluxerApplication,
+    CacheRef<Guild> guildRef
+) : GuildNestedChannel<LinkChannelProperties>(fluxerApplication, guildRef)
 {
     public string? Url { get; internal set; }
 }

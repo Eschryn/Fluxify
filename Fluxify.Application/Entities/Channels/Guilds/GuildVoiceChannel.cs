@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Model.Channel;
+using Fluxify.Application.State.Ref;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildVoiceChannel(FluxerApplication fluxerApplication) : GuildChannel<VoiceChannelProperties>(fluxerApplication), INestedChannel
+public class GuildVoiceChannel(
+    FluxerApplication fluxerApplication,
+    CacheRef<Guild> guildRef
+) : GuildNestedChannel<VoiceChannelProperties>(fluxerApplication, guildRef)
 {
     public int Bitrate { get; internal set; }
     public int? UserLimit { get; internal set; }
     public string? RtcRegion { get; internal set; }
-    public GuildCategory? Parent { get; internal set; }
 }

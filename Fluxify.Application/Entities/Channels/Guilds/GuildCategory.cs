@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Model.Channel;
+using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildCategory(FluxerApplication fluxerApplication) : GuildChannel<CategoryProperties>(fluxerApplication);
+public class GuildCategory(
+    FluxerApplication fluxerApplication,
+    CacheRef<Guild> guildRef
+) : GuildChannel<CategoryProperties>(fluxerApplication, guildRef), ICloneable<GuildCategory>
+{
+    object ICloneable.Clone() => MemberwiseClone();
+}

@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using Fluxify.Application.Model.Channel;
+using Fluxify.Application.State;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public interface IGuildChannel : IGuildScopedEntity, IChannel
+public interface IGuildChannel : IGuildScopedEntity, IChannel, ICloneable<IGuildChannel>
 {
     public string Name { get; }
     public int? Position { get; }
@@ -32,4 +33,6 @@ public interface IGuildChannel : IGuildScopedEntity, IChannel
         Snowflake targetId,
         CancellationToken cancellationToken = default
     );
+    
+    object ICloneable.Clone() => MemberwiseClone();
 }

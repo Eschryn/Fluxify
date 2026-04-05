@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.State;
+
 namespace Fluxify.Application.Entities.Channels;
 
-public interface IChannel : IEntity, IFormattable;
+public interface IChannel : IEntity, IFormattable, ICloneable<IChannel>;
