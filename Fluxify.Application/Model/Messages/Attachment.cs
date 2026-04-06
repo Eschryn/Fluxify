@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Messages;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Model.Messages;

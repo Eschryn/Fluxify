@@ -14,7 +14,6 @@
 
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds;
-using Fluxify.Rest.Channel;
 
 namespace Fluxify.Rest.Guilds;
 

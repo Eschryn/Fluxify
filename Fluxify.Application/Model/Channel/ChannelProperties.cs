@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Dto.Channels;
-
 namespace Fluxify.Application.Model.Channel;
 
 public abstract class ChannelProperties

@@ -29,7 +29,7 @@ public class SnowflakeConverter : JsonConverter<Snowflake>
                 return new Snowflake(result);
             }
             
-            throw new JsonException();
+            throw new JsonException("string could not be parsed as snowflake.");
         } else if (reader.TokenType == JsonTokenType.Number)
             return new Snowflake(reader.GetUInt64());
         

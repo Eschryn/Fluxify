@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Fluxify.Dto.Channels;
-using Fluxify.Dto.Common;
 using Fluxify.Dto.Invites;
 using Fluxify.Dto.Users;
 

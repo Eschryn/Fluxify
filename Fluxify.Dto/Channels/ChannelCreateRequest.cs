@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Text.Json.Serialization;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Category;
 using Fluxify.Dto.Channels.LinkChannel;
 using Fluxify.Dto.Channels.Text;

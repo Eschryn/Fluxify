@@ -16,7 +16,6 @@ using System.Globalization;
 using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Emoji;
-using Fluxify.Rest.Channel;
 
 namespace Fluxify.Rest.Guilds;
 

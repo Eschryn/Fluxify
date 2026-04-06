@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
-
 namespace Fluxify.Rest.Model;
 
 public record ErrorResponse(string Code, string Message, Error[]? Errors, int? RetryAfter, bool? Global);

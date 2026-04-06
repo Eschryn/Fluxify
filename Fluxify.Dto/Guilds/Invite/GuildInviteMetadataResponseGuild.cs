@@ -32,4 +32,5 @@ public record GuildInviteMetadataResponseGuild(
     [property: JsonPropertyName("splash")] string? SplashHash,
     SplashCardAlignment SplashCardAlignment,
     int SplashHeight,
-    int SplashWidth);
+    int SplashWidth
+);

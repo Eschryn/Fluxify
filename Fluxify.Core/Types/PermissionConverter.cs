@@ -32,6 +32,6 @@ public class PermissionConverter : JsonConverter<Permissions>
 
     public override void Write(Utf8JsonWriter writer, Permissions value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToString());
+        writer.WriteStringValue(((int)value).ToString());
     }
 }

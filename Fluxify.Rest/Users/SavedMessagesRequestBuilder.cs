@@ -16,7 +16,6 @@ using System.Globalization;
 using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Users;
-using Fluxify.Rest.Channel;
 
 namespace Fluxify.Rest.Users;
 

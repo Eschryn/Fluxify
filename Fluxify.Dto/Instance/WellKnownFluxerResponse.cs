@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Cryptography;
-
 namespace Fluxify.Dto.Instance;
 
 public record WellKnownFluxerResponse(

@@ -24,7 +24,6 @@ using Fluxify.Dto.Guilds.Settings;
 using Fluxify.Dto.Invites;
 using Fluxify.Dto.Users.Settings.Security;
 using Fluxify.Dto.Webhooks;
-using Fluxify.Rest.Channel;
 
 namespace Fluxify.Rest.Guilds;
 

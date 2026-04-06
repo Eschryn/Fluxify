@@ -17,7 +17,6 @@ using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Guilds.Members.Search;
-using Fluxify.Rest.Channel;
 
 namespace Fluxify.Rest.Guilds;
 

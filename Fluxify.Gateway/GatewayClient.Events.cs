@@ -20,7 +20,6 @@ using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.AuditLog;
-using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.GuildSettings;
