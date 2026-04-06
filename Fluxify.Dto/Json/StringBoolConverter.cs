@@ -15,7 +15,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Fluxify.Dto.Guilds.AuditLog;
+namespace Fluxify.Dto.Json;
 
 public class StringBoolConverter : JsonConverter<bool>
 {

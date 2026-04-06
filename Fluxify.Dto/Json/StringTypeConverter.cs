@@ -15,7 +15,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Fluxify.Dto;
+namespace Fluxify.Dto.Json;
 
 public class StringTypeConverter<T> : JsonConverter<T> where T : StringType, new()
 {

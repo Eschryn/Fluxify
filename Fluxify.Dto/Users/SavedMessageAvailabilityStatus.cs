@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Text.Json.Serialization;
+using Fluxify.Dto.Json;
 
 namespace Fluxify.Dto.Users;
 

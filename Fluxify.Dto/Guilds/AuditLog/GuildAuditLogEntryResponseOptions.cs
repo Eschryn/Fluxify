@@ -14,6 +14,7 @@
 
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Json;
 
 namespace Fluxify.Dto.Guilds.AuditLog;
 
