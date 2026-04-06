@@ -25,5 +25,6 @@ public partial class RoleMapper : IUpdateEntity<IRole>
     [MapProperty(nameof(GuildRoleResponse.Mentionable), nameof(Role.IsMentionable))]
     public partial Role MapFromDto(GuildRoleResponse dto, Guild guild);
     
+    [MapperIgnoreSource(nameof(IRole.Guild))]
     public partial void UpdateEntity([MappingTarget] IRole data, IRole update);
 }
