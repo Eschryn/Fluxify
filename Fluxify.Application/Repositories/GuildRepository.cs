@@ -14,28 +14,23 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Users;
 using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds;
-using Fluxify.Dto.Users;
 using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
-public sealed class GuildRepository(RestClient client, GuildMapper mapper, CacheConfig config)
+internal sealed class GuildRepository(RestClient client, GuildMapper mapper, CacheConfig config)
 {
     internal readonly ICache<Guild> Cache = ICache<Guild>.CreateLru(config.GuildCacheSize, mapper);
    
-    public Task<Guild> GetAsync(Snowflake id, bool bypassCache = false) 
+    public Task<CacheRef<Guild>> GetAsync(Snowflake id, bool bypassCache = false) 
         => Cache.GetOrCreateAsync(id, GetGuildRestAsync, bypassCache);
 
-    internal Guild Insert(GuildResponse response)
-    {
-        var mapped = mapper.MapCached(response);
-        Cache.UpdateOrCreate(mapped);
-        return mapped;
-    }
+    internal CacheRef<Guild> Insert(GuildResponse response) 
+        => Cache.UpdateOrCreate(mapper.MapCached(response));
 
 
     private async Task<Guild> GetGuildRestAsync(Snowflake id) 
