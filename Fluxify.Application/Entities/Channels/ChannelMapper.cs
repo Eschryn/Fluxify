@@ -31,10 +31,10 @@ namespace Fluxify.Application.Entities.Channels;
 [Mapper]
 public partial class ChannelMapper(FluxerApplication application) : IUpdateEntity<IChannel>, IUpdateEntity<IGuildChannel>
 {
-    public IChannel FromDto(ChannelResponse dto)
+    public IChannel FromDto(ChannelResponse dto, CacheRef<Guild>? guildRef = null)
     {
         var guild = dto.GuildId is { } gId
-            ? (CacheRef<Guild>?)application.GuildsRepository.Cache.GetCachedOrDefault(gId)
+            ? guildRef ?? (CacheRef<Guild>?)application.GuildsRepository.Cache.GetCachedOrDefault(gId)
             : null;
 
         return FromDto(

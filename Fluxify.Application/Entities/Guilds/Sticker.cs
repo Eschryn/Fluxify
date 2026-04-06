@@ -22,5 +22,5 @@ public class Sticker
     public string? Description { get; set; }
     public string[]? Tags { get; set; }
     public bool IsAnimated { get; init; }
-    public Snowflake? Id { get; init; }
+    public Snowflake Id { get; init; }
 }

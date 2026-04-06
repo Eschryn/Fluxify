@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Roles;
@@ -20,14 +20,15 @@ using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Repositories;
+using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Settings;
 using Fluxify.Rest.Guilds;
-using UserMapper = Fluxify.Application.Entities.Users.UserMapper;
 
 namespace Fluxify.Application.Entities.Guilds;
 
-public class Guild(FluxerApplication app) : IEntity
+public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
 {
     internal RoleRepository RolesRepository
         => field ??= new RoleRepository(Id, app.Rest, new RoleMapper(), app.GuildsRepository);
@@ -39,24 +40,25 @@ public class Guild(FluxerApplication app) : IEntity
 
     internal GuildRequestBuilder RequestBuilder => field ??= app.Rest.Guilds[Id];
 
-    internal ConcurrentDictionary<Snowflake, IGuildChannel> GuildChannels { get; } = new();
-    internal ConcurrentDictionary<Snowflake, GuildEmoji> GuildEmojis { get; } = new();
-    internal ConcurrentDictionary<Snowflake, Sticker> GuildStickers { get; } = new();
+    internal PermanentCache<IGuildChannel, ChannelMapper> GuildChannels { get; } = new(app.ChannelMapper);
+    internal ImmutableDictionary<Snowflake, GuildEmoji> GuildEmojis { get; set; } = ImmutableDictionary.Create<Snowflake, GuildEmoji>();
+    internal ImmutableDictionary<Snowflake, Sticker> GuildStickers { get; set; } = ImmutableDictionary.Create<Snowflake, Sticker>();
 
-    public IReadOnlyCollection<IRole> Roles => [..RolesRepository.Cache.GetAllCached()];
-    public IReadOnlyCollection<GuildMember> Members => [..MembersRepository.Cache.GetAllCached()];
-    public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels => GuildChannels.AsReadOnly();
+    public IReadOnlyCollection<IRole> Roles => [..RolesRepository.Cache.GetAllCached().Select(r => r.Value!)];
+    public IReadOnlyCollection<IGuildMember> Members => [..MembersRepository.Cache.GetAllCached().Select(x => x.Value!)];
+    public IReadOnlyDictionary<Snowflake, CacheRef<IGuildChannel>> Channels => GuildChannels.GetDictionary();
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
 
 
-    public GuildVoiceChannel? AfkChannel { get; internal set; }
+    internal CacheRef<IChannel>? AfkChannelRef { get;  set; }
+    public GuildVoiceChannel? AfkChannel => (GuildVoiceChannel?)AfkChannelRef?.Value; 
     public int AfkTimeout { get; internal set; }
     public string? BannerHash { get; internal set; }
     public int? BannerHeight { get; internal set; }
     public int? BannerWidth { get; internal set; }
     public DefaultMessageNotifications DefaultMessageNotifications { get; internal set; }
-    public int DisabledOperations { get; internal set; }
+    public GuildOperations DisabledOperations { get; internal set; }
     public string? EmbedSplashHash { get; internal set; }
     public int? EmbedSplashHeight { get; internal set; }
     public int? EmbedSplashWidth { get; internal set; }
@@ -68,21 +70,24 @@ public class Guild(FluxerApplication app) : IEntity
     public GuildMfaLevel MfaLevel { get; internal set; }
     public required string Name { get; set; }
     public NsfwLevel NsfwLevel { get; internal set; }
-    public required IUser Owner { get; set; }
+    internal ICacheRef<IUser> OwnerRef { get; set; }
+    public IUser Owner => OwnerRef.Value;
     public Permissions? Permissions { get; internal set; }
-    public GuildTextChannel? RulesChannel { get; internal set; }
+    internal CacheRef<IChannel>? RulesChannelRef { get; set; }
+    public GuildTextChannel? RulesChannel => (GuildTextChannel?)RulesChannelRef?.Value;
     public string? SplashHash { get; internal set; }
     public SplashCardAlignment SplashCardAlignment { get; internal set; }
     public int? SplashHeight { get; internal set; }
     public int? SplashWidth { get; internal set; }
     public SystemChannelFlags SystemChannelFlags { get; internal set; }
-    public GuildTextChannel? SystemChannel { get; internal set; }
+    internal CacheRef<IChannel>? SystemChannelRef { get; set; }
+    public GuildTextChannel? SystemChannel => (GuildTextChannel?)SystemChannelRef?.Value;
     public string? VanityUrlCode { get; internal set; }
     public GuildVerificationLevel VerificationLevel { get; internal set; }
     public int MemberCount { get; internal set; }
 
     public IUser CurrentMember =>
-        field ??= MembersRepository.Cache.GetCachedOrDefault<GuildMember>(app.CurrentUser.Id)!;
+        field ??= MembersRepository.Cache.GetCachedOrDefault(app.CurrentUser.Id).Value!;
 
     public Task<GuildTextChannel> CreateTextChannelAsync(
         string name,
@@ -130,5 +135,7 @@ public class Guild(FluxerApplication app) : IEntity
         CancellationToken cancellationToken = default
     ) => app.WebhookMapper.FromResponse(await app.Rest.Webhooks[id].GetAsync(cancellationToken));
 
-    public Task<GuildMember> GetMemberAsync(Snowflake id) => MembersRepository.GetAsync(id);
+    public Task<IGuildMember?> GetMemberAsync(Snowflake id) 
+        => MembersRepository.GetAsync(id)
+            .ContinueWith(t => t.Result.Value, TaskContinuationOptions.OnlyOnRanToCompletion);
 }
