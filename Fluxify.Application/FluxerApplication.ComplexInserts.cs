@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Immutable;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
@@ -19,6 +20,7 @@ using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.EventArgs;
+using Fluxify.Application.State.Ref;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Emoji;
@@ -29,13 +31,12 @@ using Fluxify.Gateway.Model.Data.Channel.Message;
 using Fluxify.Gateway.Model.Data.Channel.Reaction;
 using Fluxify.Gateway.Model.Data.User;
 using Fluxify.Gateway.Model.Data.Voice;
-using UserStatus = Fluxify.Gateway.Model.Data.UserStatus;
 
 namespace Fluxify.Application;
 
 public partial class FluxerApplication
 {
-    private Guild InsertGuild(
+    private CacheRef<Guild> InsertGuild(
         GuildResponse response,
         GuildRoleResponse[] roles,
         GuildMemberResponse[] members,
@@ -46,31 +47,34 @@ public partial class FluxerApplication
         VoiceStateResponse[] voiceStates
     )
     {
-        var guild = GuildsRepository.Insert(response);
+        var guildRef = GuildsRepository.Insert(response);
+        var guild = guildRef.Value!;
         foreach (var guildRoleResponse in roles)
         {
-            guild.RolesRepository.Insert(guildRoleResponse, guild);
+            guild.RolesRepository.Insert(guildRoleResponse, guildRef);
         }
 
         foreach (var guildMemberResponse in members)
         {
-            guild.MembersRepository.Insert(guildMemberResponse, guild,
-                UsersRepository.GetCachedOrDefault(guildMemberResponse.User!.Id) ?? UsersRepository.Insert(guildMemberResponse.User));
+            guild.MembersRepository.Insert(
+                guildMemberResponse,
+                guildRef,
+                UsersRepository.Insert(guildMemberResponse.User!));
         }
 
         foreach (var channelResponse in channels)
         {
-            InsertChannel(channelResponse, guild);
+            InsertChannel(channelResponse, guildRef);
         }
 
         foreach (var voiceStateResponse in voiceStates)
         {
-            if (guild.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(voiceStateResponse.UserId) is not { } user)
+            if (guild.MembersRepository.Cache.GetCachedOrDefault(voiceStateResponse.UserId) is not { Value: not null } user)
             {
                 continue;
             }
 
-            UpdateGuildUserVoiceState(voiceStateResponse, guild, user);
+            UpdateGuildUserVoiceState(voiceStateResponse, guildRef, user);
         }
 
         foreach (var presence in presences)
@@ -81,37 +85,43 @@ public partial class FluxerApplication
         GuildInsertStickers(stickers, guild);
         GuildInsertEmoji(emojis, guild);
         
-        return guild;
+        return guildRef;
     }
 
     private void UpdateUserPresence(PresenceResponse presence)
     {
-        if (UsersRepository.GetCachedOrDefault(presence.User.Id) is {} user)
-        {
-            UserMapper.UpdateStatus(user, presence);
-        }
+        UsersRepository.Cache.TryUpdate(
+            presence.User.Id,
+            user => UserMapper.UpdateStatus(user, presence),
+            out _);
     }
 
-    private void UpdateGuildUserVoiceState(VoiceStateResponse voiceState, Guild guild, GuildMember guildMember)
+    private void UpdateGuildUserVoiceState(
+        VoiceStateResponse voiceState,
+        CacheRef<Guild> guildRef,
+        CacheRef<IGuildMember> guildMemberRef
+    )
     {
-        if (voiceState.ConnectionId == null)
+        if (voiceState.ConnectionId == null 
+            || guildMemberRef.Value is not GuildMember { VoiceStateList: var voiceStateList}
+            || guildRef.Value is not {} guild)
         {
             return;
         }
 
         if (voiceState.ChannelId == null)
         {
-            guildMember.VoiceStateList.TryRemove(voiceState.ConnectionId, out _);
+            voiceStateList.TryRemove(voiceState.ConnectionId, out _);
             return;
         }
         
-        guildMember.VoiceStateList.AddOrUpdate(
+        voiceStateList.AddOrUpdate(
             voiceState.ConnectionId,
             _ =>
             {
                 var state = new VoiceState
                 {
-                    VoiceChannel = (GuildVoiceChannel)guild.Channels[voiceState.ChannelId.Value]
+                    VoiceChannelRef = guild.Channels[voiceState.ChannelId.Value].Cast<GuildVoiceChannel>()
                 };
                 UserMapper.UpdateVoiceState(state, voiceState);
                 
@@ -127,64 +137,43 @@ public partial class FluxerApplication
     
     private static void GuildInsertStickers(GuildStickerResponse[] stickers, Guild guild)
     {
-        foreach (var guildStickerResponse in stickers)
-        {
-            guild.GuildStickers.AddOrUpdate(
-                guildStickerResponse.Id,
-                _ => CommonMapper.MapToSticker(guildStickerResponse),
-                (_, target) =>
-                {
-                    CommonMapper.UpdateSticker(target, guildStickerResponse);
-                    return target;
-                });
-        }
+        guild.GuildStickers = stickers
+            .Select(CommonMapper.MapToSticker)
+            .ToImmutableDictionary(k => k.Id);
     }
 
     private static void GuildInsertEmoji(GuildEmojiResponse[] emojis, Guild guild)
     {
-        foreach (var guildEmojiResponse in emojis)
-        {
-            guild.GuildEmojis.AddOrUpdate(
-                guildEmojiResponse.Id!.Value,
-                _ => (GuildEmoji)CommonMapper.MapToEmoji(guildEmojiResponse),
-                (_, target) =>
-                {
-                    target.Name = guildEmojiResponse.Name;
-                    return target;
-                });
-        }
+        guild.GuildEmojis = emojis
+            .Select(CommonMapper.MapToEmoji)
+            .OfType<GuildEmoji>()
+            .ToImmutableDictionary(k => k.Id);
     }
 
-    private void InsertChannel(ChannelResponse arg, Guild? guild = null)
+    private CacheRef<IChannel> InsertChannel(ChannelResponse arg, CacheRef<Guild>? guildRef = null)
     {
-        var channel = ChannelsRepository.Insert(arg);
-        if (channel is IGuildChannel guildChannel)
+        var channel = ChannelsRepository.Insert(arg, guildRef);
+        if (channel.Value is IGuildChannel guildChannel)
         {
-            guild ??= guildChannel.Guild;
+            var guild = guildRef?.Value ?? guildChannel.Guild; 
+            guild?.GuildChannels.UpdateOrCreate(guildChannel);
+        }
         
-            guild?.GuildChannels.AddOrUpdate(
-                channel.Id,
-                _ => guildChannel,
-                (_, target) =>
-                {
-                    ChannelMapper.UpdateEntity(target, guildChannel);
-                    return target;
-                });
-        }
+        return channel;
     }
 
-    private async Task<IUser> InsertMessageUser(GatewayMessage arg)
+    private async Task<ICacheRef<IUser>> InsertMessageUser(GatewayMessage arg)
     {
-        IUser user;
+        ICacheRef<IUser> user;
         if (arg.WebhookId.HasValue)
         {
-            user = UserMapper.MapWebhook(arg.Author);
+            user = new CacheRef<WebhookUser>(arg.WebhookId.Value, UserMapper.MapWebhook(arg.Author));
         }
         else if (arg.GuildId.HasValue)
         {
             var guild = await GuildsRepository.GetAsync(arg.GuildId.Value);
             var globalUser = UsersRepository.Insert(arg.Author);
-            user = guild.MembersRepository.Insert(arg.Member!, guild, globalUser);
+            user = guild.Value!.MembersRepository.Insert(arg.Member!, guild, globalUser);
         }
         else
         {
@@ -196,34 +185,38 @@ public partial class FluxerApplication
 
     private ReactionEventArgs CreateReactionEventArgs(GatewayReaction arg)
     {
-        IUser? user;
-        Guild? guild = null;
-        Message? message = null;
+        ICacheRef<IUser>? userRef;
+        CacheRef<Guild>? guildRef = null;
+        CacheRef<Message>? messageRef = null;
         var emoji = CommonMapper.MapToEmoji(arg.Emoji);
 
         if (arg.GuildId.HasValue)
         {
-            guild = GuildsRepository.Cache.GetCachedOrDefault<Guild>(arg.GuildId.Value);
+            guildRef = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId.Value);
         }
 
         if (arg.Member is not null)
         {
-            user = UsersRepository.Insert(arg.Member.User!);
-            if (guild is not null)
+            userRef = UsersRepository.Insert(arg.Member.User!);
+            if (guildRef.HasValue)
             {
-                user = guild.MembersRepository.Insert(arg.Member, guild, (GlobalUser)user);
+                userRef = guildRef.Value.Value!.MembersRepository.Insert(
+                    arg.Member,
+                    guildRef.Value,
+                    // we assigned CacheRef<GlobalUser> above so this cast is safe
+                    (CacheRef<GlobalUser>)userRef.Cast<GlobalUser>());
             }
         }
         else
         {
             // hope
-            user = UsersRepository.GetCachedOrDefault(arg.UserId);
+            userRef = UsersRepository.GetCachedOrDefault(arg.UserId);
         }
 
-        var channel = ChannelsRepository.Cache.GetCachedOrDefault<ITextChannel>(arg.ChannelId);
-        if (channel is not null)
+        var channelRef = ChannelsRepository.Cache.GetCachedOrDefault(arg.ChannelId);
+        if (channelRef.Value is not null)
         {
-            var repo = channel switch
+            var repo = channelRef.Value switch
             {
                 GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository,
                 PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository,
@@ -237,20 +230,43 @@ public partial class FluxerApplication
                     var reaction = msg.Reactions?.FirstOrDefault(r => r.Emoji == emoji);
                     reaction?.Count += 1;
                     reaction?.Me = reaction.Me || arg.UserId == CurrentUser.Id;
-                }, out message);
+                }, out var messageRefResult);
+                
+                messageRef = messageRefResult;
             }
         }
 
         return new ReactionEventArgs(
             emoji,
-            channel!,
-            arg.UserId,
-            arg.GuildId,
-            arg.MessageId,
-            message,
-            guild,
-            user,
-            arg.SessionId
+            channelRef.Cast<ITextChannel>(),
+            messageRef,
+            guildRef,
+            userRef
         );
+    }
+
+    private ICacheRef<IUser> InsertGuildMemberData(GatewayGuildMember arg)
+    {
+        var userRef = UsersRepository.Insert(arg.User!);
+        var guildRef = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId);
+        if (guildRef.Value is not {} guild)
+        {
+            return userRef;
+        }
+
+        return guild.MembersRepository.Insert(arg, guildRef, userRef);
+    }
+
+    private async Task<CacheRef<Message>> InsertGatewayMessage(GatewayMessage arg)
+    {
+        var channel = ChannelsRepository.Cache.GetCachedOrDefault(arg.ChannelId);
+        var user = await InsertMessageUser(arg);
+        var message = channel.Value switch
+        {
+            PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository.InsertNew(arg, user),
+            GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository.InsertNew(arg, user),
+            _ => new CacheRef<Message>(arg.Id, MessageMapper.Map(arg, channel: channel, author: user))
+        };
+        return message;
     }
 }
