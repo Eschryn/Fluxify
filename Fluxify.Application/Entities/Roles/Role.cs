@@ -14,6 +14,7 @@
 
 using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Roles;
@@ -29,7 +30,8 @@ public class Role : IRole
     public string? UnicodeEmoji { get; internal set; }
     public Color Color { get; internal set; }
     public Permissions Permissions { get; internal set; }
-    public required Guild Guild { get; init; }
+    internal CacheRef<Guild> GuildRef { get; init; }
+    public Guild Guild => GuildRef.Value;
     
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch
     {

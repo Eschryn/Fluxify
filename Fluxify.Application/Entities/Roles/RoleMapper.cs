@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.State.Ref;
 using Fluxify.Dto.Guilds.Roles;
 using Riok.Mapperly.Abstractions;
 
@@ -23,7 +24,7 @@ namespace Fluxify.Application.Entities.Roles;
 public partial class RoleMapper : IUpdateEntity<IRole>
 {
     [MapProperty(nameof(GuildRoleResponse.Mentionable), nameof(Role.IsMentionable))]
-    public partial Role MapFromDto(GuildRoleResponse dto, Guild guild);
+    public partial Role MapFromDto(GuildRoleResponse dto, CacheRef<Guild> guildRef);
     
     [MapperIgnoreSource(nameof(IRole.Guild))]
     public partial void UpdateEntity([MappingTarget] IRole data, IRole update);

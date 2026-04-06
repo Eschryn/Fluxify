@@ -12,37 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Rest;
-using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Repositories;
 
-public sealed class RoleRepository(Snowflake guildId, RestClient client, RoleMapper mapper, GuildRepository guildRepository)
+internal sealed class RoleRepository(Snowflake guildId, RestClient client, RoleMapper mapper, GuildRepository guildRepository)
 {
     internal PermanentCache<IRole, RoleMapper> Cache = new(mapper);
 
-    public async Task<IRole> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
+    public async Task<CacheRef<IRole>> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 
     private async Task<IRole> Factory(Snowflake arg)
     {
+        IRole? role = null;
         var guildRoleResponses = await client.Guilds[guildId].Roles.ListAsync() ?? [];
         foreach (var guildRoleResponse in guildRoleResponses)
         {
+            if (guildRoleResponse.Id == arg)
+            {
+                role = mapper.MapFromDto(guildRoleResponse, await guildRepository.GetAsync(guildId));
+            }
+            
             Insert(guildRoleResponse, await guildRepository.GetAsync(guildId));
         }
         
-        return Cache.GetCachedOrDefault<Role>(arg) ?? throw new Exception($"Role with id {arg} not found");
+        return role ?? throw new Exception($"Role with id {arg} not found");
     }
 
-    internal void Insert(GuildRoleResponse role, Guild guild)
-    {
-        Cache.UpdateOrCreate(mapper.MapFromDto(role, guild));
+    internal void Insert(GuildRoleResponse role, CacheRef<Guild> guildRef)
+    { 
+        Cache.UpdateOrCreate(mapper.MapFromDto(role, guildRef));
     }
 
     internal void Delete(Snowflake argRoleId)
