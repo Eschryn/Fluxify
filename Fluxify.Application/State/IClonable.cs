@@ -17,5 +17,5 @@ namespace Fluxify.Application.State;
 public interface ICloneable<out T> : ICloneable where T : class, ICloneable<T>
 { 
     object ICloneable.Clone() => Clone();
-    public new T Clone() => (T)MemberwiseClone();
+    public new T Clone() => (T)((ICloneable)this).Clone();
 }

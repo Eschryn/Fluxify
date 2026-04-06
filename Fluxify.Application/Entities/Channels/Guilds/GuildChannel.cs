@@ -102,4 +102,6 @@ public abstract class GuildChannel<TProperties>(
         "i" or "I" => ((long)Id).ToString(),
         _ => $"<#{Id}>"
     };
+
+    public object Clone() => MemberwiseClone();
 }

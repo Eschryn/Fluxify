@@ -33,6 +33,4 @@ public interface IGuildChannel : IGuildScopedEntity, IChannel, ICloneable<IGuild
         Snowflake targetId,
         CancellationToken cancellationToken = default
     );
-    
-    object ICloneable.Clone() => MemberwiseClone();
 }

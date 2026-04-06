@@ -21,11 +21,11 @@ namespace Fluxify.Application.Entities.Users;
 public static class UserExtensions
 {
     public static async Task<Message?> SendMessageAsync(this IUser user, string content)
-        => await (await user.GetOrCreateDmAsync()).SendMessageAsync(content);
+        => await (await user.GetOrCreateDmAsync()).Value!.SendMessageAsync(content);
     
     public static async Task<Message?> SendMessageAsync(this IUser user, Action<MessageBuilder> builder)
-        => await (await user.GetOrCreateDmAsync()).SendMessageAsync(builder);
+        => await (await user.GetOrCreateDmAsync()).Value!.SendMessageAsync(builder);
     
     public static async Task<Message?> SendMessageAsync(this IUser user, MessageCreate create)
-        => await (await user.GetOrCreateDmAsync()).SendMessageAsync(create);
+        => await (await user.GetOrCreateDmAsync()).Value!.SendMessageAsync(create);
 }

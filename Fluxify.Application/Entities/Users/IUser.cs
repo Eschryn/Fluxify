@@ -17,6 +17,7 @@ using System.Drawing;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Model;
 using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Entities.Users;
@@ -32,7 +33,7 @@ public interface IUser : IEntity, IFormattable, ICloneable<IUser>
     public bool? System { get; }
     public PublicUserFlags Flags { get; }
 
-    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default);
+    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(CancellationToken cancellationToken = default);
     
     public Uri GetAvatarUri(
         [AllowedValues(
@@ -52,7 +53,4 @@ public interface IUser : IEntity, IFormattable, ICloneable<IUser>
         ImageQuality quality = ImageQuality.High,
         bool animated = false
     );
-    
-    IUser ICloneable<IUser>.Clone() => (IUser)MemberwiseClone();
-    object ICloneable.Clone() => MemberwiseClone();
 }

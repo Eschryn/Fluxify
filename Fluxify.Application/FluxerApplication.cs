@@ -14,12 +14,14 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Repositories;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Credentials;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Instance;
@@ -35,14 +37,16 @@ public partial class FluxerApplication
     internal readonly MessageMapper MessageMapper;
     internal readonly ChannelMapper ChannelMapper;
     internal readonly UserMapper UserMapper;
-    private readonly GuildMapper _guildMapper;
+    internal readonly InviteMapper InviteMapper;
+    internal readonly GuildMapper GuildMapper;
     internal readonly CacheConfig CacheConfig = new();
     internal readonly WebhookMapper WebhookMapper;
 
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
 
-    public PrivateUser CurrentUser { get; private set; }
+    internal ICacheRef<PrivateUser> CurrentUserRef { get; private set; }
+    public PrivateUser CurrentUser => CurrentUserRef.Value!;
 
     internal WellKnownFluxerResponse? InstanceInfo { get; private set; }
 
@@ -54,13 +58,14 @@ public partial class FluxerApplication
 
         WebhookMapper = new WebhookMapper(this);
         MessageMapper = new MessageMapper(this);
+        InviteMapper = new InviteMapper(this);
         ChannelMapper = new ChannelMapper(this);
         UserMapper = new UserMapper(this);
-        _guildMapper = new GuildMapper(this);
+        GuildMapper = new GuildMapper(this);
 
         ChannelsRepository = new ChannelRepository(Rest, ChannelMapper, CacheConfig);
         UsersRepository = new UserRepository(Rest, UserMapper, CacheConfig);
-        GuildsRepository = new GuildRepository(Rest, _guildMapper, CacheConfig);
+        GuildsRepository = new GuildRepository(Rest, GuildMapper, CacheConfig);
 
         InitializeEvents();
     }
@@ -93,27 +98,27 @@ public partial class FluxerApplication
     internal UserRepository UsersRepository { get; }
     internal GuildRepository GuildsRepository { get; }
 
-    public IReadOnlyCollection<Guild> Guilds => GuildsRepository.Cache.GetAllCached();
+    public IReadOnlyCollection<CacheRef<Guild>> Guilds => GuildsRepository.Cache.GetAllCached();
 
     public IReadOnlyCollection<PrivateTextChannel> PrivateChannels
         => ChannelsRepository.Cache.GetAllCached().OfType<PrivateTextChannel>().ToArray();
 
-    public Task<Dm> GetOrCreateDmAsync(Snowflake userId,
+    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(Snowflake userId,
         CancellationToken cancellationToken = default)
         => ChannelsRepository.CreateOrGetPrivateChannelAsync<Dm>(
             new CreatePrivateChannelRequest(RecipientId: userId, Recipients: null), cancellationToken);
 
-    public Task<Guild> GetGuildAsync(
+    public Task<CacheRef<Guild>> GetGuildAsync(
         Snowflake guildId,
         bool bypassCache = false
     ) => GuildsRepository.GetAsync(guildId, bypassCache);
 
-    public Task<IChannel> GetChannelAsync(
+    public Task<CacheRef<IChannel>> GetChannelAsync(
         Snowflake channelId,
         bool bypassCache = false
     ) => ChannelsRepository.GetAsync(channelId, bypassCache);
     
-    public Task<GlobalUser> GetUserAsync(
+    public Task<CacheRef<GlobalUser>> GetUserAsync(
         Snowflake userId,
         bool bypassCache = false
     ) => UsersRepository.GetAsync(userId, bypassCache);

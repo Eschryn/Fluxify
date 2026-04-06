@@ -42,8 +42,4 @@ public interface IGuildMember : IUser, IPresence, ICloneable<IGuildMember>
     Task RemoveRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default);
     Task RemoveRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default);
     Task KickAsync(string? reason = null, CancellationToken cancellationToken = default);
-    
-    IUser ICloneable<IUser>.Clone() => (IUser)MemberwiseClone();
-    IGuildMember ICloneable<IGuildMember>.Clone() => (IGuildMember)MemberwiseClone();
-    object ICloneable.Clone() => MemberwiseClone();
 }

@@ -93,7 +93,7 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
     public Task KickAsync(string? reason = null, CancellationToken cancellationToken = default) 
         => RequestBuilder.KickAsync(reason, cancellationToken);
     
-    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
+    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
         => fluxerApplication.GetOrCreateDmAsync(Id, cancellationToken);
     
     public Uri GetAvatarUri(
@@ -152,5 +152,6 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
         );
     }
     
-    public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);  
+    public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);
+    public object Clone() => MemberwiseClone();
 }

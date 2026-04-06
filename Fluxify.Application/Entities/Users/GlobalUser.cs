@@ -18,6 +18,7 @@ using System.Text;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Model;
 using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
 
@@ -46,7 +47,7 @@ public class GlobalUser(FluxerApplication fluxerApplication) : IUser, IPresence,
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }
     
-    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
+    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
         => fluxerApplication.GetOrCreateDmAsync(Id, cancellationToken);
 
     public Uri GetAvatarUri(
