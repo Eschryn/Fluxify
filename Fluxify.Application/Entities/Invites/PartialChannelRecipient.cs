@@ -1,4 +1,4 @@
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Invites;
 
 public class PartialChannelRecipient
 {

@@ -14,9 +14,9 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
-using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Entities.Webhooks;

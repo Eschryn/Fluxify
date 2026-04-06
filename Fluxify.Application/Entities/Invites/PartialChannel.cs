@@ -1,7 +1,8 @@
+using Fluxify.Application.Entities.Channels;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 
-namespace Fluxify.Application.Entities.Channels;
+namespace Fluxify.Application.Entities.Invites;
 
 public class PartialChannel : IChannel
 {
