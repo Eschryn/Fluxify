@@ -29,17 +29,20 @@ namespace Fluxify.Application.Repositories;
 internal sealed class MessageRepository(
     FluxerApplication fluxerApplication,
     MessagesRequestBuilder messages,
-    ITextChannel channel,
+    Snowflake channelId,
     CacheConfig config,
     Snowflake? lastMessageId = null
 )
 {
+    private CacheRef<IChannel> SelfChannelRef { get; } =
+        fluxerApplication.ChannelsRepository.Cache.GetCachedOrDefault(channelId);
+
     private readonly MessagesRequestBuilder _messages = messages;
     private Snowflake _lastMessageId = lastMessageId ?? 0L;
-private MessageViewOrchestrator _messageViewOrchestrator = new(fluxerApplication.MessageMapper);
-internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(config.MessageCacheSize);
-    
-    internal ICache<Message> Cache = config.MessageCacheSize switch
+    private MessageViewOrchestrator _messageViewOrchestrator = new(fluxerApplication.MessageMapper);
+    internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(config.MessageCacheSize);
+
+    internal ICache<Message> Cache { get; } = config.MessageCacheSize switch
     {
         > 0 => new OrderedCache<Message, MessageMapper>(fluxerApplication.MessageMapper, config.MessageCacheSize),
         _ => new PassthroughCache<Message>()
@@ -51,8 +54,6 @@ internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(c
         return Insert(response, author);
     }
 
-    private CacheRef<IChannel> SelfChannelRef { get; } = fluxerApplication.ChannelsRepository.Cache.GetCachedOrDefault(channel.Id);
-    
     internal CacheRef<Message> Insert(MessageResponse response, ICacheRef<IUser>? author = null)
         => Cache.UpdateOrCreate(
             fluxerApplication.MessageMapper.Map(
@@ -61,7 +62,7 @@ internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(c
                 author));
 
     public Message Update(MessageResponse messageResponse, ICacheRef<IUser>? user)
-        => Cache.IsCached(messageResponse.Id) 
+        => Cache.IsCached(messageResponse.Id)
             ? Insert(messageResponse, user).Value!
             : fluxerApplication.MessageMapper.Map(messageResponse, SelfChannelRef, user);
 
@@ -141,12 +142,12 @@ internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(c
         Snowflake id,
         CancellationToken cancellationToken = default
     ) => await fluxerApplication.MessageMapper.MapAsync(
-            await _messages[id].GetMessageAsync(cancellationToken) ?? throw new Exception("Message was not found"));
+        await _messages[id].GetMessageAsync(cancellationToken) ?? throw new Exception("Message was not found"));
 
     public async Task DeleteMessageAsync(Snowflake id, CancellationToken cancellationToken = default)
     {
         Cache.Remove(id, out _);
-        
+
         await _messages[id].DeleteMessageAsync(cancellationToken);
     }
 
@@ -203,13 +204,16 @@ internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(c
 public class MessageViewOrchestrator(MessageMapper mapper)
 {
     private readonly ConcurrentDictionary<Snowflake, Message> _cache = new();
-    
+
     public MessageView CreateView(long size) => new(size, mapper, this);
 
     internal IReadOnlyList<Message> ChangeView(
         Snowflake newHead,
         Snowflake newTail
-    ) { throw new NotImplementedException();}
+    )
+    {
+        throw new NotImplementedException();
+    }
 
     internal MessageView[] ResolveMessageViews(
         Snowflake snowflake,
@@ -224,17 +228,15 @@ public class MessageViewOrchestrator(MessageMapper mapper)
 public class MessageView(long size, MessageMapper mapper, MessageViewOrchestrator orchestrator)
 {
     private ConcurrentQueue<Snowflake> _messageSequence = new();
-    
+
     public Snowflake Head { get; }
     public Snowflake Tail { get; }
-    
+
     public async Task LoadBeforeAsync(int count)
     {
-        
     }
-    
+
     public async Task LoadAfterAsync(int count)
     {
-        
     }
 }

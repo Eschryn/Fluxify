@@ -101,7 +101,7 @@ public partial class FluxerApplication
     public IReadOnlyCollection<CacheRef<Guild>> Guilds => GuildsRepository.Cache.GetAllCached();
 
     public IReadOnlyCollection<PrivateTextChannel> PrivateChannels
-        => ChannelsRepository.Cache.GetAllCached().OfType<PrivateTextChannel>().ToArray();
+        => ChannelsRepository.Cache.GetAllCached().Select(c => c.Value).OfType<PrivateTextChannel>().ToArray();
 
     public Task<ICacheRef<Dm>> GetOrCreateDmAsync(Snowflake userId,
         CancellationToken cancellationToken = default)
@@ -117,7 +117,7 @@ public partial class FluxerApplication
         Snowflake channelId,
         bool bypassCache = false
     ) => ChannelsRepository.GetAsync(channelId, bypassCache);
-    
+
     public Task<CacheRef<GlobalUser>> GetUserAsync(
         Snowflake userId,
         bool bypassCache = false

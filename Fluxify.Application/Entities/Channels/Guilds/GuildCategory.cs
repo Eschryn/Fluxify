@@ -22,7 +22,4 @@ namespace Fluxify.Application.Entities.Channels.Guilds;
 public class GuildCategory(
     FluxerApplication fluxerApplication,
     CacheRef<Guild> guildRef
-) : GuildChannel<CategoryProperties>(fluxerApplication, guildRef), ICloneable<GuildCategory>
-{
-    object ICloneable.Clone() => MemberwiseClone();
-}
+) : GuildChannel<CategoryProperties>(fluxerApplication, guildRef), ICloneable<GuildCategory>;

@@ -199,11 +199,11 @@ public partial class FluxerApplication
         if (arg.Member is not null)
         {
             userRef = UsersRepository.Insert(arg.Member.User!);
-            if (guildRef.HasValue)
+            if (guildRef?.Value != null)
             {
-                userRef = guildRef.Value.Value!.MembersRepository.Insert(
+                userRef = guildRef.Value.MembersRepository.Insert(
                     arg.Member,
-                    guildRef.Value,
+                    guildRef,
                     // we assigned CacheRef<GlobalUser> above so this cast is safe
                     (CacheRef<GlobalUser>)userRef.Cast<GlobalUser>());
             }

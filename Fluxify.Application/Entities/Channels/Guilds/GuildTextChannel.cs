@@ -33,7 +33,7 @@ public class GuildTextChannel(FluxerApplication fluxerApplication, CacheRef<Guil
     internal MessageRepository MessageRepository => field ??= new MessageRepository(
         FluxerApplication,
         FluxerApplication.Rest.Channels[Id].Messages,
-        this,
+        Id,
         FluxerApplication.CacheConfig,
         LastMessageId
     );

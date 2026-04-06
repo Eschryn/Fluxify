@@ -18,7 +18,7 @@ using Fluxify.Core.Types;
 namespace Fluxify.Application.State.Ref;
 
 // maybe implement INotifyPropertyChanged?
-public struct CacheRef<T>(Snowflake id, T? initialValue) : IEquatable<CacheRef<T>>, ICacheRef<T> where T : class, ICloneable<T>
+public class CacheRef<T>(Snowflake id, T? initialValue) : IEquatable<CacheRef<T>>, ICacheRef<T> where T : class, ICloneable<T>
 {
     private T? _value = initialValue;
     
@@ -29,7 +29,7 @@ public struct CacheRef<T>(Snowflake id, T? initialValue) : IEquatable<CacheRef<T
     
     internal void Swap(T newValue) => Interlocked.Exchange(ref _value, newValue);
 
-    public bool Equals(CacheRef<T> other) => Id.Equals(other.Id) && EqualityComparer<T?>.Default.Equals(_value, other._value);
+    public bool Equals(CacheRef<T>? other) => Id.Equals(other?.Id) && EqualityComparer<T?>.Default.Equals(_value, other._value);
     public override bool Equals(object? obj) => obj is CacheRef<T> other && Equals(other);
     public override int GetHashCode() => HashCode.Combine(_value, Id);
     public static bool operator ==(CacheRef<T> left, CacheRef<T> right) => left.Equals(right);

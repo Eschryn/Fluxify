@@ -62,6 +62,7 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
             data.Swap(cloned);
             updated = data;
 
+            _dataContainer.TryUpdate(key, data, data);
             return true;
         }
         

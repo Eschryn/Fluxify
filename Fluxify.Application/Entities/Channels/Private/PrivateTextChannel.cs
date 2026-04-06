@@ -40,7 +40,7 @@ public abstract class PrivateTextChannel(
         => field ??= new MessageRepository(
             FluxerApplication,
             FluxerApplication.Rest.Channels[Id].Messages,
-            this,
+            Id,
             FluxerApplication.CacheConfig,
             LastMessageId
         );
@@ -129,4 +129,6 @@ public abstract class PrivateTextChannel(
         "i" or "I" => ((long)Id).ToString(),
         _ or "m" or "M" => $"<#{Id}>"
     };
+
+    public object Clone() => MemberwiseClone();
 }

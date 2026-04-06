@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Immutable;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Extensions;
@@ -31,7 +32,8 @@ public abstract class GuildChannel<TProperties>(
 {
     protected FluxerApplication FluxerApplication => fluxerApplication;
     internal ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
-    internal Dictionary<Snowflake, PermissionOverwrite> OverwritesDictionary = new();
+    internal ImmutableDictionary<Snowflake, PermissionOverwrite> OverwritesDictionary { get; private set; } 
+        = ImmutableDictionary<Snowflake, PermissionOverwrite>.Empty;
     internal readonly CacheRef<Guild> GuildRef = guildRef;
     
     public required Snowflake Id { get; init; }
@@ -45,7 +47,8 @@ public abstract class GuildChannel<TProperties>(
         internal set
         {
             field = value;
-            OverwritesDictionary = value?.ToDictionary(x => x.Id, x => x) ?? [];
+            OverwritesDictionary = value?.ToImmutableDictionary(x => x.Id, x => x) 
+                                   ?? ImmutableDictionary<Snowflake, PermissionOverwrite>.Empty;
         }
     }
     

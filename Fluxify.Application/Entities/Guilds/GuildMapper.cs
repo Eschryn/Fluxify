@@ -61,6 +61,8 @@ public partial class GuildMapper(FluxerApplication app) : IUpdateEntity<Guild>
     [MapperIgnoreSource(nameof(Guild.AfkChannel))]
     [MapperIgnoreSource(nameof(Guild.RulesChannel))]
     [MapperIgnoreSource(nameof(Guild.SystemChannel))]
+    [MapperIgnoreSource(nameof(Guild.RolesRepository))]
+    [MapperIgnoreSource(nameof(Guild.MembersRepository))]
     public partial void UpdateEntity([MappingTarget] Guild data, Guild update);
 
     internal Guild MapCached(GuildResponse response)

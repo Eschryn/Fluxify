@@ -22,7 +22,7 @@ namespace Fluxify.Application.Entities.Roles;
 public class Role : IRole
 {
     public Snowflake Id { get; internal set; }
-    public required string Name { get; init; }
+    public string Name { get; internal set; }
     public long Position { get; internal set; }
     public bool IsMentionable { get; internal set; }
     public bool Hoist { get; internal set; }
@@ -38,4 +38,6 @@ public class Role : IRole
         "i" or "I" => ((long)Id).ToString(),
         _ or "m" or "M" => $"<@&{Id}>"
     };
+
+    public object Clone() => MemberwiseClone();
 }

@@ -26,6 +26,8 @@ public partial class RoleMapper : IUpdateEntity<IRole>
     [MapProperty(nameof(GuildRoleResponse.Mentionable), nameof(Role.IsMentionable))]
     public partial Role MapFromDto(GuildRoleResponse dto, CacheRef<Guild> guildRef);
     
-    [MapperIgnoreSource(nameof(IRole.Guild))]
-    public partial void UpdateEntity([MappingTarget] IRole data, IRole update);
+    public void UpdateEntity(IRole data, IRole update) => UpdateEntity((Role)data, (Role)update);
+    [MapperIgnoreSource(nameof(Role.Guild))]
+    [MapperIgnoreSource(nameof(Role.GuildRef))]
+    public partial void UpdateEntity([MappingTarget] Role data, Role update);
 }

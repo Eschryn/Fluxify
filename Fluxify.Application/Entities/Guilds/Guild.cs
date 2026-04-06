@@ -138,4 +138,6 @@ public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
     public Task<IGuildMember?> GetMemberAsync(Snowflake id) 
         => MembersRepository.GetAsync(id)
             .ContinueWith(t => t.Result.Value, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+    public object Clone() => MemberwiseClone();
 }
