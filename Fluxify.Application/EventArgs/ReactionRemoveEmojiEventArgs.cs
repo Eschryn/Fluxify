@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.EventArgs;
@@ -23,14 +24,12 @@ namespace Fluxify.Application.EventArgs;
 [method: SetsRequiredMembers]
 public class ReactionRemoveEmojiEventArgs(
     IEmoji emoji,
-    ITextChannel channel,
-    Snowflake messageId,
-    Message? updated,
-    Guild? guild
+    ICacheRef<ITextChannel> channel,
+    ICacheRef<Message> updated,
+    ICacheRef<Guild>? guild
 ) {
     public required IEmoji Emoji { get; init; } = emoji;
-    public required Snowflake MessageId { get; init; } = messageId;
-    public required ITextChannel Channel { get; init; } = channel;
-    public Message? Message { get; init; } = updated;
-    public Guild? Guild { get; init; } = guild;
+    public required ICacheRef<ITextChannel> Channel { get; init; } = channel;
+    public ICacheRef<Message> Message { get; init; } = updated;
+    public ICacheRef<Guild>? Guild { get; init; } = guild;
 }

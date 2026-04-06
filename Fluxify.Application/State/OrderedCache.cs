@@ -236,11 +236,10 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
         // rebuild queue 
         try
         {
-            removedMessages = _dataContainer
-                .Select(key 
-                    => _dataContainer.TryRemove(key.Key, out var message) 
+            removedMessages = id.Select(key 
+                    => _dataContainer.TryRemove(key, out var message) 
                         ? message
-                        : new CacheRef<TData>(key.Key, null))
+                        : new CacheRef<TData>(key, null))
                 .ToArray();
 
             var hashSet = id.ToHashSet();

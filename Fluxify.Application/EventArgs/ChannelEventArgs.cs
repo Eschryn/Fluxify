@@ -12,18 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
-using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Users;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
-
 namespace Fluxify.Application.EventArgs;
 
-[method: SetsRequiredMembers]
-public class GuildDeletedEventArgs(CacheRef<Guild> guild, GuildMember? self, bool? unavailable)
+public class ChannelEventArgs
 {
-    public required bool? Unavailable { get; init; } = unavailable;
-    public required CacheRef<Guild> CachedGuild { get; init; } = guild;
-    public required GuildMember? CachedSelf { get; init; } = self;
+    
 }

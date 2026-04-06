@@ -17,23 +17,24 @@ using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.Entities.Users;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.EventArgs;
 
 [method: SetsRequiredMembers]
 public class MessageDeletedEventArgs(
-    ITextChannel channel,
-    Message? cachedMessage,
-    Snowflake messageId,
-    Snowflake? authorId,
+    ICacheRef<ITextChannel> channel,
+    ICacheRef<Message> cachedMessage,
+    ICacheRef<IUser>? author,
     string? content
 ) {
-    public required Snowflake MessageId { get; init; } = messageId;
-    public required Snowflake? AuthorId { get; init; } = authorId;
     public string? Content { get; init; } = content;
     
-    public Message? CachedMessage { get; init; } = cachedMessage;
-    public required ITextChannel Channel { get; init; } = channel;
-    public Guild? Guild  => Channel is IGuildChannel gc ? gc.Guild : null;
+    public required ICacheRef<Message> Message { get; init; } = cachedMessage;
+    public required ICacheRef<IChannel> Channel { get; init; } = channel;
+    public required ICacheRef<IUser>? Author { get; init; } = author;
+    
+    public Guild? Guild  => Channel.Value is IGuildChannel gc ? gc.Guild : null;
 }

@@ -15,18 +15,17 @@
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.EventArgs;
 
 public class ReactionRemoveAllEventArgs(
-    Guild? guild,
-    ITextChannel channel,
-    Message? message,
-    Snowflake messageId
+    ICacheRef<Guild>? guild,
+    ICacheRef<ITextChannel> channel,
+    ICacheRef<Message> message
 ) {
-    public Guild? Guild { get; } = guild;
-    public ITextChannel Channel { get; } = channel;
-    public Message? Message { get; } = message;
-    public Snowflake MessageId { get; } = messageId;
+    public ICacheRef<Guild>? Guild { get; } = guild;
+    public ICacheRef<ITextChannel> Channel { get; } = channel;
+    public ICacheRef<Message> Message { get; } = message;
 }

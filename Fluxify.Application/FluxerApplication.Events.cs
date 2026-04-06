@@ -29,6 +29,8 @@ public partial class FluxerApplication
     private readonly HandlerContainer<ReactionRemoveEmojiEventArgs> _messageReactionRemoveEmojiHandlers = new();
     private readonly HandlerContainer<ReactionRemoveAllEventArgs> _messageReactionRemoveAllHandlers = new();
     
+    private readonly HandlerContainer<ChannelEventArgs> _channelCreatedHandlers = new();
+    
     private readonly HandlerContainer<GuildEventArgs> _guildCreatedHandlers = new();
     private readonly HandlerContainer<GuildEventArgs> _guildUpdatedHandlers = new();
     private readonly HandlerContainer<GuildDeletedEventArgs> _guildDeletedHandlers = new();

@@ -21,6 +21,7 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.EventArgs;
 using Fluxify.Application.State.Ref;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Emoji;
@@ -268,5 +269,15 @@ public partial class FluxerApplication
             _ => new CacheRef<Message>(arg.Id, MessageMapper.Map(arg, channel: channel, author: user))
         };
         return message;
+    }
+
+    private ICacheRef<IUser> GetMessageUser(Snowflake userId, CacheRef<IChannel> channelRef)
+    {
+        if (channelRef.Value is IGuildChannel { Guild.MembersRepository: { } membersRepository })
+        {
+            return membersRepository.Cache.GetCachedOrDefault(userId);
+        }
+
+        return UsersRepository.Cache.GetCachedOrDefault(userId);
     }
 }

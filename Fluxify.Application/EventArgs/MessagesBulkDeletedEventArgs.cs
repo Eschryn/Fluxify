@@ -15,17 +15,16 @@
 using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Messages;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.EventArgs;
 
 [method: SetsRequiredMembers]
 public class MessagesBulkDeletedEventArgs(
-    ITextChannel channel,
-    IReadOnlyCollection<Snowflake> messageIds,
-    IReadOnlyCollection<Message> cachedMessages)
+    ICacheRef<ITextChannel> channel,
+    CacheRef<Message>[] messages)
 {
-    public required ITextChannel Channel { get; init; } = channel;
-    public required IReadOnlyCollection<Snowflake> MessageIds { get; init; } = messageIds;
-    public required IReadOnlyCollection<Message> CachedMessages { get; init; } = cachedMessages;
+    public required ICacheRef<ITextChannel> Channel { get; init; } = channel;
+    public required CacheRef<Message>[] Messages { get; init; } = messages;
 }
