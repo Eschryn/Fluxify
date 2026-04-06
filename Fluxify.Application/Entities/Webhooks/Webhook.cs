@@ -19,6 +19,7 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Model.Messages;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
 using Fluxify.Rest.Webhooks;
@@ -33,9 +34,13 @@ public class Webhook(FluxerApplication fluxerApplication) : IEntity
     public string Name { get; internal set; }
     public string Token { get; internal set; }
     public MediaHash? Avatar { get; internal set; }
-    public required GuildTextChannel Channel { get; init; }
-    public required Guild Guild { get; init; }
-    public IUser? CreatedBy { get; internal set; }
+    internal ICacheRef<GuildTextChannel> ChannelRef { get; init; }
+    internal ICacheRef<Guild> GuildRef { get; init; }
+    internal ICacheRef<IUser>? CreatedByRef { get; set; }
+
+    public GuildTextChannel Channel => ChannelRef.Value!;
+    public Guild Guild => GuildRef.Value!;
+    public IUser? CreatedBy => CreatedByRef?.Value;
 
     public async Task ModifyAsync(Action<WebhookProperties> properties, CancellationToken cancellationToken = default)
         => fluxerApplication.WebhookMapper.UpdateEntity(

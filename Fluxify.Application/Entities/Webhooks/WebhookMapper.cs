@@ -15,6 +15,7 @@
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.State.Ref;
 using Fluxify.Dto.Webhooks;
 using Riok.Mapperly.Abstractions;
 
@@ -23,25 +24,30 @@ namespace Fluxify.Application.Entities.Webhooks;
 [Mapper]
 internal partial class WebhookMapper(FluxerApplication fluxerApplication) : IUpdateEntity<Webhook>
 {
+
     [MapperIgnoreSource(nameof(WebhookResponse.ChannelId))]
     [MapperIgnoreSource(nameof(WebhookResponse.GuildId))]
     [MapperIgnoreSource(nameof(WebhookResponse.User))]
-    private partial Webhook FromResponse(WebhookResponse dto, GuildTextChannel channel, Guild guild, IUser? createdBy,
+    [MapperIgnoreTarget(nameof(Webhook.Guild))]
+    private partial Webhook FromResponse(WebhookResponse dto, ICacheRef<GuildTextChannel> channelRef, CacheRef<Guild> guildRef, ICacheRef<IUser>? createdByRef,
         FluxerApplication fluxerApplication);
 
     [MapperIgnoreSource(nameof(WebhookResponse.ChannelId))]
     [MapperIgnoreSource(nameof(WebhookResponse.GuildId))]
-    [MapValue(nameof(Webhook.CreatedBy), null)]
-    private partial Webhook FromResponse(WebhookTokenResponse dto, GuildTextChannel channel, Guild guild,
+    [MapValue(nameof(Webhook.CreatedByRef), null)]
+    private partial Webhook FromResponse(WebhookTokenResponse dto, ICacheRef<GuildTextChannel> channelRef, CacheRef<Guild> guildRef,
         FluxerApplication fluxerApplication);
-
+    
     public Webhook FromResponse(WebhookTokenResponse dto)
     {
-        var guildTextChannel = fluxerApplication.ChannelsRepository.GetCachedOrDefault<GuildTextChannel>(dto.ChannelId);
-        var guild = guildTextChannel switch
+        var guildTextChannel = fluxerApplication.ChannelsRepository
+            .GetCachedOrDefault(dto.ChannelId)
+            .Cast<GuildTextChannel>();
+
+        var guild = guildTextChannel.Value switch
         {
-            { Guild: var g } => g,
-            _ => fluxerApplication.GuildsRepository.Cache.GetCachedOrDefault<Guild>(dto.GuildId)
+            { GuildRef: var g } => g,
+            _ => fluxerApplication.GuildsRepository.Cache.GetCachedOrDefault(dto.GuildId)
         };
 
         return dto switch
@@ -50,22 +56,26 @@ internal partial class WebhookMapper(FluxerApplication fluxerApplication) : IUpd
                 wr,
                 guildTextChannel,
                 guild,
-                ResolveUser(guild, wr),
+                ResolveUser(guild.Value, wr),
                 fluxerApplication),
             _ => FromResponse(dto, guildTextChannel, guild, fluxerApplication)
         };
     }
 
-    private IUser ResolveUser(Guild? guild, WebhookResponse wr)
+    private ICacheRef<IUser> ResolveUser(Guild? guild, WebhookResponse wr)
     {
-        var upsertedUser = fluxerApplication.UsersRepository.Insert(wr.User);
-        
-        return (IUser?)guild?.MembersRepository.Cache.GetCachedOrDefault<GuildMember>(wr.User.Id) ?? upsertedUser;
+        var upsertedUserRef = fluxerApplication.UsersRepository.Insert(wr.User);
+
+        return guild?.MembersRepository.Cache.GetCachedOrDefault(wr.User.Id) is { Value: not null } memberRef
+            ? memberRef
+            : upsertedUserRef;
     }
 
     [MapperIgnoreSource(nameof(Webhook.Id))]
     [MapperIgnoreSource(nameof(Webhook.Guild))]
     [MapperIgnoreSource(nameof(Webhook.Channel))]
+    [MapperIgnoreSource(nameof(Webhook.ChannelRef))]
+    [MapperIgnoreSource(nameof(Webhook.GuildRef))]
     public partial void UpdateEntity([MappingTarget] Webhook data, Webhook update);
 
     public partial WebhookTokenUpdateRequest ToUpdateRequest(WebhookProperties properties);
@@ -76,6 +86,9 @@ internal partial class WebhookMapper(FluxerApplication fluxerApplication) : IUpd
     [MapperIgnoreSource(nameof(Webhook.Token))]
     [MapperIgnoreSource(nameof(Webhook.Avatar))]
     [MapperIgnoreSource(nameof(Webhook.CreatedBy))]
+    [MapperIgnoreSource(nameof(Webhook.ChannelRef))]
+    [MapperIgnoreSource(nameof(Webhook.GuildRef))]
+    [MapperIgnoreSource(nameof(Webhook.CreatedByRef))]
     [MapValue(nameof(WebhookProperties.Avatar), null)]
     public partial WebhookProperties ToProperties(Webhook webhook);
 }
