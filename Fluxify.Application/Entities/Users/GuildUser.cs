@@ -55,7 +55,7 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
     public bool Mute { get; internal set;  }
     public string? Nick { get; internal set;  }
     public GuildMemberProfileFlags ProfileFlags { get; internal set;  }
-    public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(Guild.RolesRepository.Cache.GetCachedOrDefault<IRole>).OfType<IRole>().ToArray();
+    public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(r => Guild.RolesRepository.Cache.GetCachedOrDefault(r).Value).OfType<IRole>().ToArray();
     public required Guild Guild { get; init; }
     internal GlobalUser User { get; set; } = default!;
     public UserStatus Status => User.Status;
@@ -148,5 +148,5 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
         );
     }
     
-    public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);
+    public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);  
 }

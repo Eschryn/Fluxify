@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System.Drawing;
-using System.Text.Json.Serialization;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Auth;
 using Fluxify.Dto.Users;
 

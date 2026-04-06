@@ -13,15 +13,17 @@
 // limitations under the License.
 
 using System.Drawing;
+using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
+using Fluxify.Application.State;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Members;
 
 namespace Fluxify.Application.Entities.Users;
 
-public interface IGuildMember : IUser, IPresence
+public interface IGuildMember : IUser, IPresence, ICloneable<IGuildMember>
 {
     Snowflake[] AssignedRoleIds { get; set; }
     Color? AccentColor { get; }
@@ -40,4 +42,8 @@ public interface IGuildMember : IUser, IPresence
     Task RemoveRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default);
     Task RemoveRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default);
     Task KickAsync(string? reason = null, CancellationToken cancellationToken = default);
+    
+    IUser ICloneable<IUser>.Clone() => (IUser)MemberwiseClone();
+    IGuildMember ICloneable<IGuildMember>.Clone() => (IGuildMember)MemberwiseClone();
+    object ICloneable.Clone() => MemberwiseClone();
 }

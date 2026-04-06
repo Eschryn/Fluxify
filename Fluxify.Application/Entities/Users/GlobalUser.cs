@@ -17,12 +17,13 @@ using System.Globalization;
 using System.Text;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Model;
+using Fluxify.Application.State;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class GlobalUser(FluxerApplication fluxerApplication) : IUser, IPresence
+public class GlobalUser(FluxerApplication fluxerApplication) : IUser, IPresence, ICloneable<GlobalUser>
 {
     private static readonly CompositeFormat FallbackAvatarUriFormat = CompositeFormat.Parse("/avatars/{0}.png");
     private static readonly CompositeFormat AvatarUriFormat =
@@ -98,4 +99,6 @@ public class GlobalUser(FluxerApplication fluxerApplication) : IUser, IPresence
         "i" or "I" => ((long)Id).ToString(),
         _ or "m" or "M" => $"<#{Id}>"
     };
+
+    public object Clone() => MemberwiseClone();
 }

@@ -13,12 +13,14 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Channels.Guilds;
+using Fluxify.Application.State.Ref;
 
 namespace Fluxify.Application.Entities.Users;
 
 public class VoiceState : IVoiceState
 {
-    public required GuildVoiceChannel VoiceChannel { get; init; }
+    internal ICacheRef<GuildVoiceChannel> VoiceChannelRef { get; init; }
+    public GuildVoiceChannel VoiceChannel => VoiceChannelRef.Value;
     public bool Mute { get; internal set; }
     public bool Deaf { get; internal set; }
     public bool? SelfStream { get; internal set; }

@@ -25,7 +25,7 @@ namespace Fluxify.Application.Entities.Users;
 
 [Mapper]
 [UseStaticMapper(typeof(CommonMapper))]
-public partial class UserMapper(FluxerApplication application) : IUpdateEntity<GlobalUser>, IUpdateEntity<GuildMember>
+public partial class UserMapper(FluxerApplication application) : IUpdateEntity<GlobalUser>, IUpdateEntity<IGuildMember>
 {
     [MapProperty(nameof(UserPartialResponse.Avatar), nameof(GlobalUser.AvatarHash))]
     [MapValue(nameof(GlobalUser.Status), UserStatus.Offline)]
@@ -90,6 +90,9 @@ public partial class UserMapper(FluxerApplication application) : IUpdateEntity<G
     [MapperIgnoreTarget(nameof(GlobalUser.CustomStatus))]
     [MapperIgnoreTarget(nameof(GlobalUser.IsAfk))]
     [MapperIgnoreTarget(nameof(GlobalUser.IsMobile))]
+    [MapperIgnoreSource(nameof(IGuildMember.Guild))]
+    [MapperIgnoreTarget(nameof(GuildMember.User))]
+    [MapperIgnoreSource(nameof(GuildMember.User))]
     public partial void UpdateEntity([MappingTarget] GuildMember data, GuildMember update);
     
     [MapperIgnoreSource(nameof(VoiceStateResponse.GuildId))]
@@ -114,4 +117,6 @@ public partial class UserMapper(FluxerApplication application) : IUpdateEntity<G
     [MapProperty(nameof(PresenceResponse.Afk), nameof(GlobalUser.IsAfk))]
     [MapProperty(nameof(PresenceResponse.CustomStatus), nameof(GlobalUser.CustomStatus))]
     public partial void UpdateStatus([MappingTarget] GlobalUser target, PresenceResponse source);
+
+    public void UpdateEntity(IGuildMember data, IGuildMember update) => UpdateEntity((GuildMember)data, (GuildMember)update);
 }

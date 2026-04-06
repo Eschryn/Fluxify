@@ -16,11 +16,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Model;
+using Fluxify.Application.State;
 using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Entities.Users;
 
-public interface IUser : IEntity, IFormattable
+public interface IUser : IEntity, IFormattable, ICloneable<IUser>
 {
     public bool? Bot { get; }
     public string Username { get; }
@@ -51,4 +52,7 @@ public interface IUser : IEntity, IFormattable
         ImageQuality quality = ImageQuality.High,
         bool animated = false
     );
+    
+    IUser ICloneable<IUser>.Clone() => (IUser)MemberwiseClone();
+    object ICloneable.Clone() => MemberwiseClone();
 }
