@@ -21,6 +21,8 @@ using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
+using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Rest.Channel.Messages;
 
@@ -28,7 +30,7 @@ namespace Fluxify.Application.Entities.Messages;
 
 public class Message(
     FluxerApplication application
-) : IEntity
+) : IEntity, ICloneable<Message>
 {
     private MessageRequestBuilder RequestBuilder => field ??= application.Rest.Channels[Channel.Id].Messages[Id];
 
@@ -36,8 +38,10 @@ public class Message(
     public string? Content { get; internal set; }
 
     public Snowflake? WebhookId { get; internal set; }
-    public required IUser Author { get; init; }
-    public required ITextChannel Channel { get; init; }
+    internal ICacheRef<IUser> AuthorRef { get; init; }
+    internal ICacheRef<ITextChannel> ChannelRef { get; init; }
+    public IUser Author => AuthorRef.Value;
+    public ITextChannel Channel => ChannelRef.Value;
     public Guild? Guild => Channel is IGuildChannel guildChannel ? guildChannel.Guild : null;
     public Attachment[]? Attachments { get; internal set; }
     public Embed[]? Embeds { get; internal set; }
@@ -56,7 +60,7 @@ public class Message(
     public bool IsPinned { get; internal set; }
     public bool? HasTts { get; internal set; }
 
-    public IUser[]? Mentions { get; set; }
+    public ICacheRef<IUser>[]? Mentions { get; set; }
     internal Snowflake[] MentionRoles { get; set; } = Array.Empty<Snowflake>();
     
     public IRole[] MentionedRoles => Channel switch
@@ -64,7 +68,7 @@ public class Message(
         IGuildChannel guildChannel
             => MentionRoles
                 .Select(
-                    id => guildChannel.Guild.RolesRepository.Cache.GetCachedOrDefault<IRole>(id))
+                    id => guildChannel.Guild.RolesRepository.Cache.GetCachedOrDefault(id).Value)
                 .OfType<IRole>()
                 .ToArray(),
         _ => []
@@ -74,7 +78,8 @@ public class Message(
 
     public MessageReference? MessageReference { get; internal set; }
     public MessageSnapshot[]? MessageSnapshots { get; internal set; }
-    public Message? ReferencedMessage { get; internal set; }
+    internal ICacheRef<Message>? ReferencedMessageRef { get; set; }
+    public Message? ReferencedMessage => MessageReference != null ? ReferencedMessageRef?.Value : null;
 
     public Task EditAsync(
         Action<MessageEdit> edit,
@@ -163,7 +168,7 @@ public class Message(
                 );
 
             lastId = userPartialResponses?.LastOrDefault()?.Id;
-            yield return userPartialResponses?.Select(application.UsersRepository.Insert).ToArray() ?? [];
+            yield return userPartialResponses?.Select(r => application.UsersRepository.Insert(r).Value!).ToArray() ?? [];
         } while (lastId != null);
     }
 
@@ -188,4 +193,6 @@ public class Message(
 
     public Task DeleteAttachmentAsync(Snowflake attachmentId, CancellationToken cancellationToken = default)
         => RequestBuilder.DeleteAttachmentAsync(attachmentId, cancellationToken);
+
+    public object Clone() => MemberwiseClone();
 }
