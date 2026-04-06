@@ -14,9 +14,9 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.State;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Rest;
@@ -30,23 +30,30 @@ internal sealed class GuildMemberRepository(
     UserRepository userRepository,
     GuildRepository guildRepository,
     CacheConfig config
-) {
+)
+{
     internal UserRepository UserRepository { get; } = userRepository;
-    internal ICache<GuildMember> Cache = ICache<GuildMember>.CreateLru(config.GuildUserCacheSize, mapper);
+    internal ICache<IGuildMember> Cache = ICache<IGuildMember>.CreateLru(config.GuildUserCacheSize, mapper);
 
-    public async Task<GuildMember> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
+    public async Task<CacheRef<IGuildMember>> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 
-    private async Task<GuildMember> Factory(Snowflake memberId)
+    private async Task<IGuildMember> Factory(Snowflake memberId)
     {
         var guildMemberResponse = await client.Guilds[guild.Id].Members[memberId].GetAsync();
 
-        return guildMemberResponse is null ? 
-            throw new Exception("Could not get guild member")
-            : Insert(guildMemberResponse, await guildRepository.GetAsync(guild.Id), await userRepository.GetAsync(memberId));
+        return guildMemberResponse is null
+            ? throw new Exception("Could not get guild member")
+            : Insert(
+                guildMemberResponse,
+                await guildRepository.GetAsync(guild.Id),
+                await UserRepository.GetAsync(memberId)
+            ).Value!;
     }
 
-    internal GuildMember Insert(GuildMemberResponse member, Guild guild, GlobalUser user) 
-        => Cache.UpdateOrCreate(mapper.Map(member, user, guild));
+    internal CacheRef<IGuildMember> Insert(GuildMemberResponse member, 
+        CacheRef<Guild> guildRef,
+        CacheRef<GlobalUser> userRef)
+        => Cache.UpdateOrCreate(mapper.Map(member, userRef, guildRef));
 
     internal void Delete(Snowflake memberId)
     {

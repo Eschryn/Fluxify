@@ -35,7 +35,7 @@ public interface IGuildMember : IUser, IPresence, ICloneable<IGuildMember>
     string? Nick { get; }
     GuildMemberProfileFlags ProfileFlags { get; }
     IReadOnlyCollection<IRole> Roles { get; }
-    Guild Guild { get; init; }
+    Guild Guild { get; }
     IReadOnlyCollection<IVoiceState> VoiceStates { get; }
     Task AddRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default);
     Task AddRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default);

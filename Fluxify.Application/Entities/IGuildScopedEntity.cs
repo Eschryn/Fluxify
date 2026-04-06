@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities;
 
 public interface IGuildScopedEntity
 {
-    public Guild Guild { get; }
+    public Guild? Guild { get; }
 }

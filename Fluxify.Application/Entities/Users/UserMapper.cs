@@ -14,6 +14,7 @@
 
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Users;
@@ -65,8 +66,8 @@ public partial class UserMapper(FluxerApplication application) : IUpdateEntity<G
     [MapperIgnoreTarget(nameof(GuildMember.Status))]
     [MapperIgnoreTarget(nameof(GuildMember.CustomStatus))]
     [MapperIgnoreSource(nameof(GuildMemberResponse.User))]
-    private partial GuildMember Map(GuildMemberResponse dto, GlobalUser user, Snowflake id, Guild guild, FluxerApplication fluxerApplication);
-    public GuildMember Map(GuildMemberResponse dto, GlobalUser user, Guild guild) => Map(dto, user, user.Id, guild, application);
+    private partial GuildMember Map(GuildMemberResponse dto, CacheRef<GlobalUser> userRef, CacheRef<Guild> guildRef, FluxerApplication fluxerApplication);
+    public GuildMember Map(GuildMemberResponse dto, CacheRef<GlobalUser> userRef, CacheRef<Guild> guildRef) => Map(dto, userRef, guildRef, application);
 
     [MapperIgnoreTarget(nameof(GlobalUser.Id))]
     [MapperIgnoreSource(nameof(GlobalUser.Id))]
@@ -91,8 +92,10 @@ public partial class UserMapper(FluxerApplication application) : IUpdateEntity<G
     [MapperIgnoreTarget(nameof(GlobalUser.IsAfk))]
     [MapperIgnoreTarget(nameof(GlobalUser.IsMobile))]
     [MapperIgnoreSource(nameof(IGuildMember.Guild))]
-    [MapperIgnoreTarget(nameof(GuildMember.User))]
+    [MapperIgnoreSource(nameof(GuildMember.GuildRef))]
     [MapperIgnoreSource(nameof(GuildMember.User))]
+    [MapperIgnoreSource(nameof(GuildMember.UserRef))]
+    [MapperIgnoreTarget(nameof(GuildMember.UserRef))]
     public partial void UpdateEntity([MappingTarget] GuildMember data, GuildMember update);
     
     [MapperIgnoreSource(nameof(VoiceStateResponse.GuildId))]

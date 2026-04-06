@@ -20,6 +20,7 @@ using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Model;
+using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Members;
@@ -33,8 +34,11 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
     private static readonly CompositeFormat BannerUriFormat = CompositeFormat.Parse("/guilds/{0}/users/{1}/banners/{2}.{3}?size={4}&format={3}&quality={5}&animated={6}");
     
     private MemberRequestBuilder RequestBuilder => field ??= Guild.RequestBuilder.Members[Id];
-    public Snowflake Id { get; init; }
-
+    
+    internal CacheRef<Guild> GuildRef { get; init; }
+    internal CacheRef<GlobalUser> UserRef { get; set; }
+    
+    public Snowflake Id => UserRef.Id;
     public Snowflake[] AssignedRoleIds { get; set; } = [];
     public Color? AccentColor { get; internal set;  }
 
@@ -56,8 +60,8 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
     public string? Nick { get; internal set;  }
     public GuildMemberProfileFlags ProfileFlags { get; internal set;  }
     public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(r => Guild.RolesRepository.Cache.GetCachedOrDefault(r).Value).OfType<IRole>().ToArray();
-    public required Guild Guild { get; init; }
-    internal GlobalUser User { get; set; } = default!;
+    public Guild Guild => GuildRef.Value;
+    public GlobalUser User => UserRef.Value;
     public UserStatus Status => User.Status;
     public bool IsMobile => User.IsMobile;
     public bool IsAfk => User.IsAfk;
