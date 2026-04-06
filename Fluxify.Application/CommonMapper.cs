@@ -14,11 +14,8 @@
 
 using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Users;
-using Fluxify.Dto.Channels.Text.Messages.Reactions;
 using Fluxify.Dto.Guilds.Emoji;
 using Fluxify.Dto.Guilds.Stickers;
-using Fluxify.Gateway.Model.Data.User;
 using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application;
@@ -41,7 +38,5 @@ public static partial class CommonMapper
     [MapProperty(nameof(GuildEmojiResponse.Animated), nameof(GuildEmoji.IsAnimated))]
     private static partial GuildEmoji MapToGuildEmoji(GuildEmojiResponse e);
     
-    [MapperIgnoreSource(nameof(GuildEmojiResponse.Id))]
-    [MapperIgnoreSource(nameof(GuildEmojiResponse.Animated))]
-    private static partial UnicodeEmoji MapToUnicodeEmoji(GuildEmojiResponse e);
+    private static UnicodeEmoji MapToUnicodeEmoji(GuildEmojiResponse e) => new(e.Name);
 }
