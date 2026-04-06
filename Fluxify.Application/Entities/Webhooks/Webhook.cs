@@ -19,6 +19,7 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Model.Messages;
+using Fluxify.Application.State;
 using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
@@ -26,7 +27,7 @@ using Fluxify.Rest.Webhooks;
 
 namespace Fluxify.Application.Entities.Webhooks;
 
-public class Webhook(FluxerApplication fluxerApplication) : IEntity
+public class Webhook(FluxerApplication fluxerApplication) : IEntity, ICloneable<Webhook>
 {
     private AuthenticatedWebhookRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Webhooks[Id, Token];
 
@@ -42,15 +43,19 @@ public class Webhook(FluxerApplication fluxerApplication) : IEntity
     public Guild Guild => GuildRef.Value!;
     public IUser? CreatedBy => CreatedByRef?.Value;
 
-    public async Task ModifyAsync(Action<WebhookProperties> properties, CancellationToken cancellationToken = default)
-        => fluxerApplication.WebhookMapper.UpdateEntity(
-            this,
-            fluxerApplication.WebhookMapper.FromResponse(
-                await RequestBuilder.UpdateAsync(
-                    fluxerApplication.WebhookMapper.ToUpdateRequest(
-                        fluxerApplication.WebhookMapper.ToProperties(this)
-                            .Configure(properties)))));
-    
+    public async Task<Webhook> ModifyAsync(Action<WebhookProperties> properties, CancellationToken cancellationToken = default)
+    {
+        var updateRequest = fluxerApplication.WebhookMapper.ToUpdateRequest(
+            fluxerApplication.WebhookMapper.ToProperties(this)
+                .Configure(properties));
+        var response = await RequestBuilder.UpdateAsync(updateRequest, cancellationToken);
+        var newWebhook = fluxerApplication.WebhookMapper.FromResponse(response);
+        var clonedWebhook = (Webhook)Clone();
+        fluxerApplication.WebhookMapper.UpdateEntity(clonedWebhook, newWebhook);
+        
+        return clonedWebhook;
+    }
+
     public Task DeleteAsync(CancellationToken cancellationToken = default) 
         => RequestBuilder.DeleteAsync(cancellationToken);
 
@@ -88,4 +93,6 @@ public class Webhook(FluxerApplication fluxerApplication) : IEntity
     ) is { } response
         ? await fluxerApplication.MessageMapper.MapAsync(response)
         : null!;
+
+    public object Clone() => MemberwiseClone();
 }

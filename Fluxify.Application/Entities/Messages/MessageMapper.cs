@@ -45,7 +45,7 @@ public partial class MessageMapper(
 
     [MapperIgnoreSource(nameof(Embed.Children))]
     private partial MessageEmbedChildResponse MapToMessageEmbedChildResponse(Embed embed);
-    
+
     [MapValue(nameof(Embed.Children), null)]
     private partial Embed MapToEmbed(MessageEmbedChildResponse embed);
 
@@ -63,70 +63,79 @@ public partial class MessageMapper(
     [MapperIgnoreSource(nameof(Attachment.Size))]
     [MapperIgnoreSource(nameof(Attachment.Url))]
     private partial MessageAttachmentRequest Map(Attachment attachment);
-    
+
     public partial CreateMessageRequest Map(MessageCreate message);
     public partial CreateWebhookMessageRequest Map(MessageCreate message, string? username, string? avatarUrl);
     public partial ScheduledMessageSchema Map(MessageCreate messageCreate, DateTime scheduledLocalAt, string timezone);
-    
-    [MapperIgnoreSource(nameof(Message.Id))] 
-    [MapperIgnoreSource(nameof(Message.Reactions))] 
-    [MapperIgnoreSource(nameof(Message.Author))] 
-    [MapperIgnoreSource(nameof(Message.Channel))] 
-    [MapperIgnoreSource(nameof(Message.EditedAt))] 
-    [MapperIgnoreSource(nameof(Message.CreatedAt))] 
-    [MapperIgnoreSource(nameof(Message.Call))] 
-    [MapperIgnoreSource(nameof(Message.MentionRoles))] 
-    [MapperIgnoreSource(nameof(Message.MentionedRoles))] 
-    [MapperIgnoreSource(nameof(Message.Mentions))] 
-    [MapperIgnoreSource(nameof(Message.MentionsEveryone))] 
-    [MapperIgnoreSource(nameof(Message.MessageReference))] 
-    [MapperIgnoreSource(nameof(Message.MessageSnapshots))] 
-    [MapperIgnoreSource(nameof(Message.ReferencedMessage))] 
-    [MapperIgnoreSource(nameof(Message.Stickers))] 
-    [MapperIgnoreSource(nameof(Message.WebhookId))] 
-    [MapperIgnoreSource(nameof(Message.HasTts))] 
-    [MapperIgnoreSource(nameof(Message.IsPinned))] 
-    [MapperIgnoreSource(nameof(Message.Nonce))] 
-    [MapperIgnoreSource(nameof(Message.Type))] 
-    [MapperIgnoreSource(nameof(Message.Guild))] 
-    [MapperIgnoreSource(nameof(Message.AuthorRef))] 
-    [MapperIgnoreSource(nameof(Message.ChannelRef))] 
-    [MapperIgnoreSource(nameof(Message.ReferencedMessageRef))] 
+
+    [MapperIgnoreSource(nameof(Message.Id))]
+    [MapperIgnoreSource(nameof(Message.Reactions))]
+    [MapperIgnoreSource(nameof(Message.Author))]
+    [MapperIgnoreSource(nameof(Message.Channel))]
+    [MapperIgnoreSource(nameof(Message.EditedAt))]
+    [MapperIgnoreSource(nameof(Message.CreatedAt))]
+    [MapperIgnoreSource(nameof(Message.Call))]
+    [MapperIgnoreSource(nameof(Message.MentionRoles))]
+    [MapperIgnoreSource(nameof(Message.MentionedRoles))]
+    [MapperIgnoreSource(nameof(Message.Mentions))]
+    [MapperIgnoreSource(nameof(Message.MentionsEveryone))]
+    [MapperIgnoreSource(nameof(Message.MessageReference))]
+    [MapperIgnoreSource(nameof(Message.MessageSnapshots))]
+    [MapperIgnoreSource(nameof(Message.ReferencedMessage))]
+    [MapperIgnoreSource(nameof(Message.Stickers))]
+    [MapperIgnoreSource(nameof(Message.WebhookId))]
+    [MapperIgnoreSource(nameof(Message.HasTts))]
+    [MapperIgnoreSource(nameof(Message.IsPinned))]
+    [MapperIgnoreSource(nameof(Message.Nonce))]
+    [MapperIgnoreSource(nameof(Message.Type))]
+    [MapperIgnoreSource(nameof(Message.Guild))]
+    [MapperIgnoreSource(nameof(Message.AuthorRef))]
+    [MapperIgnoreSource(nameof(Message.ChannelRef))]
+    [MapperIgnoreSource(nameof(Message.ReferencedMessageRef))]
     [MapValue(nameof(MessageEdit.AllowedMentions), null)]
     public partial MessageEdit MapToEdit(Message message);
+
     public partial UpdateMessageRequest Map(MessageEdit message);
-    
+
     public async Task<Message> MapAsync(MessageResponse message)
     {
         var channelRef = await application.ChannelsRepository.GetAsync(message.ChannelId);
         var authorRef = channelRef.Value switch
         {
-            IGuildChannel { Guild: {} guild } => (ICacheRef<IUser>)await guild.MembersRepository.GetAsync(message.Author.Id),
-            _ when message is GatewayMessage { GuildId: {} guildId } 
+            _ when message.Author.Id == message.WebhookId => new CacheRef<IUser>(
+                message.Author.Id,
+                application.UserMapper.MapWebhook(message.Author)
+            ),
+            IGuildChannel { Guild: { } guild } => (ICacheRef<IUser>)await guild.MembersRepository.GetAsync(
+                message.Author.Id),
+            _ when message is GatewayMessage { GuildId: { } guildId }
                 => await (
                     await application.GuildsRepository.GetAsync(guildId)
                 ).Value!.MembersRepository.GetAsync(message.Author.Id),
             _ => await application.UsersRepository.GetAsync(message.Author.Id)
         };
-        
+
         return Map(message, channelRef, authorRef);
     }
 
-    public Message Map(MessageResponse message, CacheRef<IChannel>? channel = null, ICacheRef<IUser>? author = null)    
+    public Message Map(MessageResponse message, CacheRef<IChannel>? channel = null, ICacheRef<IUser>? author = null)
         => Map(
             message,
             (channel ?? new CacheRef<IChannel>(message.ChannelId, null)).Cast<ITextChannel>(),
             author ?? GetAuthor(message),
-            message.ReferencedMessage != null 
-                ? GetAuthor(message.ReferencedMessage) 
+            message.ReferencedMessage != null
+                ? GetAuthor(message.ReferencedMessage)
                 : null
         );
-    
-    private ICacheRef<IUser> GetAuthor(MessageBaseResponse message) 
-        => application.ChannelsRepository.GetCachedOrDefault(message.ChannelId).Value is IGuildChannel { Guild.MembersRepository: {} membersRepository }
+
+    private ICacheRef<IUser> GetAuthor(MessageBaseResponse message)
+        => application.ChannelsRepository.GetCachedOrDefault(message.ChannelId).Value is IGuildChannel
+        {
+            Guild.MembersRepository: { } membersRepository
+        }
             ? membersRepository.Cache.GetCachedOrDefault(message.Author.Id)
             : application.UsersRepository.Insert(message.Author);
-    
+
     [MapProperty(nameof(MessageCallResponse.EndedTimestamp), nameof(CallInfo.EndedAt))]
     private partial CallInfo MapCall(MessageCallResponse call);
 
@@ -136,7 +145,7 @@ public partial class MessageMapper(
     private partial Sticker MapSticker(MessageStickerResponse sticker);
 
     private ICacheRef<IUser> MapUser(UserPartialResponse user) => application.UsersRepository.Insert(user);
-    
+
     [MapProperty(nameof(MessageBaseResponse.Timestamp), nameof(Message.CreatedAt))]
     [MapProperty(nameof(MessageBaseResponse.EditedTimestamp), nameof(Message.EditedAt))]
     [MapProperty(nameof(MessageBaseResponse.MentionEveryone), nameof(Message.MentionsEveryone))]
@@ -147,9 +156,11 @@ public partial class MessageMapper(
     [MapperIgnoreTarget(nameof(Message.Author))]
     [MapperIgnoreTarget(nameof(Message.Channel))]
     [MapValue(nameof(Message.ReferencedMessageRef), null)]
-    private partial Message MapMessageBase(MessageBaseResponse message, ICacheRef<ITextChannel> channelRef, ICacheRef<IUser> authorRef, FluxerApplication application);
+    private partial Message MapMessageBase(MessageBaseResponse message, ICacheRef<ITextChannel> channelRef,
+        ICacheRef<IUser> authorRef, FluxerApplication application);
 
-    private ICacheRef<Message> MapMessageBase(MessageBaseResponse message, ICacheRef<ITextChannel> channel, ICacheRef<IUser> author)
+    private ICacheRef<Message> MapMessageBase(MessageBaseResponse message, ICacheRef<ITextChannel> channel,
+        ICacheRef<IUser> author)
     {
         var repository = channel.Value switch
         {
@@ -166,13 +177,14 @@ public partial class MessageMapper(
     [MapProperty(nameof(MessageSnapshotResponse.Timestamp), nameof(MessageSnapshot.CreatedAt))]
     [MapProperty(nameof(MessageSnapshotResponse.EditedTimestamp), nameof(MessageSnapshot.EditedAt))]
     private partial MessageSnapshot MapSnapshot(MessageSnapshotResponse message);
-    
-    public Message Map(MessageResponse message, ICacheRef<ITextChannel> channel, ICacheRef<IUser> author, ICacheRef<IUser>? referencedAuthor)
+
+    public Message Map(MessageResponse message, ICacheRef<ITextChannel> channel, ICacheRef<IUser> author,
+        ICacheRef<IUser>? referencedAuthor)
         => Map(
             message,
             author,
             channel,
-            message.ReferencedMessage != null 
+            message.ReferencedMessage != null
                 ? MapMessageBase(message.ReferencedMessage, channel, referencedAuthor!)
                 : null,
             application);
@@ -192,7 +204,7 @@ public partial class MessageMapper(
         ICacheRef<Message>? referencedMessageRef,
         FluxerApplication application
     );
-    
+
     [MapperIgnoreSource(nameof(Message.Id))]
     [MapperIgnoreSource(nameof(Message.Guild))]
     [MapperIgnoreSource(nameof(Message.AuthorRef))]

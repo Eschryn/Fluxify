@@ -47,7 +47,7 @@ public class GlobalUser(FluxerApplication fluxerApplication) : IUser, IPresence,
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }
     
-    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
+    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
         => fluxerApplication.GetOrCreateDmAsync(Id, cancellationToken);
 
     public Uri GetAvatarUri(

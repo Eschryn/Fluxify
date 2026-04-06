@@ -34,7 +34,9 @@ public static class PermissionExtensions
             };
     }
     
-    extension<TProperties>(GuildChannel<TProperties> guildChannel) where TProperties : ChannelProperties
+    extension<TSelf, TProperties>(GuildChannel<TSelf, TProperties> guildChannel)
+        where TSelf : GuildChannel<TSelf, TProperties>
+        where TProperties : ChannelProperties
     {
         internal Permissions CalculateUserPermissions(IGuildMember member)
         {

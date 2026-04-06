@@ -21,7 +21,7 @@ namespace Fluxify.Application.Entities.Channels.Guilds;
 public class GuildLinkChannel(
     FluxerApplication fluxerApplication,
     CacheRef<Guild> guildRef
-) : GuildNestedChannel<LinkChannelProperties>(fluxerApplication, guildRef)
+) : GuildNestedChannel<GuildLinkChannel, LinkChannelProperties>(fluxerApplication, guildRef)
 {
     public string? Url { get; internal set; }
 }

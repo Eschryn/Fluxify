@@ -21,7 +21,7 @@ namespace Fluxify.Application.Entities.Channels.Guilds;
 public class GuildVoiceChannel(
     FluxerApplication fluxerApplication,
     CacheRef<Guild> guildRef
-) : GuildNestedChannel<VoiceChannelProperties>(fluxerApplication, guildRef)
+) : GuildNestedChannel<GuildVoiceChannel, VoiceChannelProperties>(fluxerApplication, guildRef)
 {
     public int Bitrate { get; internal set; }
     public int? UserLimit { get; internal set; }

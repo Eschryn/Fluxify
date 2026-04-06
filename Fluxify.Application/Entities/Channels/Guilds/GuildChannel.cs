@@ -24,10 +24,11 @@ using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public abstract class GuildChannel<TProperties>(
+public abstract class GuildChannel<TSelf, TProperties>(
     FluxerApplication fluxerApplication,
     CacheRef<Guild> guildRef
 ) : IGuildChannel
+    where TSelf : GuildChannel<TSelf, TProperties>
     where TProperties : ChannelProperties
 {
     protected FluxerApplication FluxerApplication => fluxerApplication;
@@ -52,12 +53,12 @@ public abstract class GuildChannel<TProperties>(
         }
     }
     
-    public Task UpdateAsync(
+    public Task<TSelf> UpdateAsync(
         Action<TProperties> configure,
         string? reason = null,
         CancellationToken cancellationToken = default
     ) => fluxerApplication.ChannelsRepository.UpdateAsync(
-        this, 
+        (TSelf)this, 
         configure,
         reason,
         cancellationToken

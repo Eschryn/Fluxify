@@ -46,7 +46,9 @@ public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
 
     public IReadOnlyCollection<IRole> Roles => [..RolesRepository.Cache.GetAllCached().Select(r => r.Value!)];
     public IReadOnlyCollection<IGuildMember> Members => [..MembersRepository.Cache.GetAllCached().Select(x => x.Value!)];
-    public IReadOnlyDictionary<Snowflake, CacheRef<IGuildChannel>> Channels => GuildChannels.GetDictionary();
+    public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels 
+        => GuildChannels.GetDictionary()
+            .ToImmutableDictionary(k => k.Key, v => v.Value.Value);
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
 
@@ -89,7 +91,7 @@ public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
     public IUser CurrentMember =>
         field ??= MembersRepository.Cache.GetCachedOrDefault(app.CurrentUser.Id).Value!;
 
-    public Task<ICacheRef<GuildTextChannel>> CreateTextChannelAsync(
+    public Task<GuildTextChannel> CreateTextChannelAsync(
         string name,
         Action<TextChannelProperties>? configure = null,
         CancellationToken cancellationToken = default
@@ -98,7 +100,7 @@ public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
         Name = name
     }.Configure(configure));
 
-    public Task<ICacheRef<GuildVoiceChannel>> CreateVoiceChannelAsync(
+    public Task<GuildVoiceChannel> CreateVoiceChannelAsync(
         string name,
         Action<VoiceChannelProperties>? configure = null
     ) => app.ChannelsRepository.CreateAsync<GuildVoiceChannel>(Id, new VoiceChannelProperties
@@ -106,7 +108,7 @@ public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
         Name = name
     }.Configure(configure));
 
-    public Task<ICacheRef<GuildLinkChannel>> CreateLinkChannelAsync(
+    public Task<GuildLinkChannel> CreateLinkChannelAsync(
         string name,
         string url,
         Action<LinkChannelProperties>? configure = null
@@ -116,7 +118,7 @@ public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
         Url = url
     }.Configure(configure));
 
-    public Task<ICacheRef<GuildCategory>> CreateCategoryAsync(
+    public Task<GuildCategory> CreateCategoryAsync(
         string name,
         Action<CategoryProperties>? configure = null
     ) => app.ChannelsRepository.CreateAsync<GuildCategory>(Id, new CategoryProperties

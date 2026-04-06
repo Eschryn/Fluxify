@@ -103,23 +103,23 @@ public partial class FluxerApplication
     public IReadOnlyCollection<PrivateTextChannel> PrivateChannels
         => ChannelsRepository.Cache.GetAllCached().Select(c => c.Value).OfType<PrivateTextChannel>().ToArray();
 
-    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(Snowflake userId,
+    public Task<Dm> GetOrCreateDmAsync(Snowflake userId,
         CancellationToken cancellationToken = default)
         => ChannelsRepository.CreateOrGetPrivateChannelAsync<Dm>(
             new CreatePrivateChannelRequest(RecipientId: userId, Recipients: null), cancellationToken);
 
-    public Task<CacheRef<Guild>> GetGuildAsync(
+    public async Task<Guild> GetGuildAsync(
         Snowflake guildId,
         bool bypassCache = false
-    ) => GuildsRepository.GetAsync(guildId, bypassCache);
+    ) => (await GuildsRepository.GetAsync(guildId, bypassCache)).Value!;
 
-    public Task<CacheRef<IChannel>> GetChannelAsync(
+    public async Task<IChannel> GetChannelAsync(
         Snowflake channelId,
         bool bypassCache = false
-    ) => ChannelsRepository.GetAsync(channelId, bypassCache);
+    ) => (await ChannelsRepository.GetAsync(channelId, bypassCache)).Value!;
 
-    public Task<CacheRef<GlobalUser>> GetUserAsync(
+    public async Task<GlobalUser> GetUserAsync(
         Snowflake userId,
         bool bypassCache = false
-    ) => UsersRepository.GetAsync(userId, bypassCache);
+    ) => (await UsersRepository.GetAsync(userId, bypassCache)).Value!;
 }

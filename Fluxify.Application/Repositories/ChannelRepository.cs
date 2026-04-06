@@ -38,16 +38,16 @@ internal sealed class ChannelRepository(RestClient client, ChannelMapper mapper,
         return await Cache.GetOrCreateAsync(guildId, GetChannelRestAsync, bypassCache);
     }
 
-    internal async Task<ICacheRef<TChannel>> CreateOrGetPrivateChannelAsync<TChannel>(CreatePrivateChannelRequest request, CancellationToken cancellationToken)
+    internal async Task<TChannel> CreateOrGetPrivateChannelAsync<TChannel>(CreatePrivateChannelRequest request, CancellationToken cancellationToken)
         where TChannel : PrivateTextChannel
     {
         if (request.RecipientId.HasValue && _privateChannels.TryGetValue(request.RecipientId.Value, out var channel))
         {
-            return channel.Cast<TChannel>();
+            return (TChannel)channel.Value!;
         }
         
         var result = await client.Users.Me.PrivateChannels.CreateAsync(request, cancellationToken);
-        return Insert(result!).Cast<TChannel>();
+        return (TChannel)Insert(result!).Value!;
     }
     
     internal CacheRef<IChannel> Insert(ChannelResponse response, CacheRef<Guild>? guildRef = null)
@@ -74,17 +74,17 @@ internal sealed class ChannelRepository(RestClient client, ChannelMapper mapper,
             ? mapper.FromDto(channel)
             : throw new Exception($"Couldn't get channel with id {id}");
 
-    internal async Task<ICacheRef<TChannel>> CreateAsync<TChannel>(Snowflake guildId, ChannelProperties textChannelRequest)
+    internal async Task<TChannel> CreateAsync<TChannel>(Snowflake guildId, ChannelProperties textChannelRequest)
         where TChannel : class, IGuildChannel
     {
         var channelCreateRequest = mapper.ToCreateRequest(textChannelRequest);
         var channelAsync = await client.Guilds[guildId].CreateChannelAsync(channelCreateRequest);
 
         var entity = Insert(channelAsync ?? throw new Exception("Channel was not created"));
-        return entity.Cast<TChannel>();
+        return (TChannel)entity.Value!;
     }
 
-    internal async Task UpdateAsync<TChannel, TProperties>(
+    internal async Task<TChannel> UpdateAsync<TChannel, TProperties>(
         TChannel channel,
         Action<TProperties> configure,
         string? reason = null,
@@ -105,7 +105,7 @@ internal sealed class ChannelRepository(RestClient client, ChannelMapper mapper,
             cancellationToken
         ) ?? throw new Exception("Channel was not updated");
         
-        Insert(response);
+        return (TChannel)Insert(response).Value!;
     }
 
     public async Task DeleteAsync(Snowflake id, bool silent = false)

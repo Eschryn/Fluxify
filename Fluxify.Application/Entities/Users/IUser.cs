@@ -33,7 +33,7 @@ public interface IUser : IEntity, IFormattable, ICloneable<IUser>
     public bool? System { get; }
     public PublicUserFlags Flags { get; }
 
-    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(CancellationToken cancellationToken = default);
+    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default);
     
     public Uri GetAvatarUri(
         [AllowedValues(

@@ -122,7 +122,7 @@ public partial class FluxerApplication
             {
                 var state = new VoiceState
                 {
-                    VoiceChannelRef = guild.Channels[voiceState.ChannelId.Value].Cast<GuildVoiceChannel>()
+                    VoiceChannelRef = guild.GuildChannels.GetCachedOrDefault(voiceState.ChannelId.Value).Cast<GuildVoiceChannel>()
                 };
                 UserMapper.UpdateVoiceState(state, voiceState);
                 

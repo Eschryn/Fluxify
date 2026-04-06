@@ -93,7 +93,7 @@ public class GuildMember(FluxerApplication fluxerApplication) : IGuildMember
     public Task KickAsync(string? reason = null, CancellationToken cancellationToken = default) 
         => RequestBuilder.KickAsync(reason, cancellationToken);
     
-    public Task<ICacheRef<Dm>> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
+    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
         => fluxerApplication.GetOrCreateDmAsync(Id, cancellationToken);
     
     public Uri GetAvatarUri(

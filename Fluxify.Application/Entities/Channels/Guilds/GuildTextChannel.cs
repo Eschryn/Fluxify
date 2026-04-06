@@ -28,7 +28,7 @@ using Fluxify.Dto.Webhooks;
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
 public class GuildTextChannel(FluxerApplication fluxerApplication, CacheRef<Guild> guildRef)
-    : GuildNestedChannel<TextChannelProperties>(fluxerApplication, guildRef), ITextChannel, ICloneable<GuildTextChannel>
+    : GuildNestedChannel<GuildTextChannel, TextChannelProperties>(fluxerApplication, guildRef), ITextChannel, ICloneable<GuildTextChannel>
 {
     internal MessageRepository MessageRepository => field ??= new MessageRepository(
         FluxerApplication,

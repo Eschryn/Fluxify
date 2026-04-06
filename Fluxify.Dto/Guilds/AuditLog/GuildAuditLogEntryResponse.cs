@@ -22,5 +22,5 @@ public record GuildAuditLogEntryResponse(
     Snowflake Id,
     GuildAuditLogEntryResponseOptions? Options,
     string? Reason,
-    Snowflake? TargetId,
+    string? TargetId,
     Snowflake? UserId);
