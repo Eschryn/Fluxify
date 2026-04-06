@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
-using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Core.Types;
@@ -40,12 +38,18 @@ public static class PermissionExtensions
     {
         internal Permissions CalculateUserPermissions(IGuildMember member)
         {
-            if (guildChannel.Guild.Owner.Id == member.Id)
+            var guildChannelGuild = guildChannel.Guild;
+            if (guildChannelGuild == null)
+            {
+                throw new InvalidOperationException("Guild is null");
+            }
+
+            if (guildChannelGuild.Owner.Id == member.Id)
             {
                 return (Permissions)ulong.MaxValue;
             }
             
-            var everyone = guildChannel.Guild.RolesRepository.Cache.GetCachedOrDefault<Role>(guildChannel.Guild.Id)!;
+            var everyone = guildChannelGuild.RolesRepository.Cache.GetCachedOrDefault(guildChannelGuild.Id).Value!;
             var permissionResult = everyone.Permissions;
 
             Permissions allowed, denied;
