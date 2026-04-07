@@ -141,5 +141,40 @@ public class Guild(FluxerApplication app) : IEntity, ICloneable<Guild>
         => MembersRepository.GetAsync(id)
             .ContinueWith(t => t.Result.Value, TaskContinuationOptions.OnlyOnRanToCompletion);
 
+    public Task BanAsync(
+        Snowflake userId,
+        int? deleteMessageDays = null,
+        TimeSpan? banDuration = null,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.BanAsync(
+        userId,
+        deleteMessageDays,
+        banDuration,
+        reason,
+        cancellationToken
+    );
+
+    public Task UnbanAsync(
+        Snowflake userId,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.UnbanAsync(
+        userId,
+        reason,
+        cancellationToken
+    );
+
+    public async Task<IGuildChannel?> GetChannelAsync(
+        Snowflake id,
+        bool bypassCache = false,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var result = await app.ChannelsRepository.GetAsync(id, bypassCache);
+
+        return result.Value as IGuildChannel;
+    }
+
     public object Clone() => MemberwiseClone();
 }
