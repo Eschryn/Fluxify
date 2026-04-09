@@ -29,19 +29,18 @@ public class CommandConfig(string prefix, IServiceProvider serviceProvider)
             if (ex is CommandNotFoundException || ex.Response is null)
                 return;
 
-            await ctx.ReplyAsync(new MessageBuilder()
-                .WithEmbed(e =>
-                    e.WithTitle("⚠️Error")
-                        .WithDescription(ex.Response))
-                .WithAllowedMentions(repliedUser: false)
-                .Build());
+            await ctx.ReplyAsync(b => b
+                .WithEmbed(e => e
+                    .WithTitle("⚠️Error")
+                    .WithDescription(ex.Response))
+                .WithAllowedMentions(repliedUser: false));
         };
-    
+
     /// <summary>
     /// The default prefix that was specified in the constructor.
     /// </summary>
     public string DefaultPrefix { get; } = prefix;
-    
+
     /// <summary>
     /// The service provider that is used to resolve services.
     /// </summary>
@@ -51,8 +50,8 @@ public class CommandConfig(string prefix, IServiceProvider serviceProvider)
     /// Predicate used to determine if a message should be processed as a command.
     /// </summary>
     /// <remarks>Returns null if the message does not start with the prefix or if the author is a bot.</remarks>
-    public Func<Message, int?> DetermineCommandStart { get; set; } = 
-        m => m.Author.Bot is not true && m.Content != null && m.Content.StartsWith(prefix) 
+    public Func<Message, int?> DetermineCommandStart { get; set; } =
+        m => m.Author.Bot is not true && m.Content != null && m.Content.StartsWith(prefix)
             ? prefix.Length
-            : null; 
+            : null;
 }

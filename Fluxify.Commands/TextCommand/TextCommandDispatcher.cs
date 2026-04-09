@@ -99,7 +99,7 @@ public class TextCommandDispatcher
             }
             else
             {
-                throw new CommandException(result.Message ?? "Precondition failed");
+                throw new PreconditionFailedException(result.Message ?? "Precondition failed", p);
             }
         }
     }
