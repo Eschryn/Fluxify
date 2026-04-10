@@ -12,13 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Channels;
 
-public record ChannelPermissionOverwrite(
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+[JsonDerivedType(typeof(ChannelRolePermissionOverwrite), (int)PermissionOverwriteType.Role)]
+[JsonDerivedType(typeof(ChannelMemberPermissionOverwrite), (int)PermissionOverwriteType.Member)]
+public abstract record ChannelPermissionOverwrite(
     Permissions? Allow,
     Permissions? Deny,
-    Snowflake Id,
-    PermissionOverwriteType Type
+    Snowflake Id
 );
+
+public record ChannelMemberPermissionOverwrite(
+    Permissions? Allow,
+    Permissions? Deny,
+    Snowflake Id
+) : ChannelPermissionOverwrite(Allow, Deny, Id);
+
+public record ChannelRolePermissionOverwrite(
+    Permissions? Allow,
+    Permissions? Deny,
+    Snowflake Id
+) : ChannelPermissionOverwrite(Allow, Deny, Id);

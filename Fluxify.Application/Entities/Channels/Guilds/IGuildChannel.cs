@@ -22,7 +22,7 @@ public interface IGuildChannel : IGuildScopedEntity, IChannel, ICloneable<IGuild
 {
     public string Name { get; }
     public int? Position { get; }
-    public PermissionOverwrite[]? Overwrites { get; }
+    public PermissionOverwrite[]? PermissionOverwrites { get; }
 
     Task SetPermissionOverwriteAsync(
         PermissionOverwrite overwrite,

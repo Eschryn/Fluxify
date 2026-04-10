@@ -42,7 +42,7 @@ public abstract class GuildChannel<TSelf, TProperties>(
     public Guild? Guild => GuildRef.Value;
     public int? Position { get; internal set; }
 
-    public PermissionOverwrite[]? Overwrites
+    public PermissionOverwrite[]? PermissionOverwrites
     {
         get;
         internal set
@@ -68,7 +68,7 @@ public abstract class GuildChannel<TSelf, TProperties>(
         PermissionOverwrite overwrite,
         CancellationToken cancellationToken = default
      ) => RequestBuilder.SetPermissionsOverwriteAsync(
-        fluxerApplication.ChannelMapper.FromPermissionOverwrite(overwrite),
+        fluxerApplication.ChannelMapper.ToDto(overwrite),
         cancellationToken
     );
     

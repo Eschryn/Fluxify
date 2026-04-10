@@ -13,7 +13,13 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
+using Fluxify.Dto.Users;
 
-namespace Fluxify.Dto.Channels.Text.Messages;
+namespace Fluxify.Dto.Channels;
 
-public record MessageStickerResponse(bool Animated, Snowflake? Id, string Name);
+public abstract record PrivateChannelResponse(
+    Snowflake Id,
+    Snowflake? LastMessageId,
+    DateTimeOffset? LastPinTimestamp,
+    UserPartialResponse[] Recipients
+) : ChannelResponse(Id);

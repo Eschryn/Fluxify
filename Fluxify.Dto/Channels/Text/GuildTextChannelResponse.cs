@@ -12,16 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Channels;
 
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
-[JsonDerivedType(typeof(GuildTextChannelResponse), (int)ChannelType.TextChannel)]
-[JsonDerivedType(typeof(GuildVoiceChannelResponse), (int)ChannelType.VoiceChannel)]
-[JsonDerivedType(typeof(GuildLinkChannelResponse), (int)ChannelType.LinkChannel)]
-[JsonDerivedType(typeof(GuildCategoryResponse), (int)ChannelType.Category)]
-[JsonDerivedType(typeof(GroupDmChannelResponse), (int)ChannelType.GroupDm)]
-[JsonDerivedType(typeof(DmChannelResponse), (int)ChannelType.Dm)]
-public abstract record ChannelResponse(Snowflake Id);
+public record GuildTextChannelResponse(
+    Snowflake GuildId,
+    Snowflake Id,
+    Snowflake? LastMessageId,
+    DateTimeOffset? LastPinTimestamp,
+    string Name,
+    bool? Nsfw,
+    Snowflake? ParentId,
+    ChannelPermissionOverwrite[]? PermissionOverwrites,
+    int? Position,
+    int? RateLimitPerUser,
+    string? Topic
+) : NestedChannelResponse(Id, Name, GuildId, ParentId, PermissionOverwrites, Position);

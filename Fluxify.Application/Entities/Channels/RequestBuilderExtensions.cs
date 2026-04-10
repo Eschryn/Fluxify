@@ -39,11 +39,7 @@ internal static class RequestBuilderExtensions
                 return pins is { HasMore: true } 
                     ? new Page<DateTimeOffset, Message>(
                         pins.Items[0].PinnedAt,
-                        (
-                            await Task.WhenAll(
-                                pins.Items.Select(m => messageMapper.MapAsync(m.Message))
-                            )
-                        ).AsReadOnly()   
+                        [..pins.Items.Select(m => messageMapper.MapFromResponse(m.Message))]
                     )   
                     : null;
             }

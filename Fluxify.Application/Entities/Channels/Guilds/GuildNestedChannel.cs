@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.State.Ref;
+using Fluxify.Dto.Channels;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
@@ -25,4 +27,20 @@ public class GuildNestedChannel<TSelf, TProperties>(FluxerApplication fluxerAppl
 {
     internal CacheRef<IChannel>? ParentRef;
     public GuildCategory? Parent => ParentRef?.Value as GuildCategory;
+
+    public async Task<GuildChannelInviteMetadata> CreateInviteAsync(
+        TimeSpan? maxAge = null,
+        int maxUses = 0,
+        bool temporary = false,
+        bool unique = false
+    ) => (GuildChannelInviteMetadata)FluxerApplication.InviteMapper.MapFromResponse(
+        await RequestBuilder.CreateInviteAsync(
+            new ChannelInviteCreateRequest(
+                maxAge?.Seconds,
+                maxUses,
+                temporary,
+                unique
+            )
+        )
+    );
 }

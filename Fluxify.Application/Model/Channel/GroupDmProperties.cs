@@ -14,6 +14,7 @@
 
 using Fluxify.Application.Entities.Users;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 
 namespace Fluxify.Application.Model.Channel;
 
@@ -22,5 +23,5 @@ public class GroupDmProperties : ChannelProperties
     public Snowflake OwnerId { get; set; }
     public List<IUser> Recipients { get; set; } = [];
     public Dictionary<string, string> Nicks { get; set; } = [];
-    public string? Icon { get; set; }
+    public Base64Image? Icon { get; set; } = null;
 }

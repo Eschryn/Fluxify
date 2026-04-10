@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels;
 
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
-[JsonDerivedType(typeof(GuildTextChannelResponse), (int)ChannelType.TextChannel)]
-[JsonDerivedType(typeof(GuildVoiceChannelResponse), (int)ChannelType.VoiceChannel)]
-[JsonDerivedType(typeof(GuildLinkChannelResponse), (int)ChannelType.LinkChannel)]
-[JsonDerivedType(typeof(GuildCategoryResponse), (int)ChannelType.Category)]
-[JsonDerivedType(typeof(GroupDmChannelResponse), (int)ChannelType.GroupDm)]
-[JsonDerivedType(typeof(DmChannelResponse), (int)ChannelType.Dm)]
-public abstract record ChannelResponse(Snowflake Id);
+public abstract record DmChannelResponse(
+    Snowflake Id,
+    Snowflake? LastMessageId,
+    DateTimeOffset? LastPinTimestamp,
+    UserPartialResponse[] Recipients
+) : PrivateChannelResponse(Id, LastMessageId, LastPinTimestamp, Recipients);

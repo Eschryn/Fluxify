@@ -23,12 +23,15 @@ using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels.Private;
 
-public abstract class PrivateTextChannel(
-    FluxerApplication fluxerApplication
-) : ITextChannel
+public abstract class PrivateTextChannel : ITextChannel
 {
     protected ChannelRequestBuilder RequestBuilder => field ??= FluxerApplication.Rest.Channels[Id];
-    protected readonly FluxerApplication FluxerApplication = fluxerApplication;
+    protected readonly FluxerApplication FluxerApplication;
+
+    protected PrivateTextChannel(FluxerApplication fluxerApplication)
+    {
+        FluxerApplication = fluxerApplication;
+    }
 
     public required Snowflake Id { get; init; }
     public Snowflake? LastMessageId { get; internal set; }
@@ -46,8 +49,8 @@ public abstract class PrivateTextChannel(
         );
     
     public async Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default) 
-        => await FluxerApplication.MessageMapper.MapAsync(
-            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.Map(message), cancellationToken)
+        => FluxerApplication.MessageMapper.MapFromResponse(
+            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.MapToRequest(message), cancellationToken)
                 ?? throw new Exception("Message was not sent"));
 
     public async Task IndicateTypingAsync(CancellationToken cancellationToken = default)
@@ -116,7 +119,7 @@ public abstract class PrivateTextChannel(
         DateTimeOffset scheduledTime,
         CancellationToken cancellationToken = default
     ) => RequestBuilder.Messages.ScheduleMessageAsync(
-        FluxerApplication.MessageMapper.Map(
+        FluxerApplication.MessageMapper.MapToRequest(
             message,
             scheduledTime.LocalDateTime,
             TimeZoneInfo.Local.StandardName

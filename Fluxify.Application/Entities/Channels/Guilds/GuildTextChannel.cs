@@ -45,8 +45,8 @@ public class GuildTextChannel(FluxerApplication fluxerApplication, CacheRef<Guil
     public DateTimeOffset? LastPinTimestamp { get; internal set; }
 
     public async Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default)
-        => await FluxerApplication.MessageMapper.MapAsync(
-            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.Map(message),
+        => FluxerApplication.MessageMapper.MapFromResponse(
+            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.MapToRequest(message),
                 cancellationToken)
             ?? throw new Exception("Message was not sent"));
 
@@ -114,7 +114,7 @@ public class GuildTextChannel(FluxerApplication fluxerApplication, CacheRef<Guil
         DateTimeOffset scheduledTime,
         CancellationToken cancellationToken = default
     ) => RequestBuilder.Messages.ScheduleMessageAsync(
-        FluxerApplication.MessageMapper.Map(
+        FluxerApplication.MessageMapper.MapToRequest(
             message,
             scheduledTime.LocalDateTime,
             TimeZoneInfo.Local.StandardName

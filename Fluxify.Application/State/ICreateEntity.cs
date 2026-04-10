@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
-using Fluxify.Core.Types;
+namespace Fluxify.Application.State;
 
-namespace Fluxify.Dto.Channels.GroupDm;
-
-public record MessageCallResponse(
-    DateTimeOffset? EndedAt,
-    Snowflake[] Participants
-)
+internal interface ICreateEntity<out TData, in TDto>
 {
-    [JsonPropertyName( "ended_timestamp")]
-    public DateTimeOffset? EndedAt { get; init; } = EndedAt;
+    TData MapFromResponse(TDto dto);
 }

@@ -19,16 +19,15 @@ using Fluxify.Dto.Channels;
 namespace Fluxify.Application.Model.Channel;
 
 [method: SetsRequiredMembers]
-public abstract class PermissionOverwrite(Snowflake id, PermissionOverwriteType type)
+public abstract class PermissionOverwrite(Snowflake id)
 {
     public required Snowflake Id { get; init; } = id;
-    public required PermissionOverwriteType Type { get; init; } = type;
     public Permissions? Allow { get; set; }
     public Permissions? Deny { get; set; }
     
     [method: SetsRequiredMembers]
-    public class Member(Snowflake user) : PermissionOverwrite(user, PermissionOverwriteType.Member);
+    public class Member(Snowflake id) : PermissionOverwrite(id);
     
     [method: SetsRequiredMembers]
-    public class Role(Snowflake role) : PermissionOverwrite(role, PermissionOverwriteType.Role);
+    public class Role(Snowflake id) : PermissionOverwrite(id);
 }
