@@ -22,7 +22,7 @@ namespace Fluxify.Application.Model.Messages;
 public class MessageCreate
 {
     public string? Content { get; set; }
-    public List<Attachment>? Attachments { get; set; }
+    public List<AttachmentProperties>? Attachments { get; set; }
     public List<Embed>? Embeds { get; set; }
     public AllowedMentions? AllowedMentions { get; set; }
     public MessageReference? MessageReference { get; set; }

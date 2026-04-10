@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
@@ -30,19 +31,29 @@ public record MessageBaseResponse(
     MessageType Type,
     MessageFlags Flags,
     string Content,
-    DateTimeOffset Timestamp,
-    DateTimeOffset? EditedTimestamp,
-    bool Pinned,
-    bool MentionEveryone,
-    bool? Tts,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? EditedAt,
+    bool IsPinned,
+    bool HasEveryoneMention,
+    bool? HasTts,
     UserPartialResponse[]? Mentions,
     Snowflake[]? MentionRoles,
     MessageEmbedResponse[]? Embeds,
     MessageAttachmentResponse[]? Attachments,
-    MessageStickerResponse[]? Stickers,
+    StickerResponse[]? Stickers,
     MessageReactionResponse[]? Reactions,
     MessageReferenceResponse? MessageReference,
     MessageSnapshotResponse[]? MessageSnapshots,
     string? Nonce,
     MessageCallResponse? Call
-);
+)
+{
+    [JsonPropertyName("timestamp")]
+    public DateTimeOffset CreatedAt { get; init; } = CreatedAt;
+
+    [JsonPropertyName("edited_timestamp")]
+    public DateTimeOffset? EditedAt { get; init; } = EditedAt;
+
+    [JsonPropertyName("mention_everyone")]
+    public bool HasEveryoneMention { get; init; } = HasEveryoneMention;
+}

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net.Mail;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Model.Messages;
@@ -37,3 +38,12 @@ public class Attachment
     public string? Waveform { get; internal set; } 
     public int? Width { get; internal set; }
 }
+
+public class AttachmentProperties
+{
+    public Snowflake Id { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public required string Filename { get; set; }
+    public AttachmentFlags Flags { get; set; } = AttachmentFlags.None;
+} 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
@@ -20,13 +21,20 @@ namespace Fluxify.Dto.Channels.Text.Messages.Reference;
 
 public record MessageSnapshotResponse(
     string? Content,
-    DateTimeOffset Timestamp,
-    DateTimeOffset? EditedTimestamp,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? EditedAt,
     Snowflake[]? Mentions,
     Snowflake[]? MentionRoles,
     MessageEmbedResponse[]? Embeds,
     MessageAttachmentResponse[]? Attachments,
-    MessageStickerResponse[]? Stickers,
+    StickerResponse[]? Stickers,
     MessageType Type,
     MessageFlags Flags
-);
+)
+{
+    [JsonPropertyName("timestamp")]
+    public DateTimeOffset CreatedAt { get; init; } = CreatedAt;
+    
+    [JsonPropertyName("edited_timestamp")]
+    public DateTimeOffset? EditedAt { get; init; } = EditedAt;
+}

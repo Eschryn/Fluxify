@@ -25,11 +25,14 @@ using Fluxify.Application.State;
 using Fluxify.Application.State.Ref;
 using Fluxify.Core.Types;
 using Fluxify.Rest.Channel.Messages;
+using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Messages;
 
-public class Message(
-    FluxerApplication application
+public partial class Message(
+    FluxerApplication application,
+    ICacheRef<IUser> authorRef,
+    ICacheRef<ITextChannel> channelRef
 ) : IEntity, ICloneable<Message>
 {
     private MessageRequestBuilder RequestBuilder => field ??= application.Rest.Channels[Channel.Id].Messages[Id];
@@ -38,14 +41,14 @@ public class Message(
     public string? Content { get; internal set; }
 
     public Snowflake? WebhookId { get; internal set; }
-    internal ICacheRef<IUser> AuthorRef { get; init; }
-    internal ICacheRef<ITextChannel> ChannelRef { get; init; }
+    internal ICacheRef<IUser> AuthorRef { get; } = authorRef;
+    internal ICacheRef<ITextChannel> ChannelRef { get; } = channelRef;
     public IUser Author => AuthorRef.Value;
     public ITextChannel Channel => ChannelRef.Value;
     public Guild? Guild => Channel is IGuildChannel guildChannel ? guildChannel.Guild : null;
     public Attachment[]? Attachments { get; internal set; }
     public Embed[]? Embeds { get; internal set; }
-    public bool MentionsEveryone { get; internal set; }
+    public bool HasEveryoneMention { get; internal set; }
     public Reaction[]? Reactions { get; internal set; }
     public Sticker[]? Stickers { get; internal set; }
 
@@ -60,9 +63,13 @@ public class Message(
     public bool IsPinned { get; internal set; }
     public bool? HasTts { get; internal set; }
 
-    public ICacheRef<IUser>[]? Mentions { get; set; }
+    internal Snowflake[]? Mentions { get; set; }
     internal Snowflake[] MentionRoles { get; set; } = Array.Empty<Snowflake>();
     
+    [MapperIgnore]
+    public IEnumerable<IUser> MentionedUsers => Mentions?.Select(ResolveUser);
+    
+    [MapperIgnore]
     public IRole[] MentionedRoles => Channel switch
     {
         IGuildChannel guildChannel
@@ -81,118 +88,16 @@ public class Message(
     internal ICacheRef<Message>? ReferencedMessageRef { get; set; }
     public Message? ReferencedMessage => MessageReference != null ? ReferencedMessageRef?.Value : null;
 
-    public Task EditAsync(
-        Action<MessageEdit> edit,
-        CancellationToken cancellationToken = default
-    ) => Channel.EditMessageAsync(this, edit, cancellationToken);
-
-    public async Task<Message?> ReplyAsync(MessageCreate message, CancellationToken cancellationToken = default)
+    private IUser? ResolveUser(Snowflake id)
     {
-        message.MessageReference = new MessageReference
-        {
-            MessageId = Id,
-            ChannelId = Channel.Id,
-            GuildId = Channel is IGuildChannel guildChannel
-                ? guildChannel.Guild.Id
-                : null,
-            Type = MessageReferenceType.Reply
-        };
-
-        return await Channel.SendMessageAsync(message, cancellationToken);
-    }
-    
-    public async Task<Message?> ReplyAsync(Action<MessageBuilder> builder, CancellationToken cancellationToken = default)
-    {
-        var messageBuilder = new MessageBuilder();
-        builder(messageBuilder);
-        return await ReplyAsync(messageBuilder.Build(), cancellationToken);
-    }
-
-    private static string GetEmojiString(IEmoji emoji) => emoji switch
-    {
-        GuildEmoji ge => $"{ge.Name}:{ge.Id.ToString(CultureInfo.InvariantCulture)}",
-        UnicodeEmoji ue => ue.Name,
-        _ => throw new ArgumentOutOfRangeException(nameof(emoji), emoji, null)
-    };
-
-    public async Task ReactAsync(IEmoji emoji, CancellationToken cancellationToken = default)
-        => await RequestBuilder.Reactions[GetEmojiString(emoji)]
-            .ReactAsync(application.Gateway.SessionId!, cancellationToken);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task ReactAsync(UnicodeEmoji emoji, CancellationToken cancellationToken = default) 
-        => ReactAsync((IEmoji)emoji, cancellationToken);
-
-    public async Task RemoveReactionAsync(IEmoji emoji, IUser user,
-        CancellationToken cancellationToken = default)
-    {
-        var messageReactionRequestBuilder = RequestBuilder.Reactions[GetEmojiString(emoji)];
-
-        if (user.Id == application.CurrentUser.Id)
-        {
-            await messageReactionRequestBuilder.RemoveOwnReactionAsync(application.Gateway.SessionId!,
-                cancellationToken);
+        if (Channel is IGuildChannel guildChannel
+            && guildChannel.Guild?.MembersRepository.Cache.GetCachedOrDefault(id) is { Value: { } value })
+        { 
+            return value;
         }
-        else
-        {
-            await messageReactionRequestBuilder.RemoveReactionAsync(user.Id.ToString(CultureInfo.InvariantCulture),
-                cancellationToken);
-        }
+        
+        return application.UsersRepository.Cache.GetCachedOrDefault(id).Value;
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task RemoveReactionAsync(UnicodeEmoji emoji, IUser user, CancellationToken cancellationToken = default) 
-        => RemoveReactionAsync((IEmoji)emoji, user, cancellationToken);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IAsyncEnumerable<ICollection<IUser>> GetReactionUsersAsync(
-        UnicodeEmoji emoji,
-        int limit = 100,
-        CancellationToken cancellationToken = default
-    ) => GetReactionUsersAsync((IEmoji)emoji, limit, cancellationToken);
-    
-    public async IAsyncEnumerable<ICollection<IUser>> GetReactionUsersAsync(
-        IEmoji emoji,
-        int limit = 100,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default
-    )
-    {
-        Snowflake? lastId = null;
-        do
-        {
-            var userPartialResponses = await RequestBuilder.Reactions[GetEmojiString(emoji)]
-                .ListUsersAsync(
-                    limit,
-                    lastId,
-                    cancellationToken
-                );
-
-            lastId = userPartialResponses?.LastOrDefault()?.Id;
-            yield return userPartialResponses?.Select(r => application.UsersRepository.Insert(r).Value!).ToArray() ?? [];
-        } while (lastId != null);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task RemoveAllReactionsAsync(UnicodeEmoji emoji, CancellationToken cancellationToken = default)
-        => RemoveAllReactionsAsync((IEmoji)emoji, cancellationToken);
-    
-    public async Task RemoveAllReactionsAsync(IEmoji emoji, CancellationToken cancellationToken = default)
-        => await RequestBuilder.Reactions[GetEmojiString(emoji)].RemoveAllAsync(cancellationToken);
-
-    public async Task RemoveAllReactionsAsync(CancellationToken cancellationToken = default)
-        => await RequestBuilder.Reactions.RemoveAllReactionsAsync(cancellationToken);
-
-    public async Task PinAsync(CancellationToken cancellationToken = default)
-        => await application.Rest.Channels[Channel.Id].Messages.Pins[Id].PinAsync(cancellationToken);
-
-    public async Task UnpinAsync(CancellationToken cancellationToken = default)
-        => await application.Rest.Channels[Channel.Id].Messages.Pins[Id].UnpinAsync(cancellationToken);
-
-    public async Task AckAsync(CancellationToken cancellationToken = default)
-        => await RequestBuilder.AckMessageAsync(cancellationToken);
-
-    public Task DeleteAttachmentAsync(Snowflake attachmentId, CancellationToken cancellationToken = default)
-        => RequestBuilder.DeleteAttachmentAsync(attachmentId, cancellationToken);
-
     public object Clone() => MemberwiseClone();
 }

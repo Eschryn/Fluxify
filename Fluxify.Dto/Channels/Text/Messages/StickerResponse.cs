@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Model.Messages.Embeds;
-using Fluxify.Dto.Channels.Text.Messages;
+using System.Text.Json.Serialization;
+using Fluxify.Core.Types;
 
-namespace Fluxify.Application.Model.Messages;
+namespace Fluxify.Dto.Channels.Text.Messages;
 
-public class MessageEdit
+public record StickerResponse(bool IsAnimated, Snowflake Id, string Name)
 {
-    public string? Content { get; set; }
-    public Embed[]? Embeds { get; set; }
-    public MessageFlags? Flags { get; set; }
-    public AllowedMentions? AllowedMentions { get; set; }
-    public AttachmentProperties[]? Attachments { get; set; }
+    [JsonPropertyName( "animated")]
+    public bool IsAnimated { get; init; } = IsAnimated;
 }

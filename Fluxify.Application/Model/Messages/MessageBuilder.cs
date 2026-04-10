@@ -76,7 +76,7 @@ public sealed class MessageBuilder(string? content = null)
     )
     {
         Message.Attachments ??= [];
-        Message.Attachments.Add(new Attachment
+        Message.Attachments.Add(new AttachmentProperties
         {
             Id = upload.SendId,
             Description = description,
