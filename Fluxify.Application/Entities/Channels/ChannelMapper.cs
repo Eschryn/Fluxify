@@ -15,7 +15,6 @@
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
-using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.State;
@@ -24,7 +23,6 @@ using Fluxify.Dto.Channels.Category;
 using Fluxify.Dto.Channels.LinkChannel;
 using Fluxify.Dto.Channels.Text;
 using Fluxify.Dto.Channels.Voice;
-using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Channels;
 

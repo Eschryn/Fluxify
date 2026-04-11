@@ -14,7 +14,6 @@
 
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels;
 

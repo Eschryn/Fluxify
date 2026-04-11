@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Fluxify.Core.Types;
-using Fluxify.Dto.Channels;
 
 namespace Fluxify.Application.Model.Channel;
 

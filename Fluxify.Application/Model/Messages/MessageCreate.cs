@@ -14,7 +14,6 @@
 
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Uploads;
 
 namespace Fluxify.Application.Model.Messages;

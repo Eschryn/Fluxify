@@ -18,7 +18,6 @@ using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Messages;
 

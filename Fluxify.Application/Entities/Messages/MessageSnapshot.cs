@@ -15,7 +15,6 @@
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Messages;
 

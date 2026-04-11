@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Channel;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels.Private;
 

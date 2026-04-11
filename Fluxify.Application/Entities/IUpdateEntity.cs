@@ -14,7 +14,7 @@
 
 namespace Fluxify.Application.Entities;
 
-public interface IUpdateEntity<TData>
+public interface IUpdateEntity<TData, TUpdate>
 {
-    public void UpdateEntity(TData data, TData update);
+    public void UpdateEntity(TData data, TUpdate update);
 }

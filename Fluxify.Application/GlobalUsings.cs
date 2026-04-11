@@ -12,14 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Users;
-
-namespace Fluxify.Application.Model.Channel;
-
-public class GroupDmProperties : ChannelProperties
-{
-    public Snowflake OwnerId { get; set; }
-    public List<IUser> Recipients { get; set; } = [];
-    public Dictionary<string, string> Nicks { get; set; } = [];
-    public Base64Image? Icon { get; set; } = null;
-}
+global using Fluxify.Application.State.Ref;
+global using Fluxify.Core.Types;
+global using Fluxify.Dto.Common;
+global using Riok.Mapperly.Abstractions;

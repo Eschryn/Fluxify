@@ -15,7 +15,6 @@
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Model.Channel;
-using Fluxify.Application.State.Ref;
 using Fluxify.Dto.Channels;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
-
 namespace Fluxify.Application.State.Ref;
 
 public interface ICacheRef

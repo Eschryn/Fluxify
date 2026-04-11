@@ -16,8 +16,6 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 using Fluxify.Rest.Channel;
 

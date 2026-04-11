@@ -17,8 +17,6 @@ using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Extensions;
 using Fluxify.Application.Model.Channel;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Rest;
 using Fluxify.Rest.Channel;
 

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State.Ref;
 

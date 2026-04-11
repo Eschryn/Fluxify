@@ -14,7 +14,6 @@
 
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.State;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 

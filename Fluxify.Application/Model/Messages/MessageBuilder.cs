@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Messages;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Uploads;
 
 namespace Fluxify.Application.Model.Messages;

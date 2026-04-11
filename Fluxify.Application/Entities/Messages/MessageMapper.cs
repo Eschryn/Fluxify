@@ -19,10 +19,7 @@ using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
-using Fluxify.Application.Repositories;
 using Fluxify.Application.State;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 using Fluxify.Dto.Channels.Text.Messages.Reference;
@@ -30,7 +27,6 @@ using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.ScheduledMessages;
 using Fluxify.Dto.Webhooks;
 using Fluxify.Gateway.Model.Data.Channel.Message;
-using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Messages;
 

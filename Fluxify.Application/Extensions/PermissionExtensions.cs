@@ -15,7 +15,6 @@
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Channel;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Extensions;
 
