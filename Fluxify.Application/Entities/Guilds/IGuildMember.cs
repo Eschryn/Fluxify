@@ -13,21 +13,18 @@
 // limitations under the License.
 
 using System.Drawing;
-using Fluxify.Application.Entities.Channels;
-using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Roles;
+using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Model;
 using Fluxify.Application.State;
-using Fluxify.Core.Types;
-using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Members;
 
-namespace Fluxify.Application.Entities.Users;
+namespace Fluxify.Application.Entities.Guilds;
 
-public interface IGuildMember : IUser, IPresence, ICloneable<IGuildMember>
+public interface IGuildMember : IUser, ICloneable<IGuildMember>
 {
-    Snowflake[] AssignedRoleIds { get; set; }
     Color? AccentColor { get; }
-    MediaHash? BannerHash { get; }
     DateTimeOffset? JoinedAt { get; }
     DateTimeOffset? CommunicationsDisabledUntil { get; }
     bool Deaf { get; }
@@ -42,4 +39,11 @@ public interface IGuildMember : IUser, IPresence, ICloneable<IGuildMember>
     Task RemoveRoleAsync(IRole role, string? reason = null, CancellationToken cancellationToken = default);
     Task RemoveRoleAsync(Snowflake roleId, string? reason = null, CancellationToken cancellationToken = default);
     Task KickAsync(string? reason = null, CancellationToken cancellationToken = default);
+
+    Uri? GetBannerUri(
+        int size = 128,
+        ImageFormat format = ImageFormat.Webp,
+        ImageQuality quality = ImageQuality.High,
+        bool animated = false
+    );
 }
