@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities;
 using Fluxify.Application.Entities.Channels;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
@@ -27,9 +26,11 @@ namespace Fluxify.Application.State;
 /// <param name="maxCacheSize"></param>
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TMapper"></typeparam>
-internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCacheSize) : ICache<TData>
+/// <typeparam name="TDto"></typeparam>
+internal sealed class OrderedCache<TData, TDto, TMapper>(TMapper mapper, long maxCacheSize) : ICache<TData, TDto>
     where TData : class, IEntity, ICloneable<TData>
-    where TMapper : IUpdateEntity<TData>
+    where TDto : IIdentifiableDto
+    where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto>
 {
     private readonly ConcurrentDictionary<Snowflake, CacheRef<TData>> _dataContainer = new();
     private ConcurrentQueue<Snowflake> _keyOrder = new();
@@ -93,7 +94,7 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
         public int Compare(Snowflake x, Snowflake y) => x.FluxerEpochMs.CompareTo(y.FluxerEpochMs);
     }
 
-    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
+    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TDto>> factory,
         bool bypassCache = false)
     {
         if (!bypassCache && _dataContainer.TryGetValue(id, out var data))
@@ -101,10 +102,10 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
             return data;
         }
 
-        return await _transactions.BeginAsync(id, async () => UpdateOrCreate(await factory(id)));
+        return await _transactions.BeginAsync(id, async () => UpdateOrCreate(id, await factory(id)));
     }
 
-    public ICollection<CacheRef<TData>> UpdateOrCreate(ICollection<TData> data)
+    public ICollection<CacheRef<TData>> UpdateOrCreate(ICollection<TDto> data)
     {
         _queueReplaceLock.EnterUpgradeableReadLock();
         if (!_keyOrder.TryPeek(out var lastElement)
@@ -130,34 +131,36 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
         return data.Select(d => _dataContainer[d.Id]).ToList();
     }
 
-    public IEnumerable<Snowflake> MassInsert(IEnumerable<TData> data)
+    public IEnumerable<Snowflake> MassInsert(IEnumerable<TDto> data)
     {
-        foreach (var entity in data)
+        foreach (var dto in data)
         {
-            _dataContainer.AddOrUpdate(entity.Id,
-                id => new CacheRef<TData>(id, entity),
+            _dataContainer.AddOrUpdate(dto.Id,
+                id => new CacheRef<TData>(id, mapper.MapFromResponse(dto)),
                 (_, existing) =>
                 {
                     if (existing.Value?.Clone() is {} cloned)
                     {
-                        mapper.UpdateEntity(cloned, entity);
+                        mapper.UpdateEntity(cloned, dto);
                     }
                     else
                     {
-                        cloned = entity;
+                        cloned = mapper.MapFromResponse(dto);
                     }
                 
                     existing.Swap(cloned);
                     return existing;
                 });
 
-            yield return entity.Id;
+            yield return dto.Id;
         }
     }
 
-    public CacheRef<TData> UpdateOrCreate(TData data)
-        => _dataContainer.AddOrUpdate(data.Id,
-            key =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public CacheRef<TData> UpdateOrCreate(TDto dto) => UpdateOrCreate(dto.Id, dto);
+    public CacheRef<TData> UpdateOrCreate(Snowflake key, TDto dto)
+        => _dataContainer.AddOrUpdate(key,
+            k =>
             {
                 _queueReplaceLock.EnterReadLock();
                 try
@@ -175,17 +178,17 @@ internal sealed class OrderedCache<TData, TMapper>(TMapper mapper, long maxCache
                     _queueReplaceLock.ExitReadLock();
                 }
 
-                return new CacheRef<TData>(key, data);
+                return new CacheRef<TData>(key, mapper.MapFromResponse(dto));
             },
             (_, existing) =>
             {
                 if (existing.Value?.Clone() is {} cloned)
                 {
-                    mapper.UpdateEntity(cloned, data);
+                    mapper.UpdateEntity(cloned, dto);
                 }
                 else
                 {
-                    cloned = data;
+                    cloned = mapper.MapFromResponse(dto);
                 }
                 
                 existing.Swap(cloned);

@@ -19,6 +19,7 @@ using Fluxify.Dto.Channels.Text.Messages.Attachments;
 using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 using Fluxify.Dto.Channels.Text.Messages.Reactions;
 using Fluxify.Dto.Channels.Text.Messages.Reference;
+using Fluxify.Dto.Common;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels.Text.Messages;
@@ -46,7 +47,7 @@ public record MessageBaseResponse(
     MessageSnapshotResponse[]? MessageSnapshots,
     string? Nonce,
     MessageCallResponse? Call
-)
+) : IIdentifiableDto
 {
     [JsonPropertyName("timestamp")]
     public DateTimeOffset CreatedAt { get; init; } = CreatedAt;

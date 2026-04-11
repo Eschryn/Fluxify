@@ -16,7 +16,8 @@ using Fluxify.Application.Entities;
 
 namespace Fluxify.Application.State;
 
-internal interface ICache<TData, TDto> where TData : class, IEntity, ICloneable<TData>
+internal interface ICache<TData, TDto> 
+    where TData : class, IEntity, ICloneable<TData>
 {
     bool IsCached(Snowflake id);
     CacheRef<TData> GetCachedOrDefault(Snowflake id);
@@ -30,13 +31,6 @@ internal interface ICache<TData, TDto> where TData : class, IEntity, ICloneable<
     bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated);
     bool Remove(Snowflake id, out CacheRef<TData> data);
     void Clear();
-
-    public static ICache<TData, TDto> CreateOrdered<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto>
-        => limit switch
-        {
-            > 0 => new OrderedCache<TData, TDto, TMapper>(mapper, limit),
-            _ => new PassthroughCache<TData, TDto, TMapper>(mapper)
-        };
 
     public static ICache<TData, TDto> CreateLru<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto> => limit switch
         {
