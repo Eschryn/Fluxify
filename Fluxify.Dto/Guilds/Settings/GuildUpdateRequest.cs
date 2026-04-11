@@ -13,18 +13,19 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 
 namespace Fluxify.Dto.Guilds.Settings;
 
 public record GuildUpdateRequest(
     Snowflake? AfkChannelId,
     int? AfkTimeout,
-    string? Banner,
+    Base64Image? Banner,
     DefaultMessageNotifications? DefaultMessageNotifications,
-    string? EmbedSplash,
+    Base64Image? EmbedSplash,
     GuildExplicitContentFilter? ExplicitContentFilter,
     GuildFeatureSchema[]? Features,
-    string? Icon,
+    Base64Image? Icon,
     DateTimeOffset? MessageHistoryCutoff,
     string? MfaCode,
     GuildMfaLevel? MfaLevel,
@@ -32,7 +33,7 @@ public record GuildUpdateRequest(
     string? Name,
     NsfwLevel? NsfwLevel,
     string? Password,
-    string? Splash,
+    Base64Image? Splash,
     SplashCardAlignment? SplashCardAlignment,
     SystemChannelFlags? SystemChannelFlags,
     Snowflake? SystemChannelId,

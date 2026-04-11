@@ -14,6 +14,8 @@
 
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
+using Fluxify.Dto.Guilds.Invite;
 using Fluxify.Dto.Guilds.Settings;
 
 namespace Fluxify.Dto.Guilds;
@@ -21,20 +23,20 @@ namespace Fluxify.Dto.Guilds;
 public record GuildResponse(
     Snowflake? AfkChannelId,
     int AfkTimeout,
-    [property: JsonPropertyName("banner")] string? BannerHash,
+    MediaHash? Banner,
     int? BannerHeight,
     int? BannerWidth,
     int MemberCount,
     DefaultMessageNotifications DefaultMessageNotifications,
-    /*GuildOperations*/ long DisabledOperations, // the enum doesnt match the api
-    [property: JsonPropertyName("embed_splash")]
-    string? EmbedSplashHash,
+    /*GuildOperations*/
+    long DisabledOperations, // the enum doesnt match the api
+    MediaHash? EmbedSplash,
     int? EmbedSplashHeight,
     int? EmbedSplashWidth,
     GuildExplicitContentFilter ExplicitContentFilter,
     GuildFeatureSchema[] Features,
-    [property: JsonPropertyName("icon")] string? IconHash,
-    Snowflake? Id,
+    MediaHash? Icon,
+    Snowflake Id,
     DateTimeOffset? MessageHistoryCutoff,
     GuildMfaLevel MfaLevel,
     string Name,
@@ -42,7 +44,7 @@ public record GuildResponse(
     Snowflake OwnerId,
     Permissions? Permissions,
     Snowflake? RulesChannelId,
-    [property: JsonPropertyName("splash")] string? SplashHash,
+    MediaHash? Splash,
     SplashCardAlignment SplashCardAlignment,
     int? SplashHeight,
     int? SplashWidth,
@@ -50,4 +52,19 @@ public record GuildResponse(
     Snowflake? SystemChannelId,
     string? VanityUrlCode,
     GuildVerificationLevel VerificationLevel
+) : PartialGuildResponse(
+    Id,
+    Name,
+    Features,
+    Icon,
+    Banner,
+    BannerHeight,
+    BannerWidth,
+    EmbedSplash,
+    EmbedSplashHeight,
+    EmbedSplashWidth,
+    Splash,
+    SplashHeight,
+    SplashWidth,
+    SplashCardAlignment
 );

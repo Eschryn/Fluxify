@@ -14,23 +14,24 @@
 
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Settings;
 
 namespace Fluxify.Dto.Guilds.Invite;
 
-public record GuildInviteMetadataResponseGuild(
-    [property: JsonPropertyName("banner")] string? BannerHash,
-    int? BannerHeight,
-    int? BannerWidth,
-    string? EmbedSplash,
-    int? EmbedSplashHeight,
-    int? EmbedSplashWidth,
-    GuildFeatureSchema[] Features,
-    [property: JsonPropertyName("icon")] string? IconHash,
+public record PartialGuildResponse(
     Snowflake Id,
     string Name,
-    [property: JsonPropertyName("splash")] string? SplashHash,
-    SplashCardAlignment SplashCardAlignment,
-    int SplashHeight,
-    int SplashWidth
+    GuildFeatureSchema[] Features,
+    MediaHash? Icon,
+    MediaHash? Banner,
+    int? BannerHeight,
+    int? BannerWidth,
+    MediaHash? EmbedSplash,
+    int? EmbedSplashHeight,
+    int? EmbedSplashWidth,
+    MediaHash? Splash,
+    int? SplashHeight,
+    int? SplashWidth,
+    SplashCardAlignment SplashCardAlignment
 );

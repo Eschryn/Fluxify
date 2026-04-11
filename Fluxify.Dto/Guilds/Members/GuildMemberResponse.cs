@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Guilds.Members;
 
 public record GuildMemberResponse(
     int? AccentColor,
-    [property: JsonPropertyName("avatar")] string? AvatarHash,
-    [property: JsonPropertyName("banner")] string? BannerHash,
+    MediaHash? Avatar,
+    MediaHash? Banner,
     DateTimeOffset? JoinedAt,
     DateTimeOffset? CommunicationsDisabledUntil,
     bool Deaf,

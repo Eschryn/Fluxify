@@ -34,4 +34,8 @@ public record InviteMetadataResponseSchema(
     int MaxUses,
     bool Temporary,
     int Uses
+) : InviteResponseSchema(
+    Code,
+    Inviter,
+    Temporary
 );

@@ -23,7 +23,7 @@ public record GuildInviteMetadataResponse(
     string Code,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ExpiresAt,
-    GuildInviteMetadataResponseGuild Guild,
+    PartialGuildResponse Guild,
     UserPartialResponse? Inviter,
     int MaxAge,
     int MaxUses,

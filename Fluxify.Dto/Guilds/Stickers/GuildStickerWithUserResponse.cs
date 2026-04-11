@@ -18,10 +18,10 @@ using Fluxify.Dto.Users;
 namespace Fluxify.Dto.Guilds.Stickers;
 
 public record GuildStickerWithUserResponse(
-    bool Animated,
+    bool IsAnimated,
     string Description,
     Snowflake Id,
     string Name,
     string[] Tags,
     UserPartialResponse User
-) : GuildStickerResponse(Animated, Description, Id, Name, Tags);
+) : GuildStickerResponse(IsAnimated, Description, Id, Name, Tags);

@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
+using Fluxify.Dto.Channels.Text.Messages;
 
 namespace Fluxify.Dto.Guilds.Stickers;
 
 public record GuildStickerResponse(
-    bool Animated,
+    bool IsAnimated,
     string Description,
     Snowflake Id,
     string Name,
     string[] Tags
-);
+) : StickerResponse(IsAnimated, Id, Name);

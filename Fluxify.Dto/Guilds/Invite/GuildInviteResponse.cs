@@ -22,7 +22,7 @@ public record GuildInviteResponse(
     ChannelPartialResponse Channel,
     string Code,
     DateTimeOffset CreatedAt,
-    GuildInviteMetadataResponseGuild Guild,
+    PartialGuildResponse Guild,
     UserPartialResponse? Inviter,
     int MemberCount,
     int PresenceCount,
