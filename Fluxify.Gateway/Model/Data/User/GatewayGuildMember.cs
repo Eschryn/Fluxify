@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
+using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Users;
 
@@ -21,8 +22,8 @@ namespace Fluxify.Gateway.Model.Data.User;
 public record GatewayGuildMember(
     Snowflake GuildId,
     int? AccentColor,
-    string? AvatarHash,
-    string? BannerHash,
+    MediaHash? Avatar,
+    MediaHash? Banner,
     DateTimeOffset? JoinedAt,
     DateTimeOffset? CommunicationsDisabledUntil,
     bool Deaf,
@@ -33,8 +34,8 @@ public record GatewayGuildMember(
     UserPartialResponse User
 ) : GuildMemberResponse(
     AccentColor,
-    AvatarHash,
-    BannerHash,
+    Avatar,
+    Banner,
     JoinedAt,
     CommunicationsDisabledUntil,
     Deaf,

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Gateway.Model.Data.User;
@@ -19,7 +20,7 @@ namespace Fluxify.Gateway.Model.Data.User;
 public record PresenceResponse(
     UserPartialResponse User,
     UserStatus Status,
-    bool Mobile,
-    bool Afk,
+    [property: JsonPropertyName("mobile")] bool IsMobile,
+    [property: JsonPropertyName("afk")] bool IsAfk,
     CustomStatus? CustomStatus
 );

@@ -18,41 +18,41 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class PrivateUser(FluxerApplication fluxerApplication) : GlobalUser(fluxerApplication)
+public class PrivateUser(FluxerApplication fluxerApplication, Snowflake id) : GlobalUser(fluxerApplication, id)
 {
-    public int? AccentColor { get; set;  }
-    public string[] Acls { get; set;  }
-    public AuthenticatorTypes[] AuthenticatorTypes { get; set;  }
-    public string? BannerHash { get; set;  }
-    public Color? BannerColor { get; set;  }
-    public string? Bio { get; set;}
-    public string? Email { get; set; }
-    public bool? EmailBounced { get; set; }
-    public bool? HasDismissedPremiumOnboarding { get; set; }
-    public bool? HasEverPurchased { get; set; }
-    public bool? HasUnreadGiftInventory { get; set; }
-    public bool IsStaff { get; set; }
-    public bool MfaEnabled { get; set; }
-    public bool NsfwAllowed { get; set; }
-    public string? PasswordLastChangedAt { get; set; }
-    public UserPrivateResponsePendingBulkMessageDeletion? PendingBulkMessageDeletion { get; set; }
-    public string? Phone { get; set; }
-    public bool PremiumBadgeHidden { get; set; }
-    public bool PremiumBadgeMasked { get; set; }
-    public bool PremiumBadgeSequenceHidden { get; set; }
-    public bool PremiumBadgeTimestampHidden { get; set; }
-    public string? PremiumBillingCycle { get; set; }
-    public bool PremiumEnabledOverride { get; set; }
-    public int? PremiumLifetimeSequence { get; set; }
-    public bool PremiumPurchaseDisabled { get; set; }
-    public DateTimeOffset? PremiumSince { get; set; }
-    public UserPremiumTypes PremiumType { get; set; }
-    public DateTimeOffset? PremiumUntil { get; set; }
-    public bool? PremiumWillCancel { get; set; }
-    public string? Pronouns { get; set; }
-    public string[]? RequiredActions { get; set; }
-    public string[] Traits { get; set; }
-    public int UnreadGiftInventoryCount { get; set; }
-    public bool UsedMobileClient { get; set; }
-    public bool Verified { get; set; }
+    public int? AccentColor { get; internal set;  }
+    public string[] Acls { get; internal set;  }
+    public AuthenticatorTypes[] AuthenticatorTypes { get; internal set;  }
+    public string? BannerHash { get; internal set;  }
+    public Color? BannerColor { get; internal set;  }
+    public string? Bio { get; internal set;}
+    public string? Email { get; internal set; }
+    public bool? EmailBounced { get; internal set; }
+    public bool? HasDismissedPremiumOnboarding { get; internal set; }
+    public bool? HasEverPurchased { get; internal set; }
+    public bool? HasUnreadGiftInventory { get; internal set; }
+    public bool IsStaff { get; internal set; }
+    public bool MfaEnabled { get; internal set; }
+    public bool NsfwAllowed { get; internal set; }
+    public string? PasswordLastChangedAt { get; internal set; }
+    public UserPrivateResponsePendingBulkMessageDeletion? PendingBulkMessageDeletion { get; internal set; }
+    public string? Phone { get; internal set; }
+    public bool PremiumBadgeHidden { get; internal set; }
+    public bool PremiumBadgeMasked { get; internal set; }
+    public bool PremiumBadgeSequenceHidden { get; internal set; }
+    public bool PremiumBadgeTimestampHidden { get; internal set; }
+    public string? PremiumBillingCycle { get; internal set; }
+    public bool PremiumEnabledOverride { get; internal set; }
+    public int? PremiumLifetimeSequence { get; internal set; }
+    public bool PremiumPurchaseDisabled { get; internal set; }
+    public DateTimeOffset? PremiumSince { get; internal set; }
+    public UserPremiumTypes PremiumType { get; internal set; }
+    public DateTimeOffset? PremiumUntil { get; internal set; }
+    public bool? PremiumWillCancel { get; internal set; }
+    public string? Pronouns { get; internal set; }
+    public string[]? RequiredActions { get; internal set; }
+    public string[] Traits { get; internal set; }
+    public int UnreadGiftInventoryCount { get; internal set; }
+    public bool UsedMobileClient { get; internal set; }
+    public bool Verified { get; internal set; }
 }

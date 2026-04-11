@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
-using Fluxify.Dto.Common;
+namespace Fluxify.Application.Entities.Users;
 
-namespace Fluxify.Dto.Users;
-
-public record UserPartialResponse(
-    MediaHash? Avatar,
-    int? AvatarColor,
-    string Discriminator,
-    PublicUserFlags Flags,
-    string? GlobalName,
-    Snowflake Id,
-    bool? System,
-    bool? Bot,
-    string Username);
+public class UserPresence : IPresence
+{
+    public UserStatus Status { get; internal set; }
+    public bool IsMobile { get; internal set; }
+    public bool IsAfk { get; internal set; }
+    public CustomStatus? CustomStatus { get; internal set; }
+}

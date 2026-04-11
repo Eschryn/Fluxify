@@ -12,38 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-using Fluxify.Application.Common;
+using System.Globalization;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Model;
-using Fluxify.Application.State;
 
 namespace Fluxify.Application.Entities.Users;
 
-public interface IUser : IEntity, IFormattable, ICloneable<IUser>
+public partial class GlobalUser
 {
-    public bool? Bot { get; }
-    public string Username { get; }
-    public string? Discriminator { get; }
-    public string? GlobalName { get; }
-    public Image? Avatar { get; }
-    public Color? AvatarColor { get; }
-    public bool? System { get; }
-    public PublicUserFlags Flags { get; }
-    public IPresence? Presence { get; }
+    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default) 
+        => fluxerApplication.GetOrCreateDmAsync(Id, cancellationToken);
 
-    public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default);
-    
     public Uri GetAvatarUri(
-        [AllowedValues(
-            16, 20, 22, 24, 28, 32, 40, 44, 48, 56, 60, 64,
-            80, 96, 100, 128, 160, 240, 256, 300, 320, 480,
-            512, 600, 640, 1024, 1280, 1536, 2048, 3072, 4096
-        )]
         int size = 128,
         ImageFormat format = ImageFormat.Webp,
         ImageQuality quality = ImageQuality.High,
         bool animated = false
+    ) => Avatar?.GetUri(size, format, quality, animated) ?? new Uri(
+        fluxerApplication.InstanceInfo!.Endpoints.StaticCdn,
+        string.Format(
+            CultureInfo.InvariantCulture,
+            FallbackAvatarUriFormat,
+            ((ulong)Id) % 6
+        )
     );
 }

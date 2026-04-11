@@ -15,6 +15,7 @@
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Auth;
+using Fluxify.Dto.Common;
 
 namespace Fluxify.Dto.Users;
 
@@ -22,9 +23,9 @@ public record UserPrivateReponse(
     int? AccentColor,
     string[] Acls,
     AuthenticatorTypes[] AuthenticatorTypes,
-    [property: JsonPropertyName("avatar")] string? AvatarHash,
+    MediaHash? Avatar,
     int? AvatarColor,
-    [property: JsonPropertyName("banner")] string? BannerHash,
+    MediaHash? Banner,
     int? BannerColor,
     string? Bio,
     bool? Bot,
@@ -63,4 +64,14 @@ public record UserPrivateReponse(
     bool UsedMobileClient,
     string Username,
     bool Verified
+) : UserPartialResponse(
+    Avatar,
+    AvatarColor,
+    Discriminator,
+    Flags,
+    GlobalName,
+    Id,
+    System,
+    Bot,
+    Username
 );

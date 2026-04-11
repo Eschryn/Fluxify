@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Channels.Guilds;
-using Fluxify.Application.State.Ref;
 
 namespace Fluxify.Application.Entities.Users;
 

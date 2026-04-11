@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+using Fluxify.Application.Entities.Guilds;
 
 namespace Fluxify.Application.Entities.Users;
 
 public class CustomStatus
 {
     public string? Text { get; internal set; }
-    public string? EmojiName { get; internal set; }
-    public Snowflake? EmojiId { get; internal set; }
+    public IEmoji? Emoji { get; internal set; }
     public DateTimeOffset? ExpiresAt { get; internal set; }
-    public bool? EmojiAnimated { get; internal set; }
 }

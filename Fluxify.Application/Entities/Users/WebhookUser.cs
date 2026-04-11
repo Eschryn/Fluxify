@@ -16,4 +16,4 @@ using Fluxify.Application.State;
 
 namespace Fluxify.Application.Entities.Users;
 
-public class WebhookUser(FluxerApplication fluxerApplication) : GlobalUser(fluxerApplication), ICloneable<WebhookUser>;
+public class WebhookUser(FluxerApplication fluxerApplication, Snowflake id) : GlobalUser(fluxerApplication, id), ICloneable<WebhookUser>;
