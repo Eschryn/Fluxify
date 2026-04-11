@@ -21,13 +21,12 @@ using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Repositories;
-using Fluxify.Application.State.Ref;
 using Fluxify.Core.Credentials;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Instance;
 using Fluxify.Dto.Users;
 using Fluxify.Gateway;
 using Fluxify.Rest;
+using MemberMapper = Fluxify.Application.Entities.Guilds.Members.MemberMapper;
 
 namespace Fluxify.Application;
 
@@ -41,6 +40,9 @@ public partial class FluxerApplication
     internal readonly GuildMapper GuildMapper;
     internal readonly CacheConfig CacheConfig = new();
     internal readonly WebhookMapper WebhookMapper;
+    internal readonly ImageFactory ImageFactory;
+    internal readonly CacheMapper CacheMapper;
+    internal readonly MemberMapper MemberMapper;
 
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
@@ -62,6 +64,10 @@ public partial class FluxerApplication
         ChannelMapper = new ChannelMapper(this);
         UserMapper = new UserMapper(this);
         GuildMapper = new GuildMapper(this);
+        CacheMapper = new CacheMapper(this);
+        MemberMapper = new MemberMapper(this);
+
+        ImageFactory = new ImageFactory(this);
 
         ChannelsRepository = new ChannelRepository(Rest, ChannelMapper, CacheConfig);
         UsersRepository = new UserRepository(Rest, UserMapper, CacheConfig);
@@ -102,6 +108,7 @@ public partial class FluxerApplication
 
     public IReadOnlyCollection<PrivateTextChannel> PrivateChannels
         => ChannelsRepository.Cache.GetAllCached().Select(c => c.Value).OfType<PrivateTextChannel>().ToArray();
+
 
     public Task<Dm> GetOrCreateDmAsync(Snowflake userId,
         CancellationToken cancellationToken = default)

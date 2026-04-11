@@ -13,37 +13,35 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
-internal interface ICache<TData> where TData : class, IEntity, ICloneable<TData>
+internal interface ICache<TData, TDto> where TData : class, IEntity, ICloneable<TData>
 {
     bool IsCached(Snowflake id);
     CacheRef<TData> GetCachedOrDefault(Snowflake id);
     IReadOnlyCollection<CacheRef<TData>> GetAllCached();
 
-    Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
+
+    public Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TDto>> factory,
         bool bypassCache = false);
 
-    CacheRef<TData> UpdateOrCreate(TData data);
+    CacheRef<TData> UpdateOrCreate(Snowflake key, TDto dto);
     bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated);
     bool Remove(Snowflake id, out CacheRef<TData> data);
     void Clear();
 
-    public static ICache<TData> CreateOrdered<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData>
+    public static ICache<TData, TDto> CreateOrdered<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto>
         => limit switch
         {
-            > 0 => new OrderedCache<TData, TMapper>(mapper, limit),
-            _ => new PassthroughCache<TData>()
+            > 0 => new OrderedCache<TData, TDto, TMapper>(mapper, limit),
+            _ => new PassthroughCache<TData, TDto, TMapper>(mapper)
         };
 
-    public static ICache<TData> CreateLru<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData>
-        => limit switch
+    public static ICache<TData, TDto> CreateLru<TMapper>(long limit, TMapper mapper) where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto> => limit switch
         {
-            long.MaxValue => new PermanentCache<TData, TMapper>(mapper),
-            > 0 => new LruCache<TData,TMapper>(mapper, limit),
-            _ => new PassthroughCache<TData>()
+            long.MaxValue => new PermanentCache<TData, TDto, TMapper>(mapper),
+            > 0 => new LruCache<TData, TDto, TMapper>(mapper, limit),
+            _ => new PassthroughCache<TData, TDto, TMapper>(mapper)
         };
 }

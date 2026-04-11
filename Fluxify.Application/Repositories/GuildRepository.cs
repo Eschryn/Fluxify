@@ -14,29 +14,49 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Model.Channel;
+using Fluxify.Application.Model.Guild;
 using Fluxify.Application.State;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds;
+using Fluxify.Dto.Users.Settings.Security;
 using Fluxify.Rest;
 
 namespace Fluxify.Application.Repositories;
 
 internal sealed class GuildRepository(RestClient client, GuildMapper mapper, CacheConfig config)
 {
-    internal readonly ICache<Guild> Cache = ICache<Guild>.CreateLru(config.GuildCacheSize, mapper);
-   
-    public Task<CacheRef<Guild>> GetAsync(Snowflake id, bool bypassCache = false) 
+    internal readonly ICache<Guild, GuildResponse> Cache = ICache<Guild, GuildResponse>.CreateLru(config.GuildCacheSize, mapper);
+
+    public Task<CacheRef<Guild>> GetAsync(Snowflake id, bool bypassCache = false)
         => Cache.GetOrCreateAsync(id, GetGuildRestAsync, bypassCache);
 
-    internal CacheRef<Guild> Insert(GuildResponse response) 
-        => Cache.UpdateOrCreate(mapper.MapCached(response));
+    internal CacheRef<Guild> Insert(GuildResponse response)
+        => Cache.UpdateOrCreate(response.Id, response);
 
 
-    private async Task<Guild> GetGuildRestAsync(Snowflake id) 
-        => await client.Guilds[id].GetAsync() is {} guild 
-            ? await mapper.MapAsync(guild) 
-            : throw new Exception($"Couldn't get user with id {id}");
-   
+    private async Task<GuildResponse> GetGuildRestAsync(Snowflake id)
+        => await client.Guilds[id].GetAsync() ?? throw new Exception($"Couldn't get user with id {id}");
+
     internal void Reset() => Cache.Clear();
+
+    public async Task<Guild> UpdateAsync(Guild guild, SudoVerificationSchema verificationSchema,
+        Action<GuildProperties> update, CancellationToken cancellationToken)
+    {
+        var guildProperties = mapper.ToProperties(guild)
+            .Configure(update);
+
+        var request = mapper.ToUpdateRequest(
+            guildProperties,
+            verificationSchema.MfaCode,
+            verificationSchema.MfaMethod,
+            verificationSchema.Password,
+            verificationSchema.WebauthnChallenge,
+            verificationSchema.WebauthnResponse
+        );
+        
+        var result = await guild.RequestBuilder.UpdateAsync(request, cancellationToken)
+                     ?? throw new Exception("Guild was not updated");
+
+        return Cache.UpdateOrCreate(result.Id, result).Value!;
+    }
 }

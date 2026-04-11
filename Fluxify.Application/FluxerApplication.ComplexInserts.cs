@@ -17,11 +17,11 @@ using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Guilds.Members;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.EventArgs;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
+using Fluxify.Application.Model.Guild;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Emoji;
@@ -93,7 +93,14 @@ public partial class FluxerApplication
     {
         UsersRepository.Cache.TryUpdate(
             presence.User.Id,
-            user => UserMapper.UpdateStatus(user, presence),
+            user =>
+            {
+                var clone = user.Presence?.Clone() ?? new UserPresence();
+                
+                UserMapper.UpdateStatus(clone, presence);
+                
+                user.Presence = clone;
+            },
             out _);
     }
 
@@ -122,7 +129,7 @@ public partial class FluxerApplication
             {
                 var state = new VoiceState
                 {
-                    VoiceChannelRef = guild.GuildChannels.GetCachedOrDefault(voiceState.ChannelId.Value).Cast<GuildVoiceChannel>()
+                    VoiceChannelRef = guild.GuildChannels[voiceState.ChannelId.Value].Cast<GuildVoiceChannel>()
                 };
                 UserMapper.UpdateVoiceState(state, voiceState);
                 
@@ -157,7 +164,8 @@ public partial class FluxerApplication
         if (channel.Value is IGuildChannel guildChannel)
         {
             var guild = guildRef?.Value ?? guildChannel.Guild; 
-            guild?.GuildChannels.UpdateOrCreate(guildChannel);
+            
+            guild?.GuildChannels[guildChannel.Id] = channel.Cast<IGuildChannel>();
         }
         
         return channel;
@@ -266,7 +274,7 @@ public partial class FluxerApplication
         {
             PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository.InsertNew(arg, user),
             GuildTextChannel guildTextChannel => guildTextChannel.MessageRepository.InsertNew(arg, user),
-            _ => new CacheRef<Message>(arg.Id, MessageMapper.Map(arg, channel: channel, author: user))
+            _ => new CacheRef<Message>(arg.Id, MessageMapper.MapFromResponse(arg))
         };
         return message;
     }

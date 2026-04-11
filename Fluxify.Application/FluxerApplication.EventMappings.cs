@@ -15,11 +15,12 @@
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
+using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Guilds.Members;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.EventArgs;
 using Fluxify.Application.State;
-using Fluxify.Application.State.Ref;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
@@ -328,8 +329,8 @@ public partial class FluxerApplication
         var channel = ChannelsRepository.GetCachedOrDefault(arg.ChannelId);
         var cache = channel.Value switch
         {
-            GuildTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageMapper> gtcCache } => gtcCache,
-            PrivateTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageMapper> ptcCache } => ptcCache,
+            GuildTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageResponse, MessageMapper> gtcCache } => gtcCache,
+            PrivateTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageResponse, MessageMapper> ptcCache } => ptcCache,
             _ => null
         };
 

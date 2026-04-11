@@ -13,22 +13,24 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
-internal sealed class PassthroughCache<TData> : ICache<TData>
+internal sealed class PassthroughCache<TData, TDto, TMapper>(TMapper mapper) : ICache<TData, TDto>
     where TData : class, IEntity, ICloneable<TData>
+    where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto>
 {
     public bool IsCached(Snowflake id) => false;
     public CacheRef<TData> GetCachedOrDefault(Snowflake id) => new(id, null);
     public IReadOnlyCollection<CacheRef<TData>> GetAllCached() => [];
 
-    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
-        bool bypassCache = false) => new(id, await factory(id));
+    public async Task<CacheRef<TData>> GetOrCreateAsync(
+        Snowflake id,
+        Func<Snowflake, Task<TDto>> factory,
+        bool bypassCache = false
+    ) => new(id, mapper.MapFromResponse(await factory(id)));
 
-    public CacheRef<TData> UpdateOrCreate(TData data) => new(data.Id, data);
+    public CacheRef<TData> UpdateOrCreate(Snowflake key, TDto dto) => new(key, mapper.MapFromResponse(dto));
     
     public bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated)
     {

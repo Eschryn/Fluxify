@@ -15,8 +15,6 @@
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.State;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Roles;
 using Fluxify.Rest;
 
@@ -24,7 +22,7 @@ namespace Fluxify.Application.Repositories;
 
 internal sealed class RoleRepository(Snowflake guildId, RestClient client, RoleMapper mapper, GuildRepository guildRepository)
 {
-    internal PermanentCache<IRole, RoleMapper> Cache = new(mapper);
+    internal readonly PermanentCache<IRole, RoleInsert, RoleMapper> Cache = new(mapper);
 
     public async Task<CacheRef<IRole>> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 
@@ -36,7 +34,7 @@ internal sealed class RoleRepository(Snowflake guildId, RestClient client, RoleM
         {
             if (guildRoleResponse.Id == arg)
             {
-                role = mapper.MapFromDto(guildRoleResponse, await guildRepository.GetAsync(guildId));
+                role = mapper.MapFromResponse(new RoleInsert(guildRoleResponse, guildRepository.Cache.GetCachedOrDefault(guildId)));
             }
             
             Insert(guildRoleResponse, await guildRepository.GetAsync(guildId));
@@ -47,7 +45,7 @@ internal sealed class RoleRepository(Snowflake guildId, RestClient client, RoleM
 
     internal void Insert(GuildRoleResponse role, CacheRef<Guild> guildRef)
     { 
-        Cache.UpdateOrCreate(mapper.MapFromDto(role, guildRef));
+        Cache.UpdateOrCreate(mapper.MapFromResponse(new RoleInsert(role, guildRef)));
     }
 
     internal void Delete(Snowflake argRoleId)

@@ -20,4 +20,5 @@ public class UserPresence : IPresence
     public bool IsMobile { get; internal set; }
     public bool IsAfk { get; internal set; }
     public CustomStatus? CustomStatus { get; internal set; }
+    public object Clone() => MemberwiseClone();
 }

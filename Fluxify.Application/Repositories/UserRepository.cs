@@ -15,8 +15,6 @@
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.State;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Users;
 using Fluxify.Rest;
 
@@ -24,23 +22,21 @@ namespace Fluxify.Application.Repositories;
 
 internal sealed class UserRepository(RestClient client, UserMapper mapper, CacheConfig config)
 {
-   internal readonly ICache<GlobalUser> Cache = ICache<GlobalUser>.CreateLru(config.UserCacheSize, mapper);
+   internal readonly ICache<GlobalUser, UserPartialResponse> Cache = ICache<GlobalUser, UserPartialResponse>.CreateLru(config.UserCacheSize, mapper);
    
    public async Task<CacheRef<GlobalUser>> GetAsync(Snowflake id, bool bypassCache = false) 
       => await Cache.GetOrCreateAsync(id, GetUserRestAsync, bypassCache);
 
    internal CacheRef<GlobalUser> Insert(UserPartialResponse response)
-      => Cache.UpdateOrCreate(mapper.Map(response));
+      => Cache.UpdateOrCreate(response.Id, response);
 
    internal CacheRef<GlobalUser> Insert(UserPrivateReponse response)
-      => Cache.UpdateOrCreate(mapper.Map(response));
+      => Cache.UpdateOrCreate(response.Id, response);
 
    internal CacheRef<GlobalUser> GetCachedOrDefault(Snowflake id) => Cache.GetCachedOrDefault(id);
     
-   private async Task<GlobalUser> GetUserRestAsync(Snowflake id) 
-      => await client.Users[id].GetAsync() is {} user 
-         ? mapper.Map(user) 
-         : throw new Exception($"Couldn't get user with id {id}");
+   private async Task<UserPartialResponse> GetUserRestAsync(Snowflake id) 
+      => await client.Users[id].GetAsync() ?? throw new Exception($"Couldn't get user with id {id}");
    
    internal void Reset() => Cache.Clear();
 }

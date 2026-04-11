@@ -38,7 +38,7 @@ public partial class Guild(FluxerApplication app) : GuildMetadata, IEntity, IClo
 
     internal GuildRequestBuilder RequestBuilder => field ??= app.Rest.Guilds[Id];
 
-    internal ConcurrentDictionary<Snowflake, IGuildChannel> GuildChannels { get; } = new();
+    internal ConcurrentDictionary<Snowflake, ICacheRef<IGuildChannel>> GuildChannels { get; } = new();
 
     [MapperIgnore]
     internal ImmutableDictionary<Snowflake, GuildEmoji> GuildEmojis { get; set; } =
@@ -61,7 +61,7 @@ public partial class Guild(FluxerApplication app) : GuildMetadata, IEntity, IClo
 
     public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels
         => GuildChannels
-            .ToImmutableDictionary(k => k.Key, v => v.Value);
+            .ToImmutableDictionary(k => k.Key, v => v.Value.Value);
 
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];

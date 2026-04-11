@@ -14,46 +14,53 @@
 
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Guilds.Members;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.State;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Rest;
+using MemberMapper = Fluxify.Application.Entities.Guilds.Members.MemberMapper;
 
 namespace Fluxify.Application.Repositories;
 
 internal sealed class GuildMemberRepository(
     Guild guild,
     RestClient client,
-    UserMapper mapper,
+    MemberMapper mapper,
     UserRepository userRepository,
     GuildRepository guildRepository,
     CacheConfig config
 )
 {
-    internal UserRepository UserRepository { get; } = userRepository;
-    internal ICache<IGuildMember> Cache = ICache<IGuildMember>.CreateLru(config.GuildUserCacheSize, mapper);
+    private UserRepository UserRepository { get; } = userRepository;
 
-    public async Task<CacheRef<IGuildMember>> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
+    internal readonly ICache<IGuildMember, MemberInsert> Cache =
+        ICache<IGuildMember, MemberInsert>.CreateLru(config.GuildUserCacheSize, mapper);
 
-    private async Task<IGuildMember> Factory(Snowflake memberId)
+    public async Task<CacheRef<IGuildMember>> GetAsync(Snowflake roleId) =>
+        await Cache.GetOrCreateAsync(roleId, Factory);
+
+    private async Task<MemberInsert> Factory(Snowflake memberId)
     {
         var guildMemberResponse = await client.Guilds[guild.Id].Members[memberId].GetAsync();
 
         return guildMemberResponse is null
             ? throw new Exception("Could not get guild member")
-            : Insert(
+            : new MemberInsert(
                 guildMemberResponse,
-                await guildRepository.GetAsync(guild.Id),
-                await UserRepository.GetAsync(memberId)
-            ).Value!;
+                await UserRepository.GetAsync(memberId),
+                await guildRepository.GetAsync(guild.Id)
+            );
     }
 
-    internal CacheRef<IGuildMember> Insert(GuildMemberResponse member, 
+    internal CacheRef<IGuildMember> Insert(
+        GuildMemberResponse member,
         CacheRef<Guild> guildRef,
-        CacheRef<GlobalUser> userRef)
-        => Cache.UpdateOrCreate(mapper.Map(member, userRef, guildRef));
+        CacheRef<GlobalUser> userRef
+    ) => Cache.UpdateOrCreate(
+        userRef.Id,
+        new MemberInsert(member, userRef, guildRef)
+    );
 
     internal void Delete(Snowflake memberId)
     {

@@ -16,8 +16,6 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
@@ -29,16 +27,10 @@ internal record struct LruCacheEntry<T>(
     public readonly LinkedListNode<Snowflake> Node = Node;
 }
 
-/// <summary>
-/// Cache with LRU purge strategy
-/// </summary>
-/// <param name="mapper"></param>
-/// <param name="maxCacheSize"></param>
-/// <typeparam name="TData"></typeparam>
-/// <typeparam name="TMapper"></typeparam>
-internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize) : ICache<TData>
+// Cache with LRU purge strategy
+internal sealed class LruCache<TData, TDto, TMapper>(TMapper mapper, long maxCacheSize) : ICache<TData, TDto>
     where TData : class, IEntity, ICloneable<TData>
-    where TMapper : IUpdateEntity<TData>
+    where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto>
 {
     private readonly ConcurrentDictionary<Snowflake, LruCacheEntry<TData>> _dataContainer = new();
     private readonly LinkedList<Snowflake> _keyOrder = new();
@@ -47,7 +39,7 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
     public bool IsCached(Snowflake id) => _dataContainer.ContainsKey(id);
 
     public CacheRef<TData> GetCachedOrDefault(Snowflake id)
-        => TryGet(id, out var data) ? data : default;
+        => TryGet(id, out var data) ? data : new CacheRef<TData>(id, null);
 
     private bool TryGet(Snowflake key, out CacheRef<TData> data)
     {
@@ -75,7 +67,7 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
     public IReadOnlyCollection<CacheRef<TData>> GetAllCached()
         => _dataContainer.Values.Select(e => e.Data).ToImmutableArray().AsReadOnly();
 
-    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
+    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TDto>> factory,
         bool bypassCache = false)
     {
         if (!bypassCache && TryGet(id, out var data))
@@ -83,24 +75,24 @@ internal sealed class LruCache<TData, TMapper>(TMapper mapper, long maxCacheSize
             return data;
         }
 
-        return await _transactions.BeginAsync(id, async () => UpdateOrCreate(await factory(id)));
+        return await _transactions.BeginAsync(id, async () => UpdateOrCreate(id, await factory(id)));
     }
 
-    public CacheRef<TData> UpdateOrCreate(TData data)
-        => _dataContainer.AddOrUpdate(data.Id,
-            key => new LruCacheEntry<TData>(
-                new CacheRef<TData>(key, data),
+    public CacheRef<TData> UpdateOrCreate(Snowflake key, TDto dto)
+        => _dataContainer.AddOrUpdate(key,
+            _ => new LruCacheEntry<TData>(
+                new CacheRef<TData>(key, mapper.MapFromResponse(dto)),
                 InsertNewEntry(key)),
             (_, existing) =>
             {
                 RenewEntry(existing.Node);
                 if (existing.Data.Value?.Clone() is { } cloned)
                 {
-                    mapper.UpdateEntity(cloned, data);
+                    mapper.UpdateEntity(cloned, dto);
                 }
                 else
                 {
-                    cloned = data;
+                    cloned = mapper.MapFromResponse(dto);
                 }
 
                 existing.Data.Swap(cloned);

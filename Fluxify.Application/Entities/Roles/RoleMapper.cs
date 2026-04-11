@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.State;
 using Fluxify.Dto.Guilds.Roles;
 
 namespace Fluxify.Application.Entities.Roles;
@@ -21,11 +22,14 @@ internal readonly record struct RoleInsert(GuildRoleResponse Response, CacheRef<
 
 [Mapper]
 [UseStaticMapper(typeof(CommonMapper))]
-internal partial class RoleMapper : IUpdateEntity<IRole, RoleInsert>
+internal partial class RoleMapper 
+    : IUpdateEntity<IRole, RoleInsert>,
+        ICreateEntity<IRole, RoleInsert>
 {
     [NamedMapping("MapRoleFromDto"),
-     MapNestedProperties(nameof(RoleInsert.Response))]
-    public partial Role MapFromDto(RoleInsert data);
+     MapNestedProperties(nameof(RoleInsert.Response)),
+     MapDerivedType<RoleInsert, Role>]
+    public partial IRole MapFromResponse(RoleInsert data);
 
     [MapNestedProperties(nameof(RoleInsert.Response)),
      MapperIgnoreSource(nameof(RoleInsert.GuildRef)),
