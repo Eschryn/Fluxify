@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Common;
+using Fluxify.Dto.Guilds.Settings;
 
-public readonly struct UnicodeEmoji(string name) : IEmoji
+namespace Fluxify.Application.Model.Guild;
+
+public class GuildMetadata
 {
-    public string Name { get; } = name;
-
-    public static implicit operator UnicodeEmoji(string unicodeEmoji) => new(unicodeEmoji);
+    public Snowflake Id { get; init; }
+    public string Name { get; internal set; }
+    public Image? Icon { get; internal set; }
+    public Image? Splash { get; internal set; }
+    public Image? Banner { get; internal set; }
+    public Image? EmbedSplash { get; internal set; }
+    public GuildFeatureSchema[] Features { get; internal set; }
+    public SplashCardAlignment SplashCardAlignment { get; internal set; }
 }

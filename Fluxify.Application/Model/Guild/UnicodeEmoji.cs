@@ -12,6 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Guilds;
 
-public interface IEmoji : IFormattable;
+namespace Fluxify.Application.Model.Guild;
+
+public readonly struct UnicodeEmoji(string name) : IEmoji
+{
+    public string Name { get; } = name;
+
+    public static implicit operator UnicodeEmoji(string unicodeEmoji) => new(unicodeEmoji);
+
+    public string ToString(string? format, IFormatProvider? formatProvider) => Name;
+    public override string ToString() => Name;
+}

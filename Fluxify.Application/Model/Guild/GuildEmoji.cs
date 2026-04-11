@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+using System.Text;
+using Fluxify.Application.Entities.Guilds;
 
-namespace Fluxify.Application.Entities.Guilds;
+namespace Fluxify.Application.Model.Guild;
 
 public class GuildEmoji : IEmoji
 {
+    private static CompositeFormat EmojiFormat = CompositeFormat.Parse("<{0}:{1}:{2}>");
+    
     public required string Name { get; set; }
     public bool IsAnimated { get; init; }
     public Snowflake Id { get; init; }
+
+    public string ToString(string? format, IFormatProvider? formatProvider) 
+        => string.Format(formatProvider, EmojiFormat, IsAnimated ? "a" : string.Empty, Name, Id);
 }

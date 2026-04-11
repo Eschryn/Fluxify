@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Model.Guild;
 
-namespace Fluxify.Application.Entities.Guilds;
-
-public class Sticker
+public class GuildSticker : Sticker
 {
-    public required string Name { get; set; }
     public string? Description { get; set; }
     public string[]? Tags { get; set; }
-    public bool IsAnimated { get; init; }
-    public Snowflake Id { get; init; }
 }

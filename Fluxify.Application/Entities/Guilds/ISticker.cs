@@ -14,4 +14,9 @@
 
 namespace Fluxify.Application.Entities.Guilds;
 
-public interface IEmoji : IFormattable;
+public interface ISticker
+{
+    string Name { get; }
+    bool IsAnimated { get; }
+    Snowflake Id { get; }
+}

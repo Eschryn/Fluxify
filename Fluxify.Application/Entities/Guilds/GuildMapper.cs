@@ -12,82 +12,86 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Channels;
-using Fluxify.Application.Entities.Users;
-using Fluxify.Application.State.Ref;
+using System.Runtime.CompilerServices;
+using Fluxify.Application.Common;
+using Fluxify.Application.Model.Guild;
+using Fluxify.Application.State;
+using Fluxify.Dto;
 using Fluxify.Dto.Guilds;
+using Fluxify.Dto.Guilds.Invite;
 using Fluxify.Dto.Guilds.Settings;
-using Fluxify.Dto.Users;
-using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Guilds;
 
 [Mapper]
-public partial class GuildMapper(FluxerApplication app) : IUpdateEntity<Guild>
+internal partial class GuildMapper(FluxerApplication app) 
+    : IUpdateEntity<Guild, GuildResponse>,
+        ICreateEntity<Guild, GuildResponse>
 {
-    public async Task<Guild> MapAsync(GuildResponse dto)
-        => Map(dto,
-            dto.AfkChannelId is { } afkId ? await app.ChannelsRepository.GetAsync(afkId) : null,
-            dto.RulesChannelId is { } rulesId ? await app.ChannelsRepository.GetAsync(rulesId) : null,
-            dto.SystemChannelId is { } systemId ? await app.ChannelsRepository.GetAsync(systemId) : null,
-            await app.UsersRepository.GetAsync(dto.OwnerId)
-        );
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private FluxerApplication App() => app;
+
+    [UseMapper] private ImageFactory ImageFactory { get; } = app.ImageFactory;
+    [UseMapper] private CacheMapper CacheMapper { get; } = app.CacheMapper;
 
     private static GuildOperations ToOperations(long operations) => (GuildOperations)operations;
 
-    [MapperIgnoreSource(nameof(GuildResponse.AfkChannelId))]
-    [MapperIgnoreSource(nameof(GuildResponse.RulesChannelId))]
-    [MapperIgnoreSource(nameof(GuildResponse.SystemChannelId))]
-    [MapperIgnoreSource(nameof(GuildResponse.OwnerId))]
-    [MapperIgnoreTarget(nameof(Guild.GuildStickers))]
-    [MapperIgnoreTarget(nameof(Guild.GuildEmojis))]
-    private partial Guild Map(
-        GuildResponse dto,
-        CacheRef<IChannel>? afkChannelRef,
-        CacheRef<IChannel>? systemChannelRef,
-        CacheRef<IChannel>? rulesChannelRef,
-        CacheRef<GlobalUser> ownerRef,
-        FluxerApplication app
+    [NamedMapping("MapGuildFromResponse")]
+    [MapValue("app", Use = nameof(App))]
+    [MapPropertyFromSource(nameof(Guild.Icon), Use = nameof(CreateIcon))]
+    [MapPropertyFromSource(nameof(Guild.Banner), Use = nameof(CreateBanner))]
+    [MapPropertyFromSource(nameof(Guild.Splash), Use = nameof(CreateSplash))]
+    [MapPropertyFromSource(nameof(Guild.EmbedSplash), Use = nameof(CreateEmbedSplash))]
+    [MapProperty(nameof(GuildResponse.OwnerId), nameof(Guild.OwnerRef))]
+    [MapProperty(nameof(GuildResponse.AfkChannelId), nameof(Guild.AfkChannelRef))]
+    [MapProperty(nameof(GuildResponse.RulesChannelId), nameof(Guild.RulesChannelRef))]
+    [MapProperty(nameof(GuildResponse.SystemChannelId), nameof(Guild.SystemChannelRef))]
+    public partial Guild MapFromResponse(GuildResponse dto);
+
+    [IncludeMappingConfiguration("MapGuildFromResponse")]
+    public partial void UpdateEntity([MappingTarget] Guild data, GuildResponse update);
+
+    [MapperRequiredMapping(RequiredMappingStrategy.Target)]
+    [MapValue(nameof(GuildProperties.Icon), null)]
+    [MapValue(nameof(GuildProperties.EmbedSplash), null)]
+    [MapValue(nameof(GuildProperties.Splash), null)]
+    [MapValue(nameof(GuildProperties.Banner), null)]
+    [MapProperty(nameof(Guild.AfkChannelRef), nameof(GuildProperties.AfkChannelId))]
+    [MapProperty(nameof(Guild.SystemChannelRef), nameof(GuildProperties.SystemChannelId))]
+    public partial GuildProperties ToProperties(Guild guild);
+
+    public partial GuildUpdateRequest ToUpdateRequest(
+        GuildProperties guildProperties,
+        string? mfaCode = null,
+        MfaMethod? mfaMethod = null,
+        string? password = null,
+        string? webauthnChallenge = null,
+        string? webauthnResponse = null
     );
     
-    public Guild Map(
-        GuildResponse dto,
-        CacheRef<IChannel>? afkChannel,
-        CacheRef<IChannel>? systemChannel,
-        CacheRef<IChannel>? rulesChannel,
-        CacheRef<GlobalUser> owner
-    ) => Map(dto, afkChannel, systemChannel, rulesChannel, owner, app);
+    [MapPropertyFromSource(nameof(Guild.Icon), Use = nameof(CreateIcon))]
+    [MapPropertyFromSource(nameof(Guild.Banner), Use = nameof(CreateBanner))]
+    [MapPropertyFromSource(nameof(Guild.Splash), Use = nameof(CreateSplash))]
+    [MapPropertyFromSource(nameof(Guild.EmbedSplash), Use = nameof(CreateEmbedSplash))]
+    public partial GuildMetadata MapFromResponse(PartialGuildResponse response);
 
-    [MapperIgnoreSource(nameof(Guild.AfkChannel))]
-    [MapperIgnoreSource(nameof(Guild.RulesChannel))]
-    [MapperIgnoreSource(nameof(Guild.SystemChannel))]
-    [MapperIgnoreSource(nameof(Guild.RolesRepository))]
-    [MapperIgnoreSource(nameof(Guild.MembersRepository))]
-    public partial void UpdateEntity([MappingTarget] Guild data, Guild update);
+    #region Images
 
-    internal Guild MapCached(GuildResponse response)
-        => Map(
-            response,
-            response.AfkChannelId is { } afkId ? app.ChannelsRepository.GetCachedOrDefault(afkId) : null,
-            response.RulesChannelId is { } rulesId ? app.ChannelsRepository.GetCachedOrDefault(rulesId) : null,
-            response.SystemChannelId is { } systemId
-                ? app.ChannelsRepository.GetCachedOrDefault(systemId)
-                : null,
-            app.UsersRepository.GetCachedOrDefault(response.OwnerId) is { Value: not null } cacheRef 
-                ? cacheRef 
-                : app.UsersRepository.Insert(CreateUserFromOwnerId(response))
-        );
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Image? CreateIcon(PartialGuildResponse dto)
+        => ImageFactory.MakeIcon(dto.Id, dto.Icon);
 
-    private static UserPartialResponse CreateUserFromOwnerId(GuildResponse response)
-        => new(
-            Id: response.OwnerId,
-            Discriminator: "0000",
-            Username: "Unknown",
-            Avatar: null,
-            AvatarColor: null,
-            Bot: null,
-            Flags: 0,
-            GlobalName: null,
-            System: null
-        );
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Image? CreateBanner(PartialGuildResponse dto)
+        => ImageFactory.MakeBanner(dto.Id, dto.Banner, dto.BannerWidth, dto.BannerHeight);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Image? CreateSplash(PartialGuildResponse dto)
+        => ImageFactory.MakeSplash(dto.Id, dto.Splash, dto.SplashWidth, dto.SplashHeight);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Image? CreateEmbedSplash(PartialGuildResponse dto)
+        => ImageFactory.MakeEmbedSplash(dto.Id, dto.EmbedSplash, dto.EmbedSplashWidth, dto.EmbedSplashHeight);
+
+    #endregion
 }

@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Guilds;
 
-public interface IEmoji : IFormattable;
+namespace Fluxify.Application.Model.Guild;
+
+public class Sticker : ISticker
+{
+    public Snowflake Id { get; init; }
+    public required string Name { get; set; }
+    public bool IsAnimated { get; internal set; }
+}

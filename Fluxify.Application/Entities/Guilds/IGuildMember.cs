@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Drawing;
-using Fluxify.Application.Entities.Channels.Private;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model;
