@@ -14,8 +14,8 @@
 
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Channels.Guilds;
+using Fluxify.Application.Entities.Channels.Partial;
 using Fluxify.Application.Entities.Channels.Private;
-using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.State;
 using Fluxify.Dto.Channels;
@@ -36,67 +36,67 @@ internal partial class ChannelMapper(FluxerApplication application)
 
     [UseMapper] public CacheMapper CacheMapper { get; } = application.CacheMapper;
 
-    [MapValue("fluxerApplication", Use = nameof(App))]
-    [MapDerivedType<DmChannelResponse, Dm>]
-    [MapDerivedType<GroupDmChannelResponse, GroupDm>]
-    [MapProperty(nameof(PrivateChannelResponse.Recipients), nameof(PrivateTextChannel.RecipientsRef))]
+    [MapValue("fluxerApplication", Use = nameof(App)),
+     MapDerivedType<DmChannelResponse, Dm>,
+     MapDerivedType<GroupDmChannelResponse, GroupDm>,
+     MapProperty(nameof(PrivateChannelResponse.Recipients), nameof(PrivateTextChannel.RecipientsRef))]
     public partial PrivateTextChannel FromPrivateDto(PrivateChannelResponse dto);
 
-    [MapValue("fluxerApplication", Use = nameof(App))]
-    [MapDerivedType<GuildCategoryResponse, GuildCategory>]
-    [MapProperty(nameof(GuildChannelResponse.GuildId), nameof(GuildChannel<,>.GuildRef))]
+    [MapValue("fluxerApplication", Use = nameof(App)),
+     MapDerivedType<GuildCategoryResponse, GuildCategory>,
+     MapProperty(nameof(GuildChannelResponse.GuildId), nameof(GuildChannel<,>.GuildRef))]
     public partial IGuildChannel FromGuildChannelDto(GuildChannelResponse dto);
 
-    [UserMapping(Default = true)]
-    [IncludeMappingConfiguration(nameof(FromGuildChannelDto))]
-    [MapDerivedType<GuildTextChannelResponse, GuildTextChannel>]
-    [MapDerivedType<GuildLinkChannelResponse, GuildLinkChannel>]
-    [MapDerivedType<GuildVoiceChannelResponse, GuildVoiceChannel>]
-    [MapProperty(nameof(NestedChannelResponse.ParentId), nameof(GuildNestedChannel<,>.ParentRef))]
+    [UserMapping(Default = true),
+     IncludeMappingConfiguration(nameof(FromGuildChannelDto)),
+     MapDerivedType<GuildTextChannelResponse, GuildTextChannel>,
+     MapDerivedType<GuildLinkChannelResponse, GuildLinkChannel>,
+     MapDerivedType<GuildVoiceChannelResponse, GuildVoiceChannel>,
+     MapProperty(nameof(NestedChannelResponse.ParentId), nameof(GuildNestedChannel<,>.ParentRef))]
     public partial IGuildChannel FromNestedDto(GuildChannelResponse dto);
 
-    [NamedMapping("MapFromChannelResponse")]
-    [MapDerivedType<GuildChannelResponse, IGuildChannel>]
-    [MapDerivedType<PrivateChannelResponse, PrivateTextChannel>]
+    [NamedMapping("MapFromChannelResponse"),
+     MapDerivedType<GuildChannelResponse, IGuildChannel>,
+     MapDerivedType<PrivateChannelResponse, PrivateTextChannel>]
     public partial IChannel MapFromResponse(ChannelResponse dto);
 
-    [MapperRequiredMapping(RequiredMappingStrategy.Target)]
-    [MapValue(nameof(GroupDmProperties.Icon), null)]
+    [MapperRequiredMapping(RequiredMappingStrategy.Target),
+     MapValue(nameof(GroupDmProperties.Icon), null)]
     private partial GroupDmProperties ToProperties(GroupDm request);
 
-    [MapperRequiredMapping(RequiredMappingStrategy.Target)]
-    [MapDerivedType<GroupDm, GroupDmProperties>]
-    [MapDerivedType<GuildCategory, CategoryProperties>]
-    [MapDerivedType<GuildLinkChannel, LinkChannelProperties>]
-    [MapDerivedType<GuildTextChannel, TextChannelProperties>]
-    [MapDerivedType<GuildVoiceChannel, VoiceChannelProperties>]
+    [MapperRequiredMapping(RequiredMappingStrategy.Target),
+     MapDerivedType<GroupDm, GroupDmProperties>,
+     MapDerivedType<GuildCategory, CategoryProperties>,
+     MapDerivedType<GuildLinkChannel, LinkChannelProperties>,
+     MapDerivedType<GuildTextChannel, TextChannelProperties>,
+     MapDerivedType<GuildVoiceChannel, VoiceChannelProperties>]
     public partial ChannelProperties ToProperties(IChannel request);
 
-    [MapperRequiredMapping(RequiredMappingStrategy.Target)]
-    [MapDerivedType<TextChannelProperties, ChannelCreateTextRequest>]
-    [MapDerivedType<LinkChannelProperties, ChannelCreateLinkRequest>]
-    [MapDerivedType<CategoryProperties, ChannelCreateCategoryRequest>]
-    [MapDerivedType<VoiceChannelProperties, ChannelCreateVoiceRequest>]
+    [MapperRequiredMapping(RequiredMappingStrategy.Target),
+     MapDerivedType<TextChannelProperties, ChannelCreateTextRequest>,
+     MapDerivedType<LinkChannelProperties, ChannelCreateLinkRequest>,
+     MapDerivedType<CategoryProperties, ChannelCreateCategoryRequest>,
+     MapDerivedType<VoiceChannelProperties, ChannelCreateVoiceRequest>]
     public partial ChannelCreateRequest ToCreateRequest(ChannelProperties request);
 
-    [MapDerivedType<VoiceChannelProperties, ChannelUpdateVoiceRequest>]
-    [MapDerivedType<TextChannelProperties, ChannelUpdateTextRequest>]
-    [MapDerivedType<LinkChannelProperties, ChannelUpdateLinkRequest>]
-    [MapDerivedType<CategoryProperties, ChannelUpdateCategoryRequest>]
+    [MapDerivedType<VoiceChannelProperties, ChannelUpdateVoiceRequest>,
+     MapDerivedType<TextChannelProperties, ChannelUpdateTextRequest>,
+     MapDerivedType<LinkChannelProperties, ChannelUpdateLinkRequest>,
+     MapDerivedType<CategoryProperties, ChannelUpdateCategoryRequest>]
     public partial ChannelUpdateRequest ToUpdateRequest(ChannelProperties request);
 
-    [MapDerivedType<ChannelMemberPermissionOverwrite, PermissionOverwrite.Member>]
-    [MapDerivedType<ChannelRolePermissionOverwrite, PermissionOverwrite.Role>]
+    [MapDerivedType<ChannelMemberPermissionOverwrite, PermissionOverwrite.Member>,
+     MapDerivedType<ChannelRolePermissionOverwrite, PermissionOverwrite.Role>]
     public partial PermissionOverwrite FromDto(ChannelPermissionOverwrite dto);
 
-    [MapDerivedType<PermissionOverwrite.Member, ChannelMemberPermissionOverwrite>]
-    [MapDerivedType<PermissionOverwrite.Role, ChannelRolePermissionOverwrite>]
+    [MapDerivedType<PermissionOverwrite.Member, ChannelMemberPermissionOverwrite>,
+     MapDerivedType<PermissionOverwrite.Role, ChannelRolePermissionOverwrite>]
     public partial ChannelPermissionOverwrite ToDto(PermissionOverwrite model);
 
     [IncludeMappingConfiguration(nameof(FromGuildChannelDto)),
      MapperIgnoreSource(nameof(PrivateChannelResponse.Id))]
     public partial void UpdateGuildEntity([MappingTarget] IGuildChannel data, GuildChannelResponse update);
-    
+
     [UserMapping(Default = true),
      IncludeMappingConfiguration(nameof(FromGuildChannelDto)),
      MapperIgnoreSource(nameof(PrivateChannelResponse.Id)),
@@ -105,7 +105,7 @@ internal partial class ChannelMapper(FluxerApplication application)
      MapDerivedType<GuildVoiceChannelResponse, GuildVoiceChannel>,
      MapProperty(nameof(NestedChannelResponse.ParentId), nameof(GuildNestedChannel<,>.ParentRef))]
     public partial void UpdateNestedEntity([MappingTarget] IGuildChannel data, GuildChannelResponse update);
-    
+
     [IncludeMappingConfiguration(nameof(FromPrivateDto)),
      MapperIgnoreSource(nameof(PrivateChannelResponse.Id))]
     public partial void UpdatePrivateEntity([MappingTarget] PrivateTextChannel data, PrivateChannelResponse update);
@@ -122,8 +122,8 @@ internal partial class ChannelMapper(FluxerApplication application)
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
-        }   
+        }
     }
-    
+
     public partial PartialChannel FromPartialResponse(ChannelPartialResponse response);
 }

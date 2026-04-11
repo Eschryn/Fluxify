@@ -14,20 +14,20 @@
 
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Users;
-using Fluxify.Application.State.Ref;
+using Fluxify.Application.Model.Guild;
 
 namespace Fluxify.Application.Entities.Invites;
 
 public class GuildChannelInvite : IInvite
 {
     public required CacheRef<IChannel> Channel { get; init; }
-    public string Code { get; set; }
+    public required string Code { get; init; }
 
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; init; }
 
-    //GuildInviteMetadataResponseGuild Guild,
-    public ICacheRef<IUser> Inviter { get; set; }
-    public int MemberCount { get; set; }
-    public int PresenceCount { get; set; }
-    public bool Temporary { get; set; }
+    public required GuildMetadata Guild { get; init; }
+    public ICacheRef<IUser>? Inviter { get; init; }
+    public int MemberCount { get; init; }
+    public int PresenceCount { get; init; }
+    public bool Temporary { get; init; }
 }

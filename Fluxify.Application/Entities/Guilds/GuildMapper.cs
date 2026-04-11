@@ -24,7 +24,7 @@ using Fluxify.Dto.Guilds.Settings;
 namespace Fluxify.Application.Entities.Guilds;
 
 [Mapper]
-internal partial class GuildMapper(FluxerApplication app) 
+internal partial class GuildMapper(FluxerApplication app)
     : IUpdateEntity<Guild, GuildResponse>,
         ICreateEntity<Guild, GuildResponse>
 {
@@ -36,28 +36,28 @@ internal partial class GuildMapper(FluxerApplication app)
 
     private static GuildOperations ToOperations(long operations) => (GuildOperations)operations;
 
-    [NamedMapping("MapGuildFromResponse")]
-    [MapValue("app", Use = nameof(App))]
-    [MapPropertyFromSource(nameof(Guild.Icon), Use = nameof(CreateIcon))]
-    [MapPropertyFromSource(nameof(Guild.Banner), Use = nameof(CreateBanner))]
-    [MapPropertyFromSource(nameof(Guild.Splash), Use = nameof(CreateSplash))]
-    [MapPropertyFromSource(nameof(Guild.EmbedSplash), Use = nameof(CreateEmbedSplash))]
-    [MapProperty(nameof(GuildResponse.OwnerId), nameof(Guild.OwnerRef))]
-    [MapProperty(nameof(GuildResponse.AfkChannelId), nameof(Guild.AfkChannelRef))]
-    [MapProperty(nameof(GuildResponse.RulesChannelId), nameof(Guild.RulesChannelRef))]
-    [MapProperty(nameof(GuildResponse.SystemChannelId), nameof(Guild.SystemChannelRef))]
+    [NamedMapping("MapGuildFromResponse"),
+     MapValue("app", Use = nameof(App)),
+     MapPropertyFromSource(nameof(Guild.Icon), Use = nameof(CreateIcon)),
+     MapPropertyFromSource(nameof(Guild.Banner), Use = nameof(CreateBanner)),
+     MapPropertyFromSource(nameof(Guild.Splash), Use = nameof(CreateSplash)),
+     MapPropertyFromSource(nameof(Guild.EmbedSplash), Use = nameof(CreateEmbedSplash)),
+     MapProperty(nameof(GuildResponse.OwnerId), nameof(Guild.OwnerRef)),
+     MapProperty(nameof(GuildResponse.AfkChannelId), nameof(Guild.AfkChannelRef)),
+     MapProperty(nameof(GuildResponse.RulesChannelId), nameof(Guild.RulesChannelRef)),
+     MapProperty(nameof(GuildResponse.SystemChannelId), nameof(Guild.SystemChannelRef))]
     public partial Guild MapFromResponse(GuildResponse dto);
 
     [IncludeMappingConfiguration("MapGuildFromResponse")]
     public partial void UpdateEntity([MappingTarget] Guild data, GuildResponse update);
 
-    [MapperRequiredMapping(RequiredMappingStrategy.Target)]
-    [MapValue(nameof(GuildProperties.Icon), null)]
-    [MapValue(nameof(GuildProperties.EmbedSplash), null)]
-    [MapValue(nameof(GuildProperties.Splash), null)]
-    [MapValue(nameof(GuildProperties.Banner), null)]
-    [MapProperty(nameof(Guild.AfkChannelRef), nameof(GuildProperties.AfkChannelId))]
-    [MapProperty(nameof(Guild.SystemChannelRef), nameof(GuildProperties.SystemChannelId))]
+    [MapperRequiredMapping(RequiredMappingStrategy.Target),
+     MapValue(nameof(GuildProperties.Icon), null),
+     MapValue(nameof(GuildProperties.EmbedSplash), null),
+     MapValue(nameof(GuildProperties.Splash), null),
+     MapValue(nameof(GuildProperties.Banner), null),
+     MapProperty(nameof(Guild.AfkChannelRef), nameof(GuildProperties.AfkChannelId)),
+     MapProperty(nameof(Guild.SystemChannelRef), nameof(GuildProperties.SystemChannelId))]
     public partial GuildProperties ToProperties(Guild guild);
 
     public partial GuildUpdateRequest ToUpdateRequest(
@@ -68,11 +68,11 @@ internal partial class GuildMapper(FluxerApplication app)
         string? webauthnChallenge = null,
         string? webauthnResponse = null
     );
-    
-    [MapPropertyFromSource(nameof(Guild.Icon), Use = nameof(CreateIcon))]
-    [MapPropertyFromSource(nameof(Guild.Banner), Use = nameof(CreateBanner))]
-    [MapPropertyFromSource(nameof(Guild.Splash), Use = nameof(CreateSplash))]
-    [MapPropertyFromSource(nameof(Guild.EmbedSplash), Use = nameof(CreateEmbedSplash))]
+
+    [MapPropertyFromSource(nameof(Guild.Icon), Use = nameof(CreateIcon)),
+     MapPropertyFromSource(nameof(Guild.Banner), Use = nameof(CreateBanner)),
+     MapPropertyFromSource(nameof(Guild.Splash), Use = nameof(CreateSplash)),
+     MapPropertyFromSource(nameof(Guild.EmbedSplash), Use = nameof(CreateEmbedSplash))]
     public partial GuildMetadata MapFromResponse(PartialGuildResponse response);
 
     #region Images
@@ -88,7 +88,7 @@ internal partial class GuildMapper(FluxerApplication app)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Image? CreateSplash(PartialGuildResponse dto)
         => ImageFactory.MakeSplash(dto.Id, dto.Splash, dto.SplashWidth, dto.SplashHeight);
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Image? CreateEmbedSplash(PartialGuildResponse dto)
         => ImageFactory.MakeEmbedSplash(dto.Id, dto.EmbedSplash, dto.EmbedSplashWidth, dto.EmbedSplashHeight);

@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Users;
+namespace Fluxify.Application.Entities.Channels.Partial;
 
-namespace Fluxify.Application.Entities.Invites;
-
-public interface IInvite
+public class PartialChannelRecipient
 {
-    public string Code { get; }
-    public ICacheRef<IUser>? Inviter { get; }
-    public bool Temporary { get; }
+    internal PartialChannelRecipient() { }
+    
+    public required string Username { get; init; }
 }

@@ -15,10 +15,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Channels;
+using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
+using Fluxify.Dto.Channels;
+using Fluxify.Dto.Guilds.Invite;
+using Fluxify.Dto.Invites;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Application;
@@ -28,6 +30,15 @@ internal partial class CacheMapper(FluxerApplication app)
     [return: NotNullIfNotNull(nameof(channelId))]
     public CacheRef<IChannel>? ResolveChannel(Snowflake? channelId)
         => channelId is { } id ? app.ChannelsRepository.GetCachedOrDefault(id) : null;
+    
+    [return: NotNullIfNotNull(nameof(channelId))]
+    public ICacheRef<TChannel>? ResolveChannelTyped<TChannel>(Snowflake? channelId) where TChannel : class, IChannel
+        => channelId is { } id ? app.ChannelsRepository.GetCachedOrDefault(id).Cast<TChannel>() : null;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [return: NotNullIfNotNull(nameof(channelId))]
+    public ICacheRef<GuildTextChannel>? ResolveChannelGuildText(Snowflake? channelId) 
+        => ResolveChannelTyped<GuildTextChannel>(channelId);
     
     [return: NotNullIfNotNull(nameof(guildId))]
     public CacheRef<Guild>? ResolveGuild(Snowflake? guildId)
@@ -49,7 +60,38 @@ internal partial class CacheMapper(FluxerApplication app)
     public CacheRef<GlobalUser>? InsertGlobalUser(UserPartialResponse? user)
         => user is { } ? app.UsersRepository.Insert(user) : null;
     
+    [return: NotNullIfNotNull(nameof(user))]
+    public ICacheRef<IUser>? InsertGlobalUserAsIUser(UserPartialResponse? user)
+        => user is { } ? app.UsersRepository.Insert(user) : null;
     
+    public CacheRef<IChannel> GetChannel(ChannelPartialResponse response)
+        => app.ChannelsRepository.GetCachedOrDefault(response.Id) is
+            { Value: not null } cacheRef
+            ? cacheRef
+            : new CacheRef<IChannel>(response.Id, app.ChannelMapper.FromPartialResponse(response));
+    
+    public ICacheRef<IUser> ResolveCachedInviter(InviteResponseSchema invite)
+    {
+        var user = app.UsersRepository.Insert(invite.Inviter);
+        if (invite is not GuildInviteResponse or GuildInviteMetadataResponse)
+        {
+            return user;
+        }
+
+        var channel = invite switch
+        {
+            GuildInviteResponse response => response.Channel,
+            GuildInviteMetadataResponse response => response.Channel,
+            _ => throw new ArgumentOutOfRangeException(nameof(invite), invite, null)
+        };
+        
+        if (app.ChannelsRepository.GetCachedOrDefault(channel.Id).Value is IGuildChannel { Guild.MembersRepository: {} membersRepository })
+        {
+            return membersRepository.Cache.GetCachedOrDefault(user.Id);
+        }
+        
+        return user;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Snowflake? CacheRefToId(CacheRef<IChannel>? @ref) => @ref?.Id;

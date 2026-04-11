@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Users;
+using Fluxify.Dto.Channels;
 
-namespace Fluxify.Application.Entities.Invites;
+namespace Fluxify.Application.Entities.Channels.Partial;
 
-public interface IInvite
+public class PartialChannel : IChannel
 {
-    public string Code { get; }
-    public ICacheRef<IUser>? Inviter { get; }
-    public bool Temporary { get; }
+    internal PartialChannel() { }
+    
+    public Snowflake Id { get; init; }
+    public required string Name { get; init; }
+    public ChannelType Type { get; init; }
+    public PartialChannelRecipient[]? Recipients { get; internal set; }
+    
+    public string ToString(string? format, IFormatProvider? formatProvider) => Id.ToString(format, formatProvider);
+    public object Clone() => MemberwiseClone();
 }
