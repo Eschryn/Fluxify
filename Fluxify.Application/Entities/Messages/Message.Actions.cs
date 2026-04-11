@@ -17,6 +17,7 @@ using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Model.Guild;
 using Fluxify.Application.Model.Messages;
 
 namespace Fluxify.Application.Entities.Messages;

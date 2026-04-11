@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Entities.Guilds.Members;
 
 namespace Fluxify.Application.EventArgs;
 

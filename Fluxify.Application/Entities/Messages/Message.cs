@@ -17,6 +17,7 @@ using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Model.Guild;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
 using Fluxify.Application.State;

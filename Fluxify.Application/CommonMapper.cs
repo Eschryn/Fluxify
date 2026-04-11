@@ -14,9 +14,10 @@
 
 using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Model.Guild;
+using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds.Emoji;
 using Fluxify.Dto.Guilds.Stickers;
-using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application;
 
@@ -25,15 +26,17 @@ public static partial class CommonMapper
 {
     public static int MapToInt(Color color) => color.ToArgb() & 0x00FFFFFF;
     public static Color MapToColor(int color) => Color.FromArgb((int)((color & 0x00FFFFFF) | 0xFF000000));
+    public static Color? MapToColor(int? color) => color.HasValue ? MapToColor(color.Value) : null;
     
     public static IEmoji MapToEmoji(GuildEmojiResponse e) => e.Id.HasValue ? MapToGuildEmoji(e) : MapToUnicodeEmoji(e);
     
-    [MapProperty(nameof(GuildStickerResponse.Animated), nameof(Sticker.IsAnimated))]
-    public static partial Sticker MapToSticker(GuildStickerResponse e);
+    [MapDerivedType<StickerResponse, Sticker>,
+     MapDerivedType<GuildStickerResponse, GuildSticker>]
+    public static partial Sticker MapToSticker(StickerResponse e);
     
-    [MapperIgnoreSource(nameof(GuildStickerResponse.Id))]
-    [MapperIgnoreSource(nameof(GuildStickerResponse.Animated))]
-    public static partial void UpdateSticker([MappingTarget] Sticker target, GuildStickerResponse source);
+    [MapperIgnoreSource(nameof(GuildStickerResponse.Id)),
+     IncludeMappingConfiguration(nameof(MapToSticker))]
+    public static partial void UpdateSticker([MappingTarget] Sticker target, StickerResponse source);
 
     [MapProperty(nameof(GuildEmojiResponse.Animated), nameof(GuildEmoji.IsAnimated))]
     private static partial GuildEmoji MapToGuildEmoji(GuildEmojiResponse e);

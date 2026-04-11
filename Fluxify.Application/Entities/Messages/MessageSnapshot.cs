@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Model.Guild;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
 
