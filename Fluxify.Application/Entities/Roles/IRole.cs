@@ -14,7 +14,6 @@
 
 using System.Drawing;
 using Fluxify.Application.State;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Roles;
 

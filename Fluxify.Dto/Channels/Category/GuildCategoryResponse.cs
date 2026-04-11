@@ -17,9 +17,9 @@ using Fluxify.Core.Types;
 namespace Fluxify.Dto.Channels;
 
 public record GuildCategoryResponse(
-    Snowflake? GuildId,
+    Snowflake GuildId,
     Snowflake Id,
-    string? Name,
+    string Name,
     ChannelPermissionOverwrite[]? PermissionOverwrites,
     int? Position
 ) : GuildChannelResponse(GuildId, Id, Name, PermissionOverwrites, Position);

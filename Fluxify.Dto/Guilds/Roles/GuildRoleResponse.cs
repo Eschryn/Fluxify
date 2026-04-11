@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Guilds.Roles;
@@ -27,9 +28,13 @@ public record GuildRoleResponse(
     bool Hoist,
     long? HoistPosition,
     Snowflake Id,
-    bool Mentionable,
+    bool IsMentionable,
     string Name,
     Permissions Permissions,
     long Position,
     string? UnicodeEmoji
-);
+)
+{
+    [JsonPropertyName( "mentionable")]
+    public bool IsMentionable { get; init; } = IsMentionable;
+}

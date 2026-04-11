@@ -14,15 +14,13 @@
 
 using System.Drawing;
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.Entities.Roles;
 
-public class Role : IRole
+public class Role(string name, CacheRef<Guild> guildRef) : IRole
 {
     public Snowflake Id { get; internal set; }
-    public string Name { get; internal set; }
+    public string Name { get; internal set; } = name;
     public long Position { get; internal set; }
     public bool IsMentionable { get; internal set; }
     public bool Hoist { get; internal set; }
@@ -30,7 +28,8 @@ public class Role : IRole
     public string? UnicodeEmoji { get; internal set; }
     public Color Color { get; internal set; }
     public Permissions Permissions { get; internal set; }
-    internal CacheRef<Guild> GuildRef { get; init; }
+    private CacheRef<Guild> GuildRef => guildRef;
+    [MapperIgnore]
     public Guild Guild => GuildRef.Value;
     
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch

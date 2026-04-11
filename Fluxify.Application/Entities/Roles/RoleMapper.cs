@@ -13,21 +13,22 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.State.Ref;
 using Fluxify.Dto.Guilds.Roles;
-using Riok.Mapperly.Abstractions;
 
 namespace Fluxify.Application.Entities.Roles;
 
+internal readonly record struct RoleInsert(GuildRoleResponse Response, CacheRef<Guild> GuildRef);
+
 [Mapper]
 [UseStaticMapper(typeof(CommonMapper))]
-public partial class RoleMapper : IUpdateEntity<IRole>
+internal partial class RoleMapper : IUpdateEntity<IRole, RoleInsert>
 {
-    [MapProperty(nameof(GuildRoleResponse.Mentionable), nameof(Role.IsMentionable))]
-    public partial Role MapFromDto(GuildRoleResponse dto, CacheRef<Guild> guildRef);
-    
-    public void UpdateEntity(IRole data, IRole update) => UpdateEntity((Role)data, (Role)update);
-    [MapperIgnoreSource(nameof(Role.Guild))]
-    [MapperIgnoreSource(nameof(Role.GuildRef))]
-    public partial void UpdateEntity([MappingTarget] Role data, Role update);
+    [NamedMapping("MapRoleFromDto"),
+     MapNestedProperties(nameof(RoleInsert.Response))]
+    public partial Role MapFromDto(RoleInsert data);
+
+    [MapNestedProperties(nameof(RoleInsert.Response)),
+     MapperIgnoreSource(nameof(RoleInsert.GuildRef)),
+     MapDerivedType<RoleInsert, Role>]
+    public partial void UpdateEntity([MappingTarget] IRole data, RoleInsert update);
 }
