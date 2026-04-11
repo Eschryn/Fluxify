@@ -26,18 +26,19 @@ internal sealed class RoleRepository(Snowflake guildId, RestClient client, RoleM
 
     public async Task<CacheRef<IRole>> GetAsync(Snowflake roleId) => await Cache.GetOrCreateAsync(roleId, Factory);
 
-    private async Task<IRole> Factory(Snowflake arg)
+    private async Task<RoleInsert> Factory(Snowflake arg)
     {
-        IRole? role = null;
+        RoleInsert? role = null;
         var guildRoleResponses = await client.Guilds[guildId].Roles.ListAsync() ?? [];
         foreach (var guildRoleResponse in guildRoleResponses)
         {
             if (guildRoleResponse.Id == arg)
             {
-                role = mapper.MapFromResponse(new RoleInsert(guildRoleResponse, guildRepository.Cache.GetCachedOrDefault(guildId)));
+                role = new RoleInsert(guildRoleResponse, guildRepository.Cache.GetCachedOrDefault(guildId));
+                continue;
             }
             
-            Insert(guildRoleResponse, await guildRepository.GetAsync(guildId));
+            Insert(guildRoleResponse, guildRepository.Cache.GetCachedOrDefault(guildId));
         }
         
         return role ?? throw new Exception($"Role with id {arg} not found");
@@ -45,7 +46,7 @@ internal sealed class RoleRepository(Snowflake guildId, RestClient client, RoleM
 
     internal void Insert(GuildRoleResponse role, CacheRef<Guild> guildRef)
     { 
-        Cache.UpdateOrCreate(mapper.MapFromResponse(new RoleInsert(role, guildRef)));
+        Cache.UpdateOrCreate(role.Id, new RoleInsert(role, guildRef));
     }
 
     internal void Delete(Snowflake argRoleId)

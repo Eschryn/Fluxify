@@ -14,8 +14,6 @@
 
 using System.Collections.Concurrent;
 using Fluxify.Application.Entities;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 
 namespace Fluxify.Application.State;
 
@@ -25,9 +23,10 @@ namespace Fluxify.Application.State;
 /// <param name="mapper"></param>
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TMapper"></typeparam>
-internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TData>
+/// <typeparam name="TDto"></typeparam>
+internal sealed class PermanentCache<TData, TDto, TMapper>(TMapper mapper) : ICache<TData, TDto>
     where TData : class, IEntity, ICloneable<TData>
-    where TMapper : IUpdateEntity<TData>
+    where TMapper : IUpdateEntity<TData, TDto>, ICreateEntity<TData, TDto>
 {
     private readonly ConcurrentDictionary<Snowflake, CacheRef<TData>> _dataContainer = new();
     private readonly ResourceTransactions<CacheRef<TData>> _transactions = new();
@@ -42,7 +41,7 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
     public IReadOnlyCollection<CacheRef<TData>> GetAllCached() => (IReadOnlyCollection<CacheRef<TData>>)_dataContainer.Values;
     public IReadOnlyDictionary<Snowflake, CacheRef<TData>> GetDictionary() => _dataContainer;
 
-    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TData>> factory,
+    public async Task<CacheRef<TData>> GetOrCreateAsync(Snowflake id, Func<Snowflake, Task<TDto>> factory,
         bool bypassCache = false)
     {
         if (!bypassCache && _dataContainer.TryGetValue(id, out var data))
@@ -50,7 +49,7 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
             return data;
         }
 
-        return await _transactions.BeginAsync(id, async () => UpdateOrCreate(await factory(id)));
+        return await _transactions.BeginAsync(id, async () => UpdateOrCreate(id, await factory(id)));
     }
     
     public bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated)
@@ -70,9 +69,9 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
         return false;
     }
     
-    public CacheRef<TData> UpdateOrCreate(TData data)
-        => _dataContainer.AddOrUpdate(data.Id,
-            id => new CacheRef<TData>(id, data),
+    public CacheRef<TData> UpdateOrCreate(Snowflake key, TDto data)
+        => _dataContainer.AddOrUpdate(key,
+            id => new CacheRef<TData>(id, mapper.MapFromResponse(data)),
             (_, existing) =>
             {
                 if (existing.Value?.Clone() is {} cloned)
@@ -81,7 +80,7 @@ internal sealed class PermanentCache<TData, TMapper>(TMapper mapper) : ICache<TD
                 }
                 else
                 {
-                    cloned = data;
+                    cloned = mapper.MapFromResponse(data);
                 }
                 
                 existing.Swap(cloned);
