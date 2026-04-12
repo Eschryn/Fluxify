@@ -38,23 +38,25 @@ public partial class UserMapper(FluxerApplication application)
     private Image? CreateProfileImage(UserPartialResponse dto)
         => application.ImageFactory.MakeAvatar(dto.Id, dto.Avatar, null, null);
 
-    [MapDerivedType<UserPrivateReponse, PrivateUser>,
-     MapDerivedType<UserPartialResponse, GlobalUser>]
-    public partial GlobalUser MapFromResponse(UserPartialResponse dto);
+    public GlobalUser MapFromResponse(UserPartialResponse dto) => dto switch
+    {
+        UserPrivateReponse upr => MapUserPrivate(upr),
+        _ => MapUserResponseImpl(dto)
+    };
 
     [MapperIgnoreTarget(nameof(GlobalUser.Presence)),
      MapValue("fluxerApplication", Use = nameof(GetApplication)),
      MapPropertyFromSource(nameof(GlobalUser.Avatar), Use = nameof(CreateProfileImage))]
-    public partial GlobalUser MapUserResponse(UserPartialResponse dto);
+    public partial GlobalUser MapUserResponseImpl(UserPartialResponse dto);
 
-    [IncludeMappingConfiguration(nameof(MapUserResponse)),
+    [IncludeMappingConfiguration(nameof(MapUserResponseImpl)),
      MapperIgnoreSource(nameof(UserPartialResponse.Id))]
     public partial void UpdateEntity([MappingTarget] GlobalUser data, UserPartialResponse update);
 
-    [IncludeMappingConfiguration(nameof(MapUserResponse))]
+    [IncludeMappingConfiguration(nameof(MapUserResponseImpl))]
     public partial PrivateUser MapUserPrivate(UserPrivateReponse dto);
 
-    [IncludeMappingConfiguration(nameof(MapUserResponse))]
+    [IncludeMappingConfiguration(nameof(MapUserResponseImpl))]
     public partial WebhookUser MapWebhook(UserPartialResponse dto);
 
     [MapperIgnoreSource(nameof(VoiceStateResponse.UserId)),

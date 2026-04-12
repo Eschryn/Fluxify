@@ -24,6 +24,7 @@ public class PartialChannel : IChannel
     public required string Name { get; init; }
     public ChannelType Type { get; init; }
     public PartialChannelRecipient[]? Recipients { get; internal set; }
+    public string DisplayName => Name;
     
     public string ToString(string? format, IFormatProvider? formatProvider) => Id.ToString(format, formatProvider);
     public object Clone() => MemberwiseClone();

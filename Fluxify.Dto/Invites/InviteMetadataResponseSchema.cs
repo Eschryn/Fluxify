@@ -23,7 +23,6 @@ namespace Fluxify.Dto.Invites;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(PackInviteMetadataResponse), (int)InviteType.EmojiPackInvite)]
-[JsonDerivedType(typeof(PackInviteMetadataResponse), (int)InviteType.StickerPackInvite)]
 [JsonDerivedType(typeof(GuildInviteMetadataResponse), (int)InviteType.Guild)]
 [JsonDerivedType(typeof(GroupDmInviteMetadataResponse), (int)InviteType.GroupDm)]
 public record InviteMetadataResponseSchema(

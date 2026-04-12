@@ -20,6 +20,7 @@ using Fluxify.Application.Entities.Guilds.Members;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Model.Messages.Embeds;
+using Fluxify.Application.Repositories;
 using Fluxify.Application.State;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
@@ -44,6 +45,7 @@ public partial class MessageMapper(
      IncludeMappingConfiguration(nameof(MapMessageBase)),
      MapperIgnoreSource(nameof(MessageResponse.ReferencedMessage))]
     public partial Message MapFromResponse(MessageResponse message);
+    
     
     [IncludeMappingConfiguration("MapMessageFromResponse")]
     public partial void UpdateEntity([MappingTarget] Message data, MessageResponse update);
@@ -102,7 +104,10 @@ public partial class MessageMapper(
         var channel = application.ChannelsRepository.GetCachedOrDefault(message.ChannelId);
         var authorRef = GetAuthor(message, channel);
 
-        return new Message(application, authorRef, channel.Cast<ITextChannel>());
+        return new Message(application, authorRef, channel.Cast<ITextChannel>())
+        {
+            Id = message.Id
+        };
     }
 
     private ICacheRef<IUser> GetAuthor<TMessage>(TMessage message, CacheRef<IChannel> channel) where TMessage : MessageBaseResponse
@@ -134,9 +139,17 @@ public partial class MessageMapper(
                     member,
                     application.UsersRepository.Insert(author),
                     guild!)),
+            ({} members, MessageBaseResponse { Author: { } author})
+                => GetGlobalOrMember(members, author),
             (null, { Author: { } author })
                 => application.UsersRepository.Insert(author),
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    private ICacheRef<IUser> GetGlobalOrMember(GuildMemberRepository repository, UserPartialResponse response)
+    {
+        var userRef = application.UsersRepository.Insert(response);
+        return repository.Cache.GetCachedOrDefault(response.Id) is { Value: not null } memberRef ? memberRef : userRef;
     }
 }

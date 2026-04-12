@@ -56,7 +56,8 @@ using Fluxify.Dto.Webhooks.Slack;
 namespace Fluxify.Dto.Json;
 
 [JsonSourceGenerationOptions(
-    NumberHandling = JsonNumberHandling.AllowReadingFromString
+    NumberHandling = JsonNumberHandling.AllowReadingFromString,
+    AllowOutOfOrderMetadataProperties = true
 )]
 [JsonSerializable(typeof(Snowflake))]
 [JsonSerializable(typeof(Snowflake[]))]

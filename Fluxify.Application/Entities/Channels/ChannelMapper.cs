@@ -118,7 +118,7 @@ internal partial class ChannelMapper(FluxerApplication application)
                 UpdatePrivateEntity(privateChannel, (PrivateChannelResponse)update);
                 break;
             case IGuildChannel guildChannel:
-                UpdateGuildEntity(guildChannel, (GuildChannelResponse)update);
+                UpdateNestedEntity(guildChannel, (GuildChannelResponse)update);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

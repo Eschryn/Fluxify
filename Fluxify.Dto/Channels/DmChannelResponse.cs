@@ -17,7 +17,7 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels;
 
-public abstract record DmChannelResponse(
+public record DmChannelResponse(
     Snowflake Id,
     Snowflake? LastMessageId,
     DateTimeOffset? LastPinTimestamp,

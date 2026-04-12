@@ -59,16 +59,17 @@ public partial class FluxerApplication
         Gateway = new GatewayClient(config.FluxerConfig, config.GatewayConfig);
         Rest = new RestClient(config.FluxerConfig);
 
+        CacheMapper = new CacheMapper(this);
+        ImageFactory = new ImageFactory(this);
+        
         WebhookMapper = new WebhookMapper(this);
         MessageMapper = new MessageMapper(this);
         InviteMapper = new InviteMapper(this);
         ChannelMapper = new ChannelMapper(this);
         UserMapper = new UserMapper(this);
         GuildMapper = new GuildMapper(this);
-        CacheMapper = new CacheMapper(this);
         MemberMapper = new MemberMapper(this);
 
-        ImageFactory = new ImageFactory(this);
 
         ChannelsRepository = new ChannelRepository(Rest, ChannelMapper, CacheConfig);
         UsersRepository = new UserRepository(Rest, UserMapper, CacheConfig);

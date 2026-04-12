@@ -16,6 +16,8 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Rest.Model;
 
-[JsonSourceGenerationOptions]
+[JsonSourceGenerationOptions(
+    AllowOutOfOrderMetadataProperties = true
+)]
 [JsonSerializable(typeof(ErrorResponse))]
 public partial class RestDtoContext : JsonSerializerContext;

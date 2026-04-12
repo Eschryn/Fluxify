@@ -21,6 +21,7 @@ internal interface ICache<TData, TDto>
 {
     bool IsCached(Snowflake id);
     CacheRef<TData> GetCachedOrDefault(Snowflake id);
+    CacheRef<TData> GetCachedOrCreateEmpty(Snowflake id);
     IReadOnlyCollection<CacheRef<TData>> GetAllCached();
 
 

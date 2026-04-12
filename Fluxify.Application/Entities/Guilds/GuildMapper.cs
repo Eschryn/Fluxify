@@ -42,7 +42,7 @@ internal partial class GuildMapper(FluxerApplication app)
      MapPropertyFromSource(nameof(Guild.Banner), Use = nameof(CreateBanner)),
      MapPropertyFromSource(nameof(Guild.Splash), Use = nameof(CreateSplash)),
      MapPropertyFromSource(nameof(Guild.EmbedSplash), Use = nameof(CreateEmbedSplash)),
-     MapProperty(nameof(GuildResponse.OwnerId), nameof(Guild.OwnerRef)),
+     MapProperty(nameof(GuildResponse.OwnerId), nameof(Guild.Owner), Use = nameof(@CacheMapper.ResolveOwner)),
      MapProperty(nameof(GuildResponse.AfkChannelId), nameof(Guild.AfkChannelRef)),
      MapProperty(nameof(GuildResponse.RulesChannelId), nameof(Guild.RulesChannelRef)),
      MapProperty(nameof(GuildResponse.SystemChannelId), nameof(Guild.SystemChannelRef))]

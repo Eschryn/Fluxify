@@ -50,7 +50,7 @@ public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
     internal ImmutableDictionary<Snowflake, Sticker> GuildStickers { get; set; } =
         ImmutableDictionary.Create<Snowflake, Sticker>();
 
-    internal ICacheRef<IUser> OwnerRef { get; }
+    public ICacheRef<IUser> Owner { get; }
 
     internal CacheRef<IChannel>? AfkChannelRef { get; set; }
 
@@ -71,7 +71,6 @@ public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
 
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
-    public IUser Owner => field = OwnerRef.Value ?? field;
     public GuildVoiceChannel? AfkChannel => (GuildVoiceChannel?)AfkChannelRef?.Value;
     public GuildTextChannel? RulesChannel => (GuildTextChannel?)RulesChannelRef?.Value;
     public GuildTextChannel? SystemChannel => (GuildTextChannel?)SystemChannelRef?.Value;
@@ -92,14 +91,13 @@ public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
         field ??= MembersRepository.Cache.GetCachedOrDefault(_app.CurrentUser.Id).Value!;
 
     internal Guild(FluxerApplication app,
-        ICacheRef<IUser> ownerRef,
+        ICacheRef<IUser> owner,
         string name,
         GuildFeatureSchema[] features
     ) : base(name, features)
     {
         _app = app;
-        OwnerRef = ownerRef;
-        Owner = ownerRef.Value!;
+        Owner = owner;
     }
 
     public object Clone() => MemberwiseClone();

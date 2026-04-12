@@ -38,6 +38,9 @@ internal sealed class PermanentCache<TData, TDto, TMapper>(TMapper mapper) : ICa
             ? @ref 
             : new CacheRef<TData>(id, null);
 
+    public CacheRef<TData> GetCachedOrCreateEmpty(Snowflake id) 
+        => _dataContainer.GetOrAdd(id, static key => new CacheRef<TData>(key, null));
+
     public IReadOnlyCollection<CacheRef<TData>> GetAllCached() => (IReadOnlyCollection<CacheRef<TData>>)_dataContainer.Values;
     public IReadOnlyDictionary<Snowflake, CacheRef<TData>> GetDictionary() => _dataContainer;
 

@@ -34,7 +34,8 @@ internal sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSo
             Model.GatewayJsonContext.Default,
             DtoJsonContext.Default
         ),
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        AllowOutOfOrderMetadataProperties = true
     };
     
     public async Task<GatewayPayload?> DeserializeAsync(PipeReader pipeReader, CancellationToken cancellationToken = default)

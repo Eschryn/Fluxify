@@ -22,6 +22,8 @@ internal sealed class PassthroughCache<TData, TDto, TMapper>(TMapper mapper) : I
 {
     public bool IsCached(Snowflake id) => false;
     public CacheRef<TData> GetCachedOrDefault(Snowflake id) => new(id, null);
+    public CacheRef<TData> GetCachedOrCreateEmpty(Snowflake id) => new(id, null);
+
     public IReadOnlyCollection<CacheRef<TData>> GetAllCached() => [];
 
     public async Task<CacheRef<TData>> GetOrCreateAsync(

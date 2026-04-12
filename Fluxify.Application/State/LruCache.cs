@@ -41,6 +41,15 @@ internal sealed class LruCache<TData, TDto, TMapper>(TMapper mapper, long maxCac
     public CacheRef<TData> GetCachedOrDefault(Snowflake id)
         => TryGet(id, out var data) ? data : new CacheRef<TData>(id, null);
 
+    public CacheRef<TData> GetCachedOrCreateEmpty(Snowflake id)
+        => _dataContainer.GetOrAdd(
+            id,
+            key => new LruCacheEntry<TData>(
+                new CacheRef<TData>(key, null),
+                InsertNewEntry(key)
+            )
+        ).Data;
+
     private bool TryGet(Snowflake key, out CacheRef<TData> data)
     {
         if (_dataContainer.TryGetValue(key, out var container))
@@ -102,7 +111,7 @@ internal sealed class LruCache<TData, TDto, TMapper>(TMapper mapper, long maxCac
     public bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated)
     {
         if (_dataContainer.TryGetValue(key, out var entry)
-            && entry.Data.Value?.Clone() is {} cloned)
+            && entry.Data.Value?.Clone() is { } cloned)
         {
             update(cloned);
             RenewEntry(entry.Node);
@@ -119,7 +128,7 @@ internal sealed class LruCache<TData, TDto, TMapper>(TMapper mapper, long maxCac
     private LinkedListNode<Snowflake> InsertNewEntry(Snowflake key)
     {
         var newEntry = new LinkedListNode<Snowflake>(key);
-        
+
         lock (_keyOrder)
         {
             _keyOrder.AddFirst(newEntry);

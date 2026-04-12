@@ -27,7 +27,8 @@ namespace Fluxify.Gateway.Model;
 [JsonSourceGenerationOptions(
     WriteIndented = true,
     NumberHandling = JsonNumberHandling.AllowReadingFromString,
-    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower
+    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower,
+    AllowOutOfOrderMetadataProperties = true
 )]
 [JsonSerializable(typeof(GatewayPayload))]
 [JsonSerializable(typeof(IdentifyPayloadData))]

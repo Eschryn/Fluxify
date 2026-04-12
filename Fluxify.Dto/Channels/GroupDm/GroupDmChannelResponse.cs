@@ -18,7 +18,7 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Channels;
 
-public abstract record GroupDmChannelResponse(
+public record GroupDmChannelResponse(
     MediaHash? Icon,
     Snowflake Id,
     Snowflake? LastMessageId,

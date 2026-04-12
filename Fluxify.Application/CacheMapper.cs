@@ -51,6 +51,10 @@ internal class CacheMapper(FluxerApplication app)
     [return: NotNullIfNotNull(nameof(userId))]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ICacheRef<IUser>? ResolveUser(Snowflake? userId) => ResolveGlobalUser(userId);
+    
+    [return: NotNullIfNotNull(nameof(userId))]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ICacheRef<IUser> ResolveOwner(Snowflake userId) => app.UsersRepository.Cache.GetCachedOrCreateEmpty(userId);
 
     [return: NotNullIfNotNull(nameof(userId))]
     public CacheRef<GlobalUser>? ResolveGlobalUser(Snowflake? userId)

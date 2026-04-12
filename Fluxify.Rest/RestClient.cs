@@ -54,7 +54,9 @@ public class RestClient
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        TypeInfoResolver = JsonTypeInfoResolver.Combine(DtoJsonContext.Default, RestDtoContext.Default)
+        TypeInfoResolver = JsonTypeInfoResolver.Combine(DtoJsonContext.Default, RestDtoContext.Default),
+        AllowOutOfOrderMetadataProperties = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
     };
 
     public GatewayRequestBuilder Gateway { get; }

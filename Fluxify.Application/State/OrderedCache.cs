@@ -44,6 +44,13 @@ internal sealed class OrderedCache<TData, TDto, TMapper>(TMapper mapper, long ma
             ? result
             : new CacheRef<TData>(id, null);
 
+    public CacheRef<TData> GetCachedOrCreateEmpty(Snowflake id) 
+        => _dataContainer.GetOrAdd(id, key =>
+        {
+            InsertKeyToSequence(key);
+            return new CacheRef<TData>(key, null);
+        });
+    
     public IReadOnlyCollection<CacheRef<TData>> GetAllCached() =>
         (IReadOnlyCollection<CacheRef<TData>>)_dataContainer.Values;
 
@@ -162,21 +169,7 @@ internal sealed class OrderedCache<TData, TDto, TMapper>(TMapper mapper, long ma
         => _dataContainer.AddOrUpdate(key,
             k =>
             {
-                _queueReplaceLock.EnterReadLock();
-                try
-                {
-                    if (_keyOrder.Count >= maxCacheSize)
-                    {
-                        _keyOrder.TryDequeue(out var id);
-                        _dataContainer.TryRemove(id, out _);
-                    }
-
-                    _keyOrder.Enqueue(key);
-                }
-                finally
-                {
-                    _queueReplaceLock.ExitReadLock();
-                }
+                InsertKeyToSequence(key);
 
                 return new CacheRef<TData>(key, mapper.MapFromResponse(dto));
             },
@@ -194,6 +187,25 @@ internal sealed class OrderedCache<TData, TDto, TMapper>(TMapper mapper, long ma
                 existing.Swap(cloned);
                 return existing;
             });
+
+    private void InsertKeyToSequence(Snowflake key)
+    {
+        _queueReplaceLock.EnterReadLock();
+        try
+        {
+            if (_keyOrder.Count >= maxCacheSize)
+            {
+                _keyOrder.TryDequeue(out var id);
+                _dataContainer.TryRemove(id, out _);
+            }
+
+            _keyOrder.Enqueue(key);
+        }
+        finally
+        {
+            _queueReplaceLock.ExitReadLock();
+        }
+    }
 
     public bool TryUpdate(Snowflake key, Action<TData> update, out CacheRef<TData> updated)
     {
