@@ -19,6 +19,7 @@ namespace Fluxify.Application.Entities.Users;
 public class VoiceState : IVoiceState
 {
     internal ICacheRef<GuildVoiceChannel> VoiceChannelRef { get; set; }
+    internal ICacheRef<GuildVoiceChannel>? GuildRef { get; set; }
     public GuildVoiceChannel VoiceChannel => field = VoiceChannelRef.Value ?? field;
     public bool Mute { get; internal set; }
     public bool Deaf { get; internal set; }

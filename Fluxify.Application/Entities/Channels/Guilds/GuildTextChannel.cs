@@ -13,21 +13,15 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Guilds;
-using Fluxify.Application.Entities.Messages;
-using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Model.Channel;
-using Fluxify.Application.Model.Messages;
 using Fluxify.Application.Repositories;
 using Fluxify.Application.State;
-using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
-using Fluxify.Dto.Webhooks;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
 public partial class GuildTextChannel : GuildNestedChannel<GuildTextChannel, TextChannelProperties>, ITextChannel,
     ICloneable<GuildTextChannel>
 {
-
     internal MessageRepository MessageRepository => field ??= new MessageRepository(
         FluxerApplication,
         FluxerApplication.Rest.Channels[Id].Messages,
@@ -48,6 +42,4 @@ public partial class GuildTextChannel : GuildNestedChannel<GuildTextChannel, Tex
     ) : base(fluxerApplication, guildRef)
     {
     }
-
-    public object Clone() => MemberwiseClone();
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.State;
 using Fluxify.Dto.Guilds.Roles;
@@ -26,10 +27,11 @@ internal partial class RoleMapper
     : IUpdateEntity<IRole, RoleInsert>,
         ICreateEntity<IRole, RoleInsert>
 {
-    [NamedMapping("MapRoleFromDto"),
-     MapNestedProperties(nameof(RoleInsert.Response)),
-     MapDerivedType<RoleInsert, Role>]
-    public partial IRole MapFromResponse(RoleInsert data);
+    [MapNestedProperties(nameof(RoleInsert.Response))]
+    private partial Role MapRoleFromResponse(RoleInsert data);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IRole MapFromResponse(RoleInsert data) => MapRoleFromResponse(data);
 
     [MapNestedProperties(nameof(RoleInsert.Response)),
      MapperIgnoreSource(nameof(RoleInsert.GuildRef)),

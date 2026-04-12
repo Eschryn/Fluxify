@@ -40,9 +40,11 @@ internal partial class MemberMapper(FluxerApplication application)
      MapPropertyFromSource(nameof(GuildMember.Avatar), Use = nameof(CreateMemberProfileImage)),
      MapPropertyFromSource(nameof(GuildMember.Banner), Use = nameof(CreateMemberBannerImage)),
      MapProperty(nameof(@MemberInsert.Response.Roles), nameof(GuildMember.AssignedRoleIds)),
-     MapperIgnoreTarget(nameof(GuildMember.ImmutableUser)),
-     MapDerivedType<MemberInsert, GuildMember>]
-    public partial IGuildMember MapFromResponse(MemberInsert insert);
+     MapperIgnoreTarget(nameof(GuildMember.ImmutableUser))]
+    private partial GuildMember MapMemberFromResponse(MemberInsert insert);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IGuildMember MapFromResponse(MemberInsert insert) => MapMemberFromResponse(insert);
 
     [MapNestedProperties(nameof(MemberInsert.Response)),
      MapperIgnoreSource(nameof(MemberInsert.UserRef)),

@@ -47,8 +47,9 @@ public partial class FluxerApplication
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
 
-    internal ICacheRef<PrivateUser> CurrentUserRef { get; private set; }
-    public PrivateUser CurrentUser => CurrentUserRef.Value!;
+    private ICacheRef<PrivateUser>? CurrentUserRef { get; set; }
+    public PrivateUser CurrentUser => CurrentUserRef?.Value 
+                                      ?? throw new InvalidOperationException("Clients needs to be logged in.");
 
     internal WellKnownFluxerResponse? InstanceInfo { get; private set; }
 
@@ -82,7 +83,7 @@ public partial class FluxerApplication
 
         Uri gatewayUri;
         var credentials = await Config.FluxerConfig.CredentialProvider();
-        if (credentials is BotTokenCredentials botTokenCredentials)
+        if (credentials is BotTokenCredentials)
         {
             var gatewayBotResponse = await Rest.Gateway.GetGatewayBotAsync(cancellationToken);
             if (gatewayBotResponse == null)

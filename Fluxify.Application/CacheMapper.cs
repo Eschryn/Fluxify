@@ -25,21 +25,25 @@ using Fluxify.Dto.Users;
 
 namespace Fluxify.Application;
 
-internal partial class CacheMapper(FluxerApplication app)
+internal class CacheMapper(FluxerApplication app)
 {
     [return: NotNullIfNotNull(nameof(channelId))]
     public CacheRef<IChannel>? ResolveChannel(Snowflake? channelId)
         => channelId is { } id ? app.ChannelsRepository.GetCachedOrDefault(id) : null;
-    
+
     [return: NotNullIfNotNull(nameof(channelId))]
     public ICacheRef<TChannel>? ResolveChannelTyped<TChannel>(Snowflake? channelId) where TChannel : class, IChannel
         => channelId is { } id ? app.ChannelsRepository.GetCachedOrDefault(id).Cast<TChannel>() : null;
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [return: NotNullIfNotNull(nameof(channelId))]
-    public ICacheRef<GuildTextChannel>? ResolveChannelGuildText(Snowflake? channelId) 
+    public ICacheRef<GuildTextChannel>? ResolveChannelGuildText(Snowflake? channelId)
         => ResolveChannelTyped<GuildTextChannel>(channelId);
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ICacheRef<GuildVoiceChannel> ResolveChannelGuildVoice(Snowflake channelId)
+        => ResolveChannelTyped<GuildVoiceChannel>(channelId);
+
     [return: NotNullIfNotNull(nameof(guildId))]
     public CacheRef<Guild>? ResolveGuild(Snowflake? guildId)
         => guildId is { } id ? app.GuildsRepository.Cache.GetCachedOrDefault(id) : null;
@@ -51,32 +55,41 @@ internal partial class CacheMapper(FluxerApplication app)
     [return: NotNullIfNotNull(nameof(userId))]
     public CacheRef<GlobalUser>? ResolveGlobalUser(Snowflake? userId)
         => userId is { } id ? ResolveGlobalUser(id) : null;
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public CacheRef<GlobalUser> ResolveGlobalUser(Snowflake userId)
         => app.UsersRepository.GetCachedOrDefault(userId);
-    
-    [return: NotNullIfNotNull(nameof(user))]
-    public CacheRef<GlobalUser>? InsertGlobalUser(UserPartialResponse? user)
-        => user is { } ? app.UsersRepository.Insert(user) : null;
-    
+
+    public CacheRef<GlobalUser> InsertGlobalUser(UserPartialResponse user)
+        => app.UsersRepository.Insert(user);
+
     [return: NotNullIfNotNull(nameof(user))]
     public ICacheRef<IUser>? InsertGlobalUserAsIUser(UserPartialResponse? user)
         => user is { } ? app.UsersRepository.Insert(user) : null;
-    
+
     public CacheRef<IChannel> GetChannel(ChannelPartialResponse response)
         => app.ChannelsRepository.GetCachedOrDefault(response.Id) is
             { Value: not null } cacheRef
             ? cacheRef
             : new CacheRef<IChannel>(response.Id, app.ChannelMapper.FromPartialResponse(response));
-    
-    public ICacheRef<IUser> ResolveCachedInviter(InviteResponseSchema invite)
+
+    [return: NotNullIfNotNull(nameof(invite.Inviter))]
+    public ICacheRef<IUser>? ResolveCachedInviter(InviteResponseSchema invite)
     {
+        if (invite.Inviter is null)
+        {
+            return null;
+        }
+
         var user = app.UsersRepository.Insert(invite.Inviter);
+        
+        // no, C# it's not redundant
+#pragma warning disable 9336
         if (invite is not GuildInviteResponse or GuildInviteMetadataResponse)
         {
             return user;
         }
+#pragma warning restore 9336
 
         var channel = invite switch
         {
@@ -84,12 +97,15 @@ internal partial class CacheMapper(FluxerApplication app)
             GuildInviteMetadataResponse response => response.Channel,
             _ => throw new ArgumentOutOfRangeException(nameof(invite), invite, null)
         };
-        
-        if (app.ChannelsRepository.GetCachedOrDefault(channel.Id).Value is IGuildChannel { Guild.MembersRepository: {} membersRepository })
+
+        if (app.ChannelsRepository.GetCachedOrDefault(channel.Id).Value is IGuildChannel
+            {
+                Guild.MembersRepository: { } membersRepository
+            })
         {
             return membersRepository.Cache.GetCachedOrDefault(user.Id);
         }
-        
+
         return user;
     }
 

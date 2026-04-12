@@ -106,7 +106,7 @@ public class VoiceSession : IAsyncDisposable
 
         try
         {
-            _connectTaskCompletionSource = new TaskCompletionSource();
+            _connectTaskCompletionSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             await _connectTaskCompletionSource.Task;
         }
         finally

@@ -213,8 +213,9 @@ internal sealed class OrderedCache<TData, TDto, TMapper>(TMapper mapper, long ma
 
     public bool Remove(Snowflake id, out CacheRef<TData> message)
     {
-        if (!_dataContainer.TryRemove(id, out message))
+        if (!_dataContainer.TryRemove(id, out var removedMessage))
         {
+            message = new CacheRef<TData>(id, null);
             return false;
         }
 
@@ -228,7 +229,8 @@ internal sealed class OrderedCache<TData, TDto, TMapper>(TMapper mapper, long ma
         {
             _queueReplaceLock.ExitWriteLock();
         }
-
+        
+        message = removedMessage;
         return true;
     }
 

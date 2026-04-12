@@ -89,8 +89,9 @@ internal sealed class PermanentCache<TData, TDto, TMapper>(TMapper mapper) : ICa
 
     public bool Remove(Snowflake id, out CacheRef<TData> data)
     {
-        if (_dataContainer.TryRemove(id, out data))
+        if (_dataContainer.TryRemove(id, out var removedMessage))
         {
+            data = removedMessage;
             return true;
         }
         

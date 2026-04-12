@@ -66,7 +66,8 @@ public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
 
     public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels
         => GuildChannels
-            .ToImmutableDictionary(k => k.Key, v => v.Value.Value);
+            .Where(x => x.Value.Value is not null)
+            .ToImmutableDictionary(k => k.Key, v => v.Value.Value)!;
 
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
@@ -86,13 +87,15 @@ public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
     public NsfwLevel NsfwLevel { get; internal set; }
     public Permissions? Permissions { get; internal set; }
     public SystemChannelFlags SystemChannelFlags { get; internal set; }
+
     public IUser CurrentMember =>
         field ??= MembersRepository.Cache.GetCachedOrDefault(_app.CurrentUser.Id).Value!;
 
-    internal Guild(
-        FluxerApplication app,
-        ICacheRef<IUser> ownerRef
-    )
+    internal Guild(FluxerApplication app,
+        ICacheRef<IUser> ownerRef,
+        string name,
+        GuildFeatureSchema[] features
+    ) : base(name, features)
     {
         _app = app;
         OwnerRef = ownerRef;

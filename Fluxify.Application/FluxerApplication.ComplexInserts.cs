@@ -112,7 +112,7 @@ public partial class FluxerApplication
     {
         if (voiceState.ConnectionId == null 
             || guildMemberRef.Value is not GuildMember { VoiceStateList: var voiceStateList}
-            || guildRef.Value is not {} guild)
+            || guildRef.Value is null)
         {
             return;
         }
@@ -125,16 +125,7 @@ public partial class FluxerApplication
         
         voiceStateList.AddOrUpdate(
             voiceState.ConnectionId,
-            _ =>
-            {
-                var state = new VoiceState
-                {
-                    VoiceChannelRef = guild.GuildChannels[voiceState.ChannelId.Value].Cast<GuildVoiceChannel>()
-                };
-                UserMapper.UpdateVoiceState(state, voiceState);
-                
-                return state;
-            },
+            _ => UserMapper.MakeVoiceState(voiceState),
             (_, target) =>
             {
                 UserMapper.UpdateVoiceState(target, voiceState);
@@ -165,7 +156,7 @@ public partial class FluxerApplication
         {
             var guild = guildRef?.Value ?? guildChannel.Guild; 
             
-            guild?.GuildChannels[guildChannel.Id] = channel.Cast<IGuildChannel>();
+            guild.GuildChannels[guildChannel.Id] = channel.Cast<IGuildChannel>();
         }
         
         return channel;

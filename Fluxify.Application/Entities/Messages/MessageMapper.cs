@@ -16,7 +16,6 @@ using System.Runtime.CompilerServices;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
-using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Guilds.Members;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
@@ -90,6 +89,7 @@ public partial class MessageMapper(
                 reference.MessageReference.MessageId),
             PrivateTextChannel privateTextChannel => privateTextChannel.MessageRepository.Cache.GetCachedOrDefault(
                 reference.MessageReference.MessageId),
+            _ => throw new InvalidOperationException()
         };
     }
 

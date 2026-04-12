@@ -31,13 +31,15 @@ public partial class UserMapper(FluxerApplication application)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private FluxerApplication GetApplication() => application;
+    
+    [UseMapper] private CacheMapper CacheMapper => application.CacheMapper;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Image? CreateProfileImage(UserPartialResponse dto)
         => application.ImageFactory.MakeAvatar(dto.Id, dto.Avatar, null, null);
 
-    [MapDerivedType<UserPartialResponse, GlobalUser>,
-     MapDerivedType<UserPrivateReponse, PrivateUser>]
+    [MapDerivedType<UserPrivateReponse, PrivateUser>,
+     MapDerivedType<UserPartialResponse, GlobalUser>]
     public partial GlobalUser MapFromResponse(UserPartialResponse dto);
 
     [MapperIgnoreTarget(nameof(GlobalUser.Presence)),
@@ -55,20 +57,29 @@ public partial class UserMapper(FluxerApplication application)
     [IncludeMappingConfiguration(nameof(MapUserResponse))]
     public partial WebhookUser MapWebhook(UserPartialResponse dto);
 
-    [MapperIgnoreSource(nameof(VoiceStateResponse.GuildId)),
-     MapperIgnoreSource(nameof(VoiceStateResponse.ChannelId)),
-     MapperIgnoreSource(nameof(VoiceStateResponse.UserId)),
-     MapperIgnoreSource(nameof(VoiceStateResponse.Member))]
+    [MapperIgnoreSource(nameof(VoiceStateResponse.UserId)),
+     MapperIgnoreSource(nameof(VoiceStateResponse.Member)),
+     MapProperty(nameof(VoiceStateResponse.GuildId), nameof(VoiceState.GuildRef)),
+     MapProperty(nameof(VoiceStateResponse.ChannelId), nameof(VoiceState.VoiceChannelRef))]
+    public partial VoiceState MakeVoiceState(VoiceStateResponse state);
+    
+    [MapperIgnoreSource(nameof(VoiceStateResponse.UserId)),
+     MapperIgnoreSource(nameof(VoiceStateResponse.Member)),
+     MapProperty(nameof(VoiceStateResponse.GuildId), nameof(VoiceState.GuildRef)),
+     MapProperty(nameof(VoiceStateResponse.ChannelId), nameof(VoiceState.VoiceChannelRef))]
     public partial void UpdateVoiceState([MappingTarget] VoiceState target, VoiceStateResponse state);
 
     [MapDerivedType<PresenceResponse, UserPresence>,
      MapperIgnoreSource(nameof(PresenceResponse.User)),
-     MapPropertyFromSource(nameof(@IPresence.CustomStatus.Emoji), Use = nameof(MapStatusEmoji))]
+     MapProperty(nameof(PresenceResponse.CustomStatus), nameof(IPresence.CustomStatus), Use = nameof(MapCustomStatus))]
     public partial void UpdateStatus([MappingTarget] IPresence target, PresenceResponse source);
 
-    private IEmoji? MapStatusEmoji(PresenceResponse presence)
+    [MapPropertyFromSource(nameof(CustomStatus.Emoji), Use = nameof(MapStatusEmoji))]
+    private partial void MapCustomStatus([MappingTarget] CustomStatus? status, Fluxify.Dto.Users.CustomStatus? customStatus);
+
+    private IEmoji MapStatusEmoji(Fluxify.Dto.Users.CustomStatus presence)
     {
-        return presence.CustomStatus switch
+        return presence switch
         {
             { EmojiId: { } id, EmojiName: var name, EmojiAnimated: var animated } => new GuildEmoji
             {
@@ -77,7 +88,7 @@ public partial class UserMapper(FluxerApplication application)
                 IsAnimated = animated ?? false
             },
             { EmojiId: null, EmojiName: { } name } => new UnicodeEmoji(name),
-            _ => null
+            _ => throw new InvalidOperationException("Invalid presence status")
         };
     }
 }
