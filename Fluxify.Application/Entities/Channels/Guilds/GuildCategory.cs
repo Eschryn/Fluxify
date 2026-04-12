@@ -18,7 +18,12 @@ using Fluxify.Application.State;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildCategory(
-    FluxerApplication fluxerApplication,
-    CacheRef<Guild> guildRef
-) : GuildChannel<GuildCategory, CategoryProperties>(fluxerApplication, guildRef), ICloneable<GuildCategory>;
+public class GuildCategory : GuildChannel<GuildCategory, CategoryProperties>, ICloneable<GuildCategory>
+{
+    internal GuildCategory(
+        FluxerApplication fluxerApplication,
+        CacheRef<Guild> guildRef
+    ) : base(fluxerApplication, guildRef)
+    {
+    }
+}

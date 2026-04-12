@@ -18,8 +18,8 @@ namespace Fluxify.Application.Entities.Users;
 
 public class VoiceState : IVoiceState
 {
-    internal ICacheRef<GuildVoiceChannel> VoiceChannelRef { get; init; }
-    public GuildVoiceChannel VoiceChannel => VoiceChannelRef.Value;
+    internal ICacheRef<GuildVoiceChannel> VoiceChannelRef { get; set; }
+    public GuildVoiceChannel VoiceChannel => field = VoiceChannelRef.Value ?? field;
     public bool Mute { get; internal set; }
     public bool Deaf { get; internal set; }
     public bool? SelfStream { get; internal set; }
@@ -31,4 +31,10 @@ public class VoiceState : IVoiceState
     public string ConnectionId { get; internal set; } = string.Empty;
     public int Version { get; internal set; }
     public string[]? ViewerStreamKeys { get; internal set; }
+    
+    internal VoiceState(ICacheRef<GuildVoiceChannel> voiceChannelRef)
+    {
+        VoiceChannelRef = voiceChannelRef;
+        VoiceChannel = VoiceChannelRef.Value!;
+    }
 }

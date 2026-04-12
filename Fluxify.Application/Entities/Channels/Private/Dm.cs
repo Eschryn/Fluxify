@@ -12,8 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Users;
+
 namespace Fluxify.Application.Entities.Channels.Private;
 
-public class Dm(
-    FluxerApplication fluxerApplication
-) : PrivateTextChannel(fluxerApplication);
+public class Dm : PrivateTextChannel
+{
+    internal Dm(
+        FluxerApplication fluxerApplication,
+        CacheRef<GlobalUser>[] recipientsRef
+    ) : base(fluxerApplication, recipientsRef)
+    {
+    }
+}

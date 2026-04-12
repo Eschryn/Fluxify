@@ -25,22 +25,20 @@ using Fluxify.Rest.Channel.Messages;
 
 namespace Fluxify.Application.Entities.Messages;
 
-public partial class Message(
-    FluxerApplication application,
-    ICacheRef<IUser> authorRef,
-    ICacheRef<ITextChannel> channelRef
-) : IEntity, ICloneable<Message>
+public partial class Message : IEntity, ICloneable<Message>
 {
-    private MessageRequestBuilder RequestBuilder => field ??= application.Rest.Channels[Channel.Id].Messages[Id];
-
+    private readonly FluxerApplication _application;
+    
+    private MessageRequestBuilder RequestBuilder => field ??= _application.Rest.Channels[Channel.Id].Messages[Id];
+    private ICacheRef<IUser> AuthorRef { get; }
+    private ICacheRef<ITextChannel> ChannelRef { get; }
+    
     public Snowflake Id { get; init; }
     public string? Content { get; internal set; }
 
     public Snowflake? WebhookId { get; internal set; }
-    internal ICacheRef<IUser> AuthorRef { get; } = authorRef;
-    internal ICacheRef<ITextChannel> ChannelRef { get; } = channelRef;
-    public IUser Author => AuthorRef.Value;
-    public ITextChannel Channel => ChannelRef.Value;
+    public IUser Author => field = AuthorRef.Value ?? field;
+    public ITextChannel Channel => field = ChannelRef.Value ?? field;
     public Guild? Guild => Channel is IGuildChannel guildChannel ? guildChannel.Guild : null;
     public Attachment[]? Attachments { get; internal set; }
     public Embed[]? Embeds { get; internal set; }
@@ -60,10 +58,11 @@ public partial class Message(
     public bool? HasTts { get; internal set; }
 
     internal Snowflake[]? Mentions { get; set; }
-    internal Snowflake[] MentionRoles { get; set; } = Array.Empty<Snowflake>();
+    internal Snowflake[] MentionRoles { get; set; } = [];
     
     [MapperIgnore]
-    public IEnumerable<IUser> MentionedUsers => Mentions?.Select(ResolveUser);
+    public IEnumerable<IUser> MentionedUsers 
+        => Mentions?.Select(ResolveUser).OfType<IUser>() ?? [];
     
     [MapperIgnore]
     public IRole[] MentionedRoles => Channel switch
@@ -71,7 +70,7 @@ public partial class Message(
         IGuildChannel guildChannel
             => MentionRoles
                 .Select(
-                    id => guildChannel.Guild.RolesRepository.Cache.GetCachedOrDefault(id).Value)
+                    id => guildChannel.Guild?.RolesRepository.Cache.GetCachedOrDefault(id).Value)
                 .OfType<IRole>()
                 .ToArray(),
         _ => []
@@ -84,6 +83,20 @@ public partial class Message(
     internal ICacheRef<Message>? ReferencedMessageRef { get; set; }
     public Message? ReferencedMessage => MessageReference != null ? ReferencedMessageRef?.Value : null;
 
+    internal Message(
+        FluxerApplication application,
+        ICacheRef<IUser> authorRef,
+        ICacheRef<ITextChannel> channelRef
+    )
+    {
+        _application = application;
+        AuthorRef = authorRef;
+        ChannelRef = channelRef;
+        
+        Author = authorRef.Value!;
+        Channel = channelRef.Value!;
+    }
+
     private IUser? ResolveUser(Snowflake id)
     {
         if (Channel is IGuildChannel guildChannel
@@ -92,7 +105,7 @@ public partial class Message(
             return value;
         }
         
-        return application.UsersRepository.Cache.GetCachedOrDefault(id).Value;
+        return _application.UsersRepository.Cache.GetCachedOrDefault(id).Value;
     }
     
     public object Clone() => MemberwiseClone();

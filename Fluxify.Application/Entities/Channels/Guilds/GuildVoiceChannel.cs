@@ -17,12 +17,16 @@ using Fluxify.Application.Model.Channel;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildVoiceChannel(
-    FluxerApplication fluxerApplication,
-    CacheRef<Guild> guildRef
-) : GuildNestedChannel<GuildVoiceChannel, VoiceChannelProperties>(fluxerApplication, guildRef)
+public class GuildVoiceChannel : GuildNestedChannel<GuildVoiceChannel, VoiceChannelProperties>
 {
     public int Bitrate { get; internal set; }
     public int? UserLimit { get; internal set; }
     public string? RtcRegion { get; internal set; }
+
+    internal GuildVoiceChannel(
+        FluxerApplication fluxerApplication,
+        CacheRef<Guild> guildRef
+    ) : base(fluxerApplication, guildRef)
+    {
+    }
 }

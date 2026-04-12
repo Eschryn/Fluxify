@@ -17,10 +17,10 @@ using Fluxify.Application.Entities.Guilds;
 
 namespace Fluxify.Application.Entities.Roles;
 
-public class Role(string name, CacheRef<Guild> guildRef) : IRole
+public class Role : IRole
 {
     public Snowflake Id { get; internal set; }
-    public string Name { get; internal set; } = name;
+    public string Name { get; internal set; }
     public long Position { get; internal set; }
     public bool IsMentionable { get; internal set; }
     public bool Hoist { get; internal set; }
@@ -28,9 +28,17 @@ public class Role(string name, CacheRef<Guild> guildRef) : IRole
     public string? UnicodeEmoji { get; internal set; }
     public Color Color { get; internal set; }
     public Permissions Permissions { get; internal set; }
-    private CacheRef<Guild> GuildRef => guildRef;
+    private CacheRef<Guild> GuildRef { get; }
+
     [MapperIgnore]
-    public Guild Guild => GuildRef.Value;
+    public Guild Guild => field = GuildRef.Value ?? field;
+
+    internal Role(string name, CacheRef<Guild> guildRef)
+    {
+        Name = name;
+        GuildRef = guildRef;
+        Guild = guildRef.Value!;
+    }
     
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch
     {

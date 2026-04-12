@@ -24,17 +24,24 @@ using Fluxify.Rest.Webhooks;
 
 namespace Fluxify.Application.Entities.Webhooks;
 
-public class Webhook(FluxerApplication fluxerApplication) : IEntity, ICloneable<Webhook>
+public class Webhook(
+    FluxerApplication fluxerApplication,
+    string name,
+    string token,
+    ICacheRef<GuildTextChannel> channelRef,
+    CacheRef<Guild> guildRef,
+    ICacheRef<IUser>? createdByRef
+) : IEntity, ICloneable<Webhook>
 {
     private AuthenticatedWebhookRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Webhooks[Id, Token];
 
     public Snowflake Id { get; init; }
-    public string Name { get; internal set; }
-    public string Token { get; internal set; }
+    public string Name { get; internal set; } = name;
+    public string Token { get; internal set; } = token;
     public MediaHash? Avatar { get; internal set; }
-    internal ICacheRef<GuildTextChannel> ChannelRef { get; init; }
-    internal CacheRef<Guild> GuildRef { get; init; }
-    internal ICacheRef<IUser>? CreatedByRef { get; init; }
+    internal ICacheRef<GuildTextChannel> ChannelRef { get; set; } = channelRef;
+    internal CacheRef<Guild> GuildRef { get; } = guildRef;
+    internal ICacheRef<IUser>? CreatedByRef { get; } = createdByRef;
 
     public GuildTextChannel Channel => ChannelRef.Value!;
     public Guild Guild => GuildRef.Value!;

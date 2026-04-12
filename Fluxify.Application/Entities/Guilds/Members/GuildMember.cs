@@ -32,9 +32,9 @@ public partial class GuildMember : IGuildMember
     internal Snowflake[] AssignedRoleIds { get; set; } = [];
     public Color? AccentColor { get; internal set;  }
     
-    public Guild Guild => GuildRef.Value;
+    public Guild Guild => field = GuildRef.Value ?? field;
     [MapperIgnore]
-    public GlobalUser User => UserRef.Value;
+    public GlobalUser User => field = UserRef.Value ?? field;
 
     public Image? Avatar
     {
@@ -75,9 +75,9 @@ public partial class GuildMember : IGuildMember
     
     [MapperIgnore]
     public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(r => Guild.RolesRepository.Cache.GetCachedOrDefault(r).Value).OfType<IRole>().ToArray();
-    
-    internal CacheRef<Guild> GuildRef { get; }
-    internal CacheRef<GlobalUser> UserRef { get; }
+
+    private CacheRef<Guild> GuildRef { get; }
+    private CacheRef<GlobalUser> UserRef { get; }
 
     internal GuildMember(
         FluxerApplication fluxerApplication,
@@ -87,6 +87,10 @@ public partial class GuildMember : IGuildMember
         _fluxerApplication = fluxerApplication;
         GuildRef = guildRef;
         UserRef = userRef;
+        
+        // we consider guild and user to be non-null on creation
+        Guild = guildRef.Value!;
+        User = userRef.Value!;
     }
     
     public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);

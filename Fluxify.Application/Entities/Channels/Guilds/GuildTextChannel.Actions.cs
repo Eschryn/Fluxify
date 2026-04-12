@@ -13,51 +13,23 @@
 // limitations under the License.
 
 using Fluxify.Application.Entities.Messages;
-using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Entities.Webhooks;
 using Fluxify.Application.Model.Messages;
-using Fluxify.Application.Repositories;
 using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
-using Fluxify.Rest.Channel;
+using Fluxify.Dto.Webhooks;
 
-namespace Fluxify.Application.Entities.Channels.Private;
+namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public abstract class PrivateTextChannel : ITextChannel
+public partial class GuildTextChannel
 {
-    protected ChannelRequestBuilder RequestBuilder => field ??= FluxerApplication.Rest.Channels[Id];
-    protected readonly FluxerApplication FluxerApplication;
-
-    protected PrivateTextChannel(
-        FluxerApplication fluxerApplication,
-        CacheRef<GlobalUser>[] recipientsRef
-    )
-    {
-        FluxerApplication = fluxerApplication;
-        RecipientsRef = recipientsRef;
-    }
-
-    public required Snowflake Id { get; init; }
-    public Snowflake? LastMessageId { get; internal set; }
-    public DateTimeOffset? LastPinTimestamp { get; internal set; }
-    internal CacheRef<GlobalUser>[] RecipientsRef { get; set; }
-    public GlobalUser[] Recipients => RecipientsRef.Select(x => x.Value).OfType<GlobalUser>().ToArray();
-
-    internal MessageRepository MessageRepository
-        => field ??= new MessageRepository(
-            FluxerApplication,
-            FluxerApplication.Rest.Channels[Id].Messages,
-            Id,
-            FluxerApplication.CacheConfig,
-            LastMessageId
-        );
-
     public async Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default)
         => FluxerApplication.MessageMapper.MapFromResponse(
             await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.MapToRequest(message),
                 cancellationToken)
             ?? throw new Exception("Message was not sent"));
 
-    public async Task IndicateTypingAsync(CancellationToken cancellationToken = default)
-        => await RequestBuilder.IndicateTypingAsync(cancellationToken);
+    public Task IndicateTypingAsync(CancellationToken cancellationToken = default)
+        => RequestBuilder.IndicateTypingAsync(cancellationToken);
 
     public IAsyncEnumerable<IReadOnlyList<Message>> GetMessagesAsync(
         Snowflake? start = null,
@@ -84,10 +56,8 @@ public abstract class PrivateTextChannel : ITextChannel
         CancellationToken cancellationToken = default
     ) => MessageRepository.DeleteMessageAsync(id, cancellationToken);
 
-    public Task DeleteMessagesAsync(
-        Snowflake[] ids,
-        CancellationToken cancellationToken = default
-    ) => RequestBuilder.Messages.BulkDeleteAsync(new BulkDeleteMessagesRequest(ids), cancellationToken);
+    public Task DeleteMessagesAsync(Snowflake[] ids, CancellationToken cancellationToken = default)
+        => RequestBuilder.Messages.BulkDeleteAsync(new BulkDeleteMessagesRequest(ids), cancellationToken);
 
     public Task<Message> EditMessageAsync(
         Message message,
@@ -130,11 +100,23 @@ public abstract class PrivateTextChannel : ITextChannel
         cancellationToken
     );
 
-    public string ToString(string? format, IFormatProvider? formatProvider) => format switch
-    {
-        "i" or "I" => ((long)Id).ToString(),
-        _ => $"<#{Id}>"
-    };
+    public async Task<Webhook> CreateWebhookAsync(
+        string name,
+        Base64Image? avatar = null,
+        CancellationToken cancellationToken = default
+    ) => FluxerApplication.WebhookMapper.FromResponse(
+        await RequestBuilder.CreateWebhookAsync(
+            new WebhookCreateRequest(avatar, name),
+            cancellationToken
+        )
+    );
 
-    public object Clone() => MemberwiseClone();
+    public async Task<Webhook> GetWebhookAsync(Snowflake id, CancellationToken cancellationToken = default)
+        => FluxerApplication.WebhookMapper.FromResponse(
+            await FluxerApplication.Rest.Webhooks[id].GetAsync(cancellationToken));
+
+    public async Task<Webhook[]> GetWebhooksAsync()
+        => (await RequestBuilder.GetWebhooksAsync())!
+            .Select(FluxerApplication.WebhookMapper.FromResponse)
+            .ToArray();
 }

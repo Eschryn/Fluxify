@@ -17,10 +17,14 @@ using Fluxify.Application.Model.Channel;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildLinkChannel(
-    FluxerApplication fluxerApplication,
-    CacheRef<Guild> guildRef
-) : GuildNestedChannel<GuildLinkChannel, LinkChannelProperties>(fluxerApplication, guildRef)
+public class GuildLinkChannel : GuildNestedChannel<GuildLinkChannel, LinkChannelProperties>
 {
+    internal GuildLinkChannel(
+        FluxerApplication fluxerApplication,
+        CacheRef<Guild> guildRef
+    ) : base(fluxerApplication, guildRef)
+    {
+    }
+
     public string? Url { get; internal set; }
 }

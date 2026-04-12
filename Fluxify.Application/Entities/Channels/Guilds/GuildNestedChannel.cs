@@ -19,12 +19,19 @@ using Fluxify.Dto.Channels;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildNestedChannel<TSelf, TProperties>(FluxerApplication fluxerApplication, CacheRef<Guild> guildRef)
-    : GuildChannel<TSelf, TProperties>(fluxerApplication, guildRef), INestedChannel
+public class GuildNestedChannel<TSelf, TProperties> : GuildChannel<TSelf, TProperties>, INestedChannel
     where TProperties : ChannelProperties
     where TSelf : GuildNestedChannel<TSelf, TProperties>
 {
     internal CacheRef<IChannel>? ParentRef;
+
+    internal GuildNestedChannel(
+        FluxerApplication fluxerApplication,
+        CacheRef<Guild> guildRef
+    ) : base(fluxerApplication, guildRef)
+    {
+    }
+
     public GuildCategory? Parent => ParentRef?.Value as GuildCategory;
 
     public async Task<GuildChannelInviteMetadata> CreateInviteAsync(

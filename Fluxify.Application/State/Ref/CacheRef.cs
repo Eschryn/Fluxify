@@ -23,7 +23,6 @@ public class CacheRef<T>(Snowflake id, T? initialValue) : IEquatable<CacheRef<T>
     
     public Snowflake Id { get; } = id;
     
-    [MemberNotNullWhen(true, nameof(CacheRef<>.Value))]
     public T? Value => _value;
     
     internal void Swap(T newValue) => Interlocked.Exchange(ref _value, newValue);

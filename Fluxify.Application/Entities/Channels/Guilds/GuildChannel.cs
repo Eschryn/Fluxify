@@ -22,22 +22,30 @@ using Fluxify.Rest.Channel;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public abstract class GuildChannel<TSelf, TProperties>(
-    FluxerApplication fluxerApplication,
-    CacheRef<Guild> guildRef
-) : IGuildChannel
+public abstract class GuildChannel<TSelf, TProperties> : IGuildChannel
     where TSelf : GuildChannel<TSelf, TProperties>
     where TProperties : ChannelProperties
 {
-    protected FluxerApplication FluxerApplication => fluxerApplication;
-    internal ChannelRequestBuilder RequestBuilder => field ??= fluxerApplication.Rest.Channels[Id];
+    protected FluxerApplication FluxerApplication => _fluxerApplication;
+    internal ChannelRequestBuilder RequestBuilder => field ??= _fluxerApplication.Rest.Channels[Id];
     internal ImmutableDictionary<Snowflake, PermissionOverwrite> OverwritesDictionary { get; private set; } 
         = ImmutableDictionary<Snowflake, PermissionOverwrite>.Empty;
-    internal readonly CacheRef<Guild> GuildRef = guildRef;
-    
+    internal readonly CacheRef<Guild> GuildRef;
+    private readonly FluxerApplication _fluxerApplication;
+
+    protected GuildChannel(
+        FluxerApplication fluxerApplication,
+        CacheRef<Guild> guildRef
+    )
+    {
+        _fluxerApplication = fluxerApplication;
+        GuildRef = guildRef;
+        Guild = guildRef.Value!;
+    }
+
     public required Snowflake Id { get; init; }
     public string Name { get; internal set; } = string.Empty;
-    public Guild? Guild => GuildRef.Value;
+    public Guild Guild => field = GuildRef.Value ?? field;
     public int? Position { get; internal set; }
 
     public PermissionOverwrite[]? PermissionOverwrites
@@ -55,7 +63,7 @@ public abstract class GuildChannel<TSelf, TProperties>(
         Action<TProperties> configure,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => fluxerApplication.ChannelsRepository.UpdateAsync(
+    ) => _fluxerApplication.ChannelsRepository.UpdateAsync(
         (TSelf)this, 
         configure,
         reason,
@@ -66,7 +74,7 @@ public abstract class GuildChannel<TSelf, TProperties>(
         PermissionOverwrite overwrite,
         CancellationToken cancellationToken = default
      ) => RequestBuilder.SetPermissionsOverwriteAsync(
-        fluxerApplication.ChannelMapper.ToDto(overwrite),
+        _fluxerApplication.ChannelMapper.ToDto(overwrite),
         cancellationToken
     );
     
@@ -95,7 +103,7 @@ public abstract class GuildChannel<TSelf, TProperties>(
     
     internal IUser? ResolveUser(Snowflake id) 
         => (IUser?)Guild?.MembersRepository.Cache.GetCachedOrDefault(id).Value 
-           ?? fluxerApplication.UsersRepository.Cache.GetCachedOrDefault(id).Value;
+           ?? _fluxerApplication.UsersRepository.Cache.GetCachedOrDefault(id).Value;
     
     public Task DeleteAsync() => FluxerApplication.ChannelsRepository.DeleteAsync(Id);
 

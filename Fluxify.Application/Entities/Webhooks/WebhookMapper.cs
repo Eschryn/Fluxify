@@ -37,7 +37,7 @@ internal partial class WebhookMapper(FluxerApplication fluxerApplication)
     
     [MapperIgnoreSource(nameof(WebhookTokenResponse.Id)),
      MapperIgnoreSource(nameof(WebhookTokenResponse.GuildId)),
-     MapperIgnoreSource(nameof(WebhookTokenResponse.ChannelId))]
+     MapProperty(nameof(WebhookTokenResponse.ChannelId), nameof(Webhook.ChannelRef))]
     public partial void UpdateEntity([MappingTarget] Webhook data, WebhookTokenResponse update);
     
     [MapperRequiredMapping(RequiredMappingStrategy.Target),

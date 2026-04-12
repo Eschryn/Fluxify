@@ -26,17 +26,19 @@ using Fluxify.Rest.Guilds;
 
 namespace Fluxify.Application.Entities.Guilds;
 
-public partial class Guild(FluxerApplication app) : GuildMetadata, IEntity, ICloneable<Guild>
+public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
 {
+    private readonly FluxerApplication _app;
+
     internal RoleRepository RolesRepository
-        => field ??= new RoleRepository(Id, app.Rest, new RoleMapper(), app.GuildsRepository);
+        => field ??= new RoleRepository(Id, _app.Rest, new RoleMapper(), _app.GuildsRepository);
 
     internal GuildMemberRepository MembersRepository
         => field ??=
-            new GuildMemberRepository(this, app.Rest, app.MemberMapper, app.UsersRepository, app.GuildsRepository,
-                app.CacheConfig);
+            new GuildMemberRepository(this, _app.Rest, _app.MemberMapper, _app.UsersRepository, _app.GuildsRepository,
+                _app.CacheConfig);
 
-    internal GuildRequestBuilder RequestBuilder => field ??= app.Rest.Guilds[Id];
+    internal GuildRequestBuilder RequestBuilder => field ??= _app.Rest.Guilds[Id];
 
     internal ConcurrentDictionary<Snowflake, ICacheRef<IGuildChannel>> GuildChannels { get; } = new();
 
@@ -48,9 +50,12 @@ public partial class Guild(FluxerApplication app) : GuildMetadata, IEntity, IClo
     internal ImmutableDictionary<Snowflake, Sticker> GuildStickers { get; set; } =
         ImmutableDictionary.Create<Snowflake, Sticker>();
 
-    internal ICacheRef<IUser> OwnerRef { get; set; }
+    internal ICacheRef<IUser> OwnerRef { get; }
+
     internal CacheRef<IChannel>? AfkChannelRef { get; set; }
+
     internal CacheRef<IChannel>? RulesChannelRef { get; set; }
+
     internal CacheRef<IChannel>? SystemChannelRef { get; set; }
 
 
@@ -65,11 +70,10 @@ public partial class Guild(FluxerApplication app) : GuildMetadata, IEntity, IClo
 
     public IReadOnlyCollection<GuildEmoji> Emoji => [..GuildEmojis.Values];
     public IReadOnlyCollection<Sticker> Stickers => [..GuildStickers.Values];
-    public IUser Owner => OwnerRef.Value;
+    public IUser Owner => field = OwnerRef.Value ?? field;
     public GuildVoiceChannel? AfkChannel => (GuildVoiceChannel?)AfkChannelRef?.Value;
     public GuildTextChannel? RulesChannel => (GuildTextChannel?)RulesChannelRef?.Value;
     public GuildTextChannel? SystemChannel => (GuildTextChannel?)SystemChannelRef?.Value;
-    
     public int MemberCount { get; internal set; }
     public string? VanityUrlCode { get; internal set; }
     public int AfkTimeout { get; internal set; }
@@ -82,9 +86,18 @@ public partial class Guild(FluxerApplication app) : GuildMetadata, IEntity, IClo
     public NsfwLevel NsfwLevel { get; internal set; }
     public Permissions? Permissions { get; internal set; }
     public SystemChannelFlags SystemChannelFlags { get; internal set; }
-
     public IUser CurrentMember =>
-        field ??= MembersRepository.Cache.GetCachedOrDefault(app.CurrentUser.Id).Value!;
+        field ??= MembersRepository.Cache.GetCachedOrDefault(_app.CurrentUser.Id).Value!;
+
+    internal Guild(
+        FluxerApplication app,
+        ICacheRef<IUser> ownerRef
+    )
+    {
+        _app = app;
+        OwnerRef = ownerRef;
+        Owner = ownerRef.Value!;
+    }
 
     public object Clone() => MemberwiseClone();
 }

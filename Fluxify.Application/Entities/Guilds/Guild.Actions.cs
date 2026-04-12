@@ -27,7 +27,7 @@ public partial class Guild
         string name,
         Action<TextChannelProperties>? configure = null,
         CancellationToken cancellationToken = default
-    ) => app.ChannelsRepository.CreateAsync<GuildTextChannel>(Id, new TextChannelProperties
+    ) => _app.ChannelsRepository.CreateAsync<GuildTextChannel>(Id, new TextChannelProperties
     {
         Name = name
     }.Configure(configure));
@@ -35,7 +35,7 @@ public partial class Guild
     public Task<GuildVoiceChannel> CreateVoiceChannelAsync(
         string name,
         Action<VoiceChannelProperties>? configure = null
-    ) => app.ChannelsRepository.CreateAsync<GuildVoiceChannel>(Id, new VoiceChannelProperties
+    ) => _app.ChannelsRepository.CreateAsync<GuildVoiceChannel>(Id, new VoiceChannelProperties
     {
         Name = name
     }.Configure(configure));
@@ -44,7 +44,7 @@ public partial class Guild
         string name,
         string url,
         Action<LinkChannelProperties>? configure = null
-    ) => app.ChannelsRepository.CreateAsync<GuildLinkChannel>(Id, new LinkChannelProperties
+    ) => _app.ChannelsRepository.CreateAsync<GuildLinkChannel>(Id, new LinkChannelProperties
     {
         Name = name,
         Url = url
@@ -53,7 +53,7 @@ public partial class Guild
     public Task<GuildCategory> CreateCategoryAsync(
         string name,
         Action<CategoryProperties>? configure = null
-    ) => app.ChannelsRepository.CreateAsync<GuildCategory>(Id, new CategoryProperties
+    ) => _app.ChannelsRepository.CreateAsync<GuildCategory>(Id, new CategoryProperties
     {
         Name = name
     }.Configure(configure));
@@ -61,13 +61,14 @@ public partial class Guild
     public async Task<Webhook[]> GetWebhooksAsync(
         CancellationToken cancellationToken = default
     ) => (await RequestBuilder.GetWebhooksAsync(cancellationToken))
-        .Select(app.WebhookMapper.FromResponse)
-        .ToArray();
+        ?.Select(_app.WebhookMapper.FromResponse)
+        .ToArray() ?? [];
 
     public async Task<Webhook> GetWebhookAsync(
         Snowflake id,
         CancellationToken cancellationToken = default
-    ) => app.WebhookMapper.FromResponse(await app.Rest.Webhooks[id].GetAsync(cancellationToken));
+    ) => _app.WebhookMapper.FromResponse(
+        await _app.Rest.Webhooks[id].GetAsync(cancellationToken) ?? throw new Exception("Webhook was not found"));
 
     public Task<IGuildMember?> GetMemberAsync(Snowflake id)
         => MembersRepository.GetAsync(id)
@@ -103,7 +104,7 @@ public partial class Guild
         CancellationToken cancellationToken = default
     )
     {
-        var result = await app.ChannelsRepository.GetAsync(id, bypassCache);
+        var result = await _app.ChannelsRepository.GetAsync(id, bypassCache);
 
         return result.Value as IGuildChannel;
     }
@@ -115,7 +116,7 @@ public partial class Guild
         var invites = await RequestBuilder.ListInvitesAsync(cancellationToken);
 
         return invites?
-            .Select(app.InviteMapper.MapFromResponse)
+            .Select(_app.InviteMapper.MapFromResponse)
             .OfType<GuildChannelInviteMetadata>()
             .ToArray();
     }
@@ -124,5 +125,5 @@ public partial class Guild
         SudoVerificationSchema verificationSchema,
         Action<GuildProperties> update,
         CancellationToken cancellationToken = default
-    ) => app.GuildsRepository.UpdateAsync(this, verificationSchema, update, cancellationToken);
+    ) => _app.GuildsRepository.UpdateAsync(this, verificationSchema, update, cancellationToken);
 }

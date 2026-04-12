@@ -21,8 +21,8 @@ namespace Fluxify.Application.Entities.Users;
 public class PrivateUser(FluxerApplication fluxerApplication, Snowflake id) : GlobalUser(fluxerApplication, id)
 {
     public int? AccentColor { get; internal set;  }
-    public string[] Acls { get; internal set;  }
-    public AuthenticatorTypes[] AuthenticatorTypes { get; internal set;  }
+    public string[] Acls { get; internal set; } = [];
+    public AuthenticatorTypes[] AuthenticatorTypes { get; internal set;  } = [];
     public string? BannerHash { get; internal set;  }
     public Color? BannerColor { get; internal set;  }
     public string? Bio { get; internal set;}
@@ -51,7 +51,7 @@ public class PrivateUser(FluxerApplication fluxerApplication, Snowflake id) : Gl
     public bool? PremiumWillCancel { get; internal set; }
     public string? Pronouns { get; internal set; }
     public string[]? RequiredActions { get; internal set; }
-    public string[] Traits { get; internal set; }
+    public string[] Traits { get; internal set; } = [];
     public int UnreadGiftInventoryCount { get; internal set; }
     public bool UsedMobileClient { get; internal set; }
     public bool Verified { get; internal set; }

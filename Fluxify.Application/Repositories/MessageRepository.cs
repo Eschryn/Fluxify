@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Concurrent;
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Messages;
 using Fluxify.Application.State;
-using Fluxify.Application.State.Ref;
-using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Rest.Channel.Messages;
 
@@ -39,13 +36,13 @@ internal sealed class MessageRepository(
 
     private readonly MessagesRequestBuilder _messages = messages;
     private Snowflake _lastMessageId = lastMessageId ?? 0L;
-    private MessageViewOrchestrator _messageViewOrchestrator = new(fluxerApplication.MessageMapper);
-    internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(config.MessageCacheSize);
+    //private MessageViewOrchestrator _messageViewOrchestrator = new(fluxerApplication.MessageMapper);
+    //internal MessageView TailView => field ??= _messageViewOrchestrator.CreateView(config.MessageCacheSize);
 
-    internal ICache<Message> Cache { get; } = config.MessageCacheSize switch
+    internal ICache<Message, MessageResponse> Cache { get; } = config.MessageCacheSize switch
     {
-        > 0 => new OrderedCache<Message, MessageMapper>(fluxerApplication.MessageMapper, config.MessageCacheSize),
-        _ => new PassthroughCache<Message>()
+        > 0 => new OrderedCache<Message, MessageResponse, MessageMapper>(fluxerApplication.MessageMapper, config.MessageCacheSize),
+        _ => new PassthroughCache<Message, MessageResponse, MessageMapper>(fluxerApplication.MessageMapper)
     };
 
     internal CacheRef<Message> InsertNew(MessageResponse response, ICacheRef<IUser>? author = null)
@@ -55,16 +52,12 @@ internal sealed class MessageRepository(
     }
 
     internal CacheRef<Message> Insert(MessageResponse response, ICacheRef<IUser>? author = null)
-        => Cache.UpdateOrCreate(
-            fluxerApplication.MessageMapper.Map(
-                response,
-                SelfChannelRef,
-                author));
+        => Cache.UpdateOrCreate(response.Id, response);
 
     public Message Update(MessageResponse messageResponse, ICacheRef<IUser>? user)
         => Cache.IsCached(messageResponse.Id)
             ? Insert(messageResponse, user).Value!
-            : fluxerApplication.MessageMapper.Map(messageResponse, SelfChannelRef, user);
+            : fluxerApplication.MessageMapper.MapFromResponse(messageResponse);
 
     private async Task<IReadOnlyList<Message>> GetMessagesAsync(
         Snowflake? start,
@@ -80,7 +73,7 @@ internal sealed class MessageRepository(
         }
 
         if (!bypassCache
-            && Cache is OrderedCache<Message, MessageMapper> cache
+            && Cache is OrderedCache<Message, MessageResponse, MessageMapper> cache
             && cache.GetPaged(start, direction, limit) is { } page)
         {
             if (page.Count < limit)
@@ -134,14 +127,14 @@ internal sealed class MessageRepository(
         var response = await _messages
             .ListMessagesAsync(limit, before, after, null, cancellationToken);
 
-        var messages = response?.Select(m => fluxerApplication.MessageMapper.Map(m)) ?? [];
+        var messages = response?.Select(m => fluxerApplication.MessageMapper.MapFromResponse(m)) ?? [];
         return messages.ToArray().AsReadOnly();
     }
 
     public async Task<Message> GetMessageAsync(
         Snowflake id,
         CancellationToken cancellationToken = default
-    ) => await fluxerApplication.MessageMapper.MapAsync(
+    ) => fluxerApplication.MessageMapper.MapFromResponse(
         await _messages[id].GetMessageAsync(cancellationToken) ?? throw new Exception("Message was not found"));
 
     public async Task DeleteMessageAsync(Snowflake id, CancellationToken cancellationToken = default)
@@ -160,7 +153,7 @@ internal sealed class MessageRepository(
         var messages = await _messages
             .ListMessagesAsync(around: around, limit: limit, cancellationToken: cancellationToken);
 
-        return (messages?.Select(m => fluxerApplication.MessageMapper.Map(m)).ToArray() ?? []).AsReadOnly();
+        return (messages?.Select(m => fluxerApplication.MessageMapper.MapFromResponse(m)).ToArray() ?? []).AsReadOnly();
     }
 
     public IAsyncEnumerable<IReadOnlyList<Message>> GetMessagesAsync(
@@ -195,12 +188,12 @@ internal sealed class MessageRepository(
     {
         var messageEdit = fluxerApplication.MessageMapper.MapToEdit(message);
         edit(messageEdit);
-        var request = fluxerApplication.MessageMapper.Map(messageEdit);
+        var request = fluxerApplication.MessageMapper.MapToRequest(messageEdit);
         var response = await _messages[message.Id].UpdateMessageAsync(request, cancellationToken);
         return response is not null ? Update(response, null) : throw new Exception("Message could not be updated.");
     }
 }
-
+/*
 public class MessageViewOrchestrator(MessageMapper mapper)
 {
     private readonly ConcurrentDictionary<Snowflake, Message> _cache = new();
@@ -239,4 +232,4 @@ public class MessageView(long size, MessageMapper mapper, MessageViewOrchestrato
     public async Task LoadAfterAsync(int count)
     {
     }
-}
+}*/

@@ -61,7 +61,7 @@ public partial class Message
 
     public async Task ReactAsync(IEmoji emoji, CancellationToken cancellationToken = default)
         => await RequestBuilder.Reactions[GetEmojiString(emoji)]
-            .ReactAsync(application.Gateway.SessionId!, cancellationToken);
+            .ReactAsync(_application.Gateway.SessionId!, cancellationToken);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Task ReactAsync(UnicodeEmoji emoji, CancellationToken cancellationToken = default)
@@ -72,9 +72,9 @@ public partial class Message
     {
         var messageReactionRequestBuilder = RequestBuilder.Reactions[GetEmojiString(emoji)];
 
-        if (user.Id == application.CurrentUser.Id)
+        if (user.Id == _application.CurrentUser.Id)
         {
-            await messageReactionRequestBuilder.RemoveOwnReactionAsync(application.Gateway.SessionId!,
+            await messageReactionRequestBuilder.RemoveOwnReactionAsync(_application.Gateway.SessionId!,
                 cancellationToken);
         }
         else
@@ -111,9 +111,8 @@ public partial class Message
                     cancellationToken
                 );
 
-            lastId = userPartialResponses?.LastOrDefault()?.Id;
-            yield return userPartialResponses?.Select(r => application.UsersRepository.Insert(r).Value!).ToArray() ??
-                         [];
+            lastId = userPartialResponses.LastOrDefault()?.Id;
+            yield return userPartialResponses.Select(r => _application.UsersRepository.Insert(r).Value!).ToArray();
         } while (lastId != null);
     }
 
@@ -128,10 +127,10 @@ public partial class Message
         => await RequestBuilder.Reactions.RemoveAllReactionsAsync(cancellationToken);
 
     public async Task PinAsync(CancellationToken cancellationToken = default)
-        => await application.Rest.Channels[Channel.Id].Messages.Pins[Id].PinAsync(cancellationToken);
+        => await _application.Rest.Channels[Channel.Id].Messages.Pins[Id].PinAsync(cancellationToken);
 
     public async Task UnpinAsync(CancellationToken cancellationToken = default)
-        => await application.Rest.Channels[Channel.Id].Messages.Pins[Id].UnpinAsync(cancellationToken);
+        => await _application.Rest.Channels[Channel.Id].Messages.Pins[Id].UnpinAsync(cancellationToken);
 
     public async Task AckAsync(CancellationToken cancellationToken = default)
         => await RequestBuilder.AckMessageAsync(cancellationToken);

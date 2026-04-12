@@ -24,9 +24,10 @@ using Fluxify.Dto.Webhooks;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
-public class GuildTextChannel(FluxerApplication fluxerApplication, CacheRef<Guild> guildRef)
-    : GuildNestedChannel<GuildTextChannel, TextChannelProperties>(fluxerApplication, guildRef), ITextChannel, ICloneable<GuildTextChannel>
+public partial class GuildTextChannel : GuildNestedChannel<GuildTextChannel, TextChannelProperties>, ITextChannel,
+    ICloneable<GuildTextChannel>
 {
+
     internal MessageRepository MessageRepository => field ??= new MessageRepository(
         FluxerApplication,
         FluxerApplication.Rest.Channels[Id].Messages,
@@ -40,104 +41,13 @@ public class GuildTextChannel(FluxerApplication fluxerApplication, CacheRef<Guil
     public int? RateLimitPerUser { get; internal set; }
     public Snowflake? LastMessageId { get; internal set; }
     public DateTimeOffset? LastPinTimestamp { get; internal set; }
-
-    public async Task<Message?> SendMessageAsync(MessageCreate message, CancellationToken cancellationToken = default)
-        => FluxerApplication.MessageMapper.MapFromResponse(
-            await RequestBuilder.Messages.SendMessageAsync(FluxerApplication.MessageMapper.MapToRequest(message),
-                cancellationToken)
-            ?? throw new Exception("Message was not sent"));
-
-    public Task IndicateTypingAsync(CancellationToken cancellationToken = default)
-        => RequestBuilder.IndicateTypingAsync(cancellationToken);
-
-    public IAsyncEnumerable<IReadOnlyList<Message>> GetMessagesAsync(
-        Snowflake? start = null,
-        Direction direction = Direction.Before,
-        int limit = 100,
-        int limitPerPage = 50,
-        bool bypassCache = false,
-        CancellationToken cancellationToken = default
-    ) => MessageRepository.GetMessagesAsync(start, direction, limit, limitPerPage, bypassCache, cancellationToken);
-
-    public Task<IReadOnlyList<Message>> GetMessagesAroundAsync(
-        Snowflake around,
-        int limit = 100,
-        CancellationToken cancellationToken = default
-    ) => MessageRepository.GetMessagesAroundAsync(around, limit, cancellationToken);
-
-    public Task<Message> GetMessageAsync(
-        Snowflake id,
-        CancellationToken cancellationToken = default
-    ) => MessageRepository.GetMessageAsync(id, cancellationToken);
-
-    public Task DeleteMessageAsync(
-        Snowflake id,
-        CancellationToken cancellationToken = default
-    ) => MessageRepository.DeleteMessageAsync(id, cancellationToken);
     
-    public Task DeleteMessagesAsync(Snowflake[] ids, CancellationToken cancellationToken = default)
-        => RequestBuilder.Messages.BulkDeleteAsync(new BulkDeleteMessagesRequest(ids), cancellationToken);
-
-    public Task<Message> EditMessageAsync(
-        Message message,
-        Action<MessageEdit> edit,
-        CancellationToken cancellationToken = default
-    ) => MessageRepository.EditMessageAsync(message, edit, cancellationToken);
-
-    public IAsyncEnumerable<IReadOnlyList<Message>> GetPinnedMessagesAsync(
-        int limit = 100,
-        int limitPerPage = 25,
-        DateTimeOffset? before = null,
-        CancellationToken cancellationToken = default
-    ) => RequestBuilder.Messages.GetPinnedMessagesAsync(
-        FluxerApplication.MessageMapper,
-        limit,
-        limitPerPage,
-        before,
-        cancellationToken
-    );
-
-    public Task AckPinnedMessagesAsync(CancellationToken cancellationToken = default)
-        => RequestBuilder.Messages.Pins.AcknowledgeAsync(cancellationToken);
-
-    public Task MarkUnreadAsync(CancellationToken cancellationToken = default)
-        => RequestBuilder.Messages.MarkUnreadAsync(cancellationToken);
-
-    public Task BulkDeleteMessagesAsync(Snowflake[] ids, CancellationToken cancellationToken = default)
-        => RequestBuilder.Messages.BulkDeleteAsync(new BulkDeleteMessagesRequest(ids), cancellationToken);
-
-    public Task ScheduleMessageAsync(
-        MessageCreate message,
-        DateTimeOffset scheduledTime,
-        CancellationToken cancellationToken = default
-    ) => RequestBuilder.Messages.ScheduleMessageAsync(
-        FluxerApplication.MessageMapper.MapToRequest(
-            message,
-            scheduledTime.LocalDateTime,
-            TimeZoneInfo.Local.StandardName
-        ),
-        cancellationToken
-    );
-
-    public async Task<Webhook> CreateWebhookAsync(
-        string name,
-        Base64Image? avatar = null,
-        CancellationToken cancellationToken = default
-    ) => FluxerApplication.WebhookMapper.FromResponse(
-        await RequestBuilder.CreateWebhookAsync(
-            new WebhookCreateRequest(avatar, name),
-            cancellationToken
-        )
-    );
-
-    public async Task<Webhook> GetWebhookAsync(Snowflake id, CancellationToken cancellationToken = default)
-        => FluxerApplication.WebhookMapper.FromResponse(
-            await FluxerApplication.Rest.Webhooks[id].GetAsync(cancellationToken));
-
-    public async Task<Webhook[]> GetWebhooksAsync()
-        => (await RequestBuilder.GetWebhooksAsync())!
-            .Select(FluxerApplication.WebhookMapper.FromResponse)
-            .ToArray();
+    internal GuildTextChannel(
+        FluxerApplication fluxerApplication,
+        CacheRef<Guild> guildRef
+    ) : base(fluxerApplication, guildRef)
+    {
+    }
 
     public object Clone() => MemberwiseClone();
 }
