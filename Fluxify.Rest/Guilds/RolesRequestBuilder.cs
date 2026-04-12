@@ -28,65 +28,65 @@ public class RolesRequestBuilder(HttpClient client, Snowflake guildId)
     private static string Uri(CompositeFormat format, Snowflake guildId) =>
         string.Format(FormatProvider, format, guildId);
 
-    public async Task<GuildRoleResponse[]?> ListAsync(CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<GuildRoleResponse[]>(
+    public Task<GuildRoleResponse[]> ListAsync(CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<GuildRoleResponse[]>(
             HttpMethod.Get,
             Uri(RolesUrl, guildId),
             cancellationToken: cancellationToken
         );
 
-    public async Task<GuildRoleResponse?> CreateAsync(
+    public Task<GuildRoleResponse> CreateAsync(
         GuildRoleCreateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildRoleCreateRequest, GuildRoleResponse>(
+    ) => client.JsonRequestAsync<GuildRoleCreateRequest, GuildRoleResponse>(
         HttpMethod.Post,
         Uri(RolesUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task UpdatePositionAsync(
+    public Task UpdatePositionAsync(
         GuildRolePositionItem request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Patch,
         Uri(RolesUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task ResetHoistPositionAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task ResetHoistPositionAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Delete,
             Uri(RolesHoistUrl, guildId),
             cancellationToken: cancellationToken
         );
 
-    public async Task UpdateHoistPosition(
+    public Task UpdateHoistPosition(
         GuildRoleHoistPositionItem request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Patch,
         Uri(RolesHoistUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildRoleResponse?> UpdateAsync(
+    public Task<GuildRoleResponse> UpdateAsync(
         Snowflake roleId,
         GuildRoleUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildRoleUpdateRequest, GuildRoleResponse>(
+    ) => client.JsonRequestAsync<GuildRoleUpdateRequest, GuildRoleResponse>(
         HttpMethod.Patch,
         Uri(RolesUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task DeleteAsync(
+    public Task DeleteAsync(
         Snowflake roleId,
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, RolesUrl, guildId, roleId),
         cancellationToken: cancellationToken

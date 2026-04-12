@@ -28,8 +28,8 @@ public class PinsRequestBuilder(HttpClient client, Snowflake channelId)
     
     public PinRequestBuilder this[Snowflake messageId] => new(client, channelId, messageId);
 
-    public async Task<ChannelPinsResponse?> ListPinsAsync(int? limit = null, DateTimeOffset? before = null, CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<ChannelPinsResponse>(
+    public Task<ChannelPinsResponse> ListPinsAsync(int? limit = null, DateTimeOffset? before = null, CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<ChannelPinsResponse>(
             HttpMethod.Get,
             Uri(GetUrl, channelId) + new QueryBuilder()
                 .AddQuery("limit", limit?.ToString())
@@ -37,8 +37,8 @@ public class PinsRequestBuilder(HttpClient client, Snowflake channelId)
             cancellationToken: cancellationToken
         );
     
-    public async Task AcknowledgeAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task AcknowledgeAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Post,
             Uri(AckUrl, channelId),
             cancellationToken: cancellationToken

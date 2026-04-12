@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -66,7 +65,10 @@ public class RestClient
     public InvitesRequestBuilder Invites { get; }
     public PacksRequestBuilder Packs { get; }
     public WebhooksRequestBuilder Webhooks { get; }
-    
-    public Task<WellKnownFluxerResponse?> GetWellKnownAsync() 
-        => _httpClient.GetFromJsonAsync<WellKnownFluxerResponse>("/.well-known/fluxer", DefaultJsonOptions);
+
+    public Task<WellKnownFluxerResponse> GetWellKnownAsync()
+        => _httpClient.JsonRequestAsync<WellKnownFluxerResponse>(
+            HttpMethod.Get,
+            "/.well-known/fluxer"
+        );
 }

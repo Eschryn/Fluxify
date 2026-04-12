@@ -23,24 +23,24 @@ public class SudoRequestBuilder(HttpClient client)
     private const string SmsSendUrl = "users/@me/sudo/sms/send";
     private const string WebAuthnOptionsUrl = "users/@me/sudo/webauthn/authentication-options";
     
-    public async Task<SudoMfaMethodsResponse?> GetMfaMethodsAsync(CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<SudoMfaMethodsResponse>(
+    public Task<SudoMfaMethodsResponse> GetMfaMethodsAsync(CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<SudoMfaMethodsResponse>(
             HttpMethod.Get,
             MfaMethodsUrl,
             cancellationToken: cancellationToken
         );
     
-    public async Task SendSmsCodeAsync(
+    public Task SendSmsCodeAsync(
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Post,
         SmsSendUrl,
         cancellationToken: cancellationToken
     );
     
-    public async Task<WebAuthnChallengeResponse?> GetWebAuthnOptionsAsync(
+    public Task<WebAuthnChallengeResponse> GetWebAuthnOptionsAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<WebAuthnChallengeResponse>(
+    ) => client.JsonRequestAsync<WebAuthnChallengeResponse>(
         HttpMethod.Post,
         WebAuthnOptionsUrl,
         cancellationToken: cancellationToken

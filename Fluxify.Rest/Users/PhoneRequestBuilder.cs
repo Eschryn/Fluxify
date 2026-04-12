@@ -23,40 +23,40 @@ public class PhoneRequestBuilder(HttpClient client)
     private const string SendVerificationUrl = "users/@me/phone/send-verification";
     private const string VerifyUrl = "users/@me/phone/verify";
     
-    public async Task AddPhoneNumberAsync(
+    public Task AddPhoneNumberAsync(
         PhoneAddRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         PhoneUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task DeletePhoneNumberAsync(
+    public Task DeletePhoneNumberAsync(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Delete,
         PhoneUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task SendVerificationAsync(
+    public Task SendVerificationAsync(
         PhoneSendVerificationRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         SendVerificationUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<PhoneVerifyResponse?> VerifyAsync(
+    public Task<PhoneVerifyResponse> VerifyAsync(
         PhoneVerifyRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<PhoneVerifyRequest, PhoneVerifyResponse>(
+    ) => client.JsonRequestAsync<PhoneVerifyRequest, PhoneVerifyResponse>(
         HttpMethod.Post,
         VerifyUrl,
         request,

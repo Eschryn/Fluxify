@@ -23,28 +23,28 @@ public class ApplicationsRequestBuilder(HttpClient httpClient)
     private const string UserApplicationsUrl = "oauth2/applications/@me";
     public ApplicationRequestBuilder this[string applicationId] => new(httpClient, applicationId);
     
-    public async Task<ApplicationResponse?> CreateApplicationAsync(
+    public Task<ApplicationResponse> CreateApplicationAsync(
         ApplicationCreateRequest request,
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<ApplicationCreateRequest, ApplicationResponse>(
+    ) => httpClient.JsonRequestAsync<ApplicationCreateRequest, ApplicationResponse>(
         HttpMethod.Post,
         ApplicationsCreateUrl,
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<ApplicationsMeResponse[]?> ListUserApplicationsAsync(
+    public Task<ApplicationsMeResponse[]> ListUserApplicationsAsync(
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<ApplicationsMeResponse[]>(
+    ) => httpClient.JsonRequestAsync<ApplicationsMeResponse[]>(
         HttpMethod.Get,
         UserApplicationsUrl,
         cancellationToken: cancellationToken
     );
     
     
-    public async Task<OAuth2MeResponseApplication[]?> ListApplicationsAsync(
+    public Task<OAuth2MeResponseApplication[]> ListApplicationsAsync(
         CancellationToken cancellationToken = default)
-        => await httpClient.JsonRequestAsync<OAuth2MeResponseApplication[]>(
+        => httpClient.JsonRequestAsync<OAuth2MeResponseApplication[]>(
             HttpMethod.Get,
             ApplicationsUrl,
             cancellationToken: cancellationToken

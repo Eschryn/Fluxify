@@ -32,100 +32,100 @@ public class MfaRequestBuilder(HttpClient client)
     private const string WebAuthnCredentialsRegistrationOptionsUrl = "users/@me/mfa/webauthn/credentials/registration-options";
     private static readonly CompositeFormat WebAuthnCredentialUrl = CompositeFormat.Parse("users/@me/mfa/webauthn/credentials/{0}");
     
-    public async Task<MfaBackupCodesResponse?> GetBackupCodes(
+    public Task<MfaBackupCodesResponse> GetBackupCodes(
         MfaBackupCodesRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<MfaBackupCodesRequest, MfaBackupCodesResponse>(
+    ) => client.JsonRequestAsync<MfaBackupCodesRequest, MfaBackupCodesResponse>(
         HttpMethod.Post,
         BackupCodesUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task DisableSmsAsync(
+    public Task DisableSmsAsync(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         SmsDisableUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task EnableSmsAsync(
+    public Task EnableSmsAsync(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         SmsEnableUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task DisableTotpAsync(
+    public Task DisableTotpAsync(
         DisableTotpRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         TotpDisableUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<MfaBackupCodesResponse?> EnableTotpAsync(
+    public Task<MfaBackupCodesResponse> EnableTotpAsync(
         EnableMfaTotpRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EnableMfaTotpRequest, MfaBackupCodesResponse>(
+    ) => client.JsonRequestAsync<EnableMfaTotpRequest, MfaBackupCodesResponse>(
         HttpMethod.Post,
         TotpEnableUrl,
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<WebAuthnCredentialsResponse?> ListWebAuthnCredentialsAsync(
+    public Task<WebAuthnCredentialsResponse> ListWebAuthnCredentialsAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<WebAuthnCredentialsResponse>(
+    ) => client.JsonRequestAsync<WebAuthnCredentialsResponse>(
         HttpMethod.Get,
         WebAuthnCredentialsUrl,
         cancellationToken: cancellationToken
     );
 
-    public async Task RegisterWebAuthnCredentialAsync(
+    public Task RegisterWebAuthnCredentialAsync(
         WebAuthnRegisterRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         WebAuthnCredentialsUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<WebAuthnChallengeResponse?> GetWebAuthnRegistrationOptionsAsync(
+    public Task<WebAuthnChallengeResponse> GetWebAuthnRegistrationOptionsAsync(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<SudoVerificationSchema, WebAuthnChallengeResponse>(
+    ) => client.JsonRequestAsync<SudoVerificationSchema, WebAuthnChallengeResponse>(
         HttpMethod.Post,
         WebAuthnCredentialsRegistrationOptionsUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task DeleteWebAuthnCredentialAsync(
+    public Task DeleteWebAuthnCredentialAsync(
         string credentialId,
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, WebAuthnCredentialUrl, credentialId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task UpdateWebAuthnCredentialAsync(
+    public Task UpdateWebAuthnCredentialAsync(
         string credentialId,
         WebAuthnCredentialUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Patch,
         string.Format(FormatProvider, WebAuthnCredentialUrl, credentialId),
         request,

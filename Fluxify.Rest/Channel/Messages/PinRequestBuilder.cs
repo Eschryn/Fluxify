@@ -26,15 +26,15 @@ public class PinRequestBuilder(HttpClient client, Snowflake channelId, Snowflake
     private static string Uri(CompositeFormat format, Snowflake channelId, Snowflake messageId)
         => string.Format(FormatProvider, format, channelId, messageId);
 
-    public async Task PinAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task PinAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Put, 
             Uri(GetUrl, channelId, messageId),
             cancellationToken: cancellationToken
         );
 
-    public async Task UnpinAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task UnpinAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Delete, 
             Uri(GetUrl, channelId, messageId),
             cancellationToken: cancellationToken

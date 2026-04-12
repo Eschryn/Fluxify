@@ -26,50 +26,50 @@ public class StickersRequestBuilder(HttpClient client, Snowflake guildId)
     private static readonly CompositeFormat StickersBulkUrl = CompositeFormat.Parse("guilds/{0}/stickers/bulk");
     private static readonly CompositeFormat StickerUrl = CompositeFormat.Parse("guilds/{0}/stickers/{1}");
     
-    public async Task<GuildStickerResponse[]?> ListAsync(
+    public Task<GuildStickerResponse[]> ListAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildStickerResponse[]>(
+    ) => client.JsonRequestAsync<GuildStickerResponse[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, StickersUrl, guildId),
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildStickerResponse?> CreateAsync(
+    public Task<GuildStickerResponse> CreateAsync(
         GuildStickerCreateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildStickerCreateRequest, GuildStickerResponse>(
+    ) => client.JsonRequestAsync<GuildStickerCreateRequest, GuildStickerResponse>(
         HttpMethod.Post,
         string.Format(FormatProvider, StickersUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildStickerCreateBulkResponse?> CreateBulkAsync(
+    public Task<GuildStickerCreateBulkResponse> CreateBulkAsync(
         GuildStickerBulkCreateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildStickerBulkCreateRequest, GuildStickerCreateBulkResponse>(
+    ) => client.JsonRequestAsync<GuildStickerBulkCreateRequest, GuildStickerCreateBulkResponse>(
         HttpMethod.Post,
         string.Format(FormatProvider, StickersBulkUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task DeleteAsync(
+    public Task DeleteAsync(
         Snowflake stickerId,
         bool? purge = null,
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, StickerUrl, guildId, stickerId) + new QueryBuilder()
             .AddQuery("purge", purge?.ToString().ToLowerInvariant()),
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildStickerResponse?> UpdateAsync(
+    public Task<GuildStickerResponse> UpdateAsync(
         Snowflake stickerId,
         GuildStickerUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildStickerUpdateRequest, GuildStickerResponse>(
+    ) => client.JsonRequestAsync<GuildStickerUpdateRequest, GuildStickerResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, StickerUrl, guildId, stickerId),
         request,

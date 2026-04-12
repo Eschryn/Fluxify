@@ -28,7 +28,7 @@ internal static class HttpClientExtensions
 
     extension(HttpClient client)
     {
-        public async Task<TResult?> MultipartJsonRequestAsync<TRequest, TResult>(
+        public async Task<TResult> MultipartJsonRequestAsync<TRequest, TResult>(
             HttpMethod method,
             string url,
             TRequest request,
@@ -42,11 +42,15 @@ internal static class HttpClientExtensions
                     cancellationToken: cancellationToken);
             }
 
-            using var httpResponseMessage = await client.MultipartJsonRequestImpl(method, url, request, cancellationToken);
-            
+            using var httpResponseMessage =
+                await client.MultipartJsonRequestImpl(method, url, request, cancellationToken);
+
             return await httpResponseMessage
                 .Content
-                .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: RestClient.DefaultJsonOptions);
+                .ReadFromJsonAsync<TResult>(
+                    cancellationToken: cancellationToken,
+                    options: RestClient.DefaultJsonOptions
+                ) ?? throw new ApiNullException();
         }
 
         public async Task MultipartJsonRequestAsync<TRequest>(
@@ -57,13 +61,14 @@ internal static class HttpClientExtensions
             where TRequest : MultipartDto
         {
             if (request.Files is not { Length: > 0 })
-            { 
+            {
                 await client.JsonRequestAsync(method, url, request, reason: null, cancellationToken: cancellationToken);
-                
+
                 return;
             }
 
-            using var httpResponseMessage = await client.MultipartJsonRequestImpl(method, url, request, cancellationToken);
+            using var httpResponseMessage =
+                await client.MultipartJsonRequestImpl(method, url, request, cancellationToken);
         }
 
         private async Task<HttpResponseMessage> MultipartJsonRequestImpl<TRequest>(
@@ -71,7 +76,7 @@ internal static class HttpClientExtensions
             string url,
             TRequest request,
             CancellationToken cancellationToken
-        ) where TRequest : MultipartDto 
+        ) where TRequest : MultipartDto
         {
             HttpResponseMessage? httpResponseMessage = null;
             try
@@ -85,7 +90,7 @@ internal static class HttpClientExtensions
 
                 content.Add(jsonContent);
 
-                foreach (var attachment in request.Files)
+                foreach (var attachment in request.Files ?? throw new InvalidOperationException())
                 {
                     var partContent = attachment switch
                     {
@@ -98,7 +103,7 @@ internal static class HttpClientExtensions
                         Name = string.Format(CultureInfo.InvariantCulture, FileFormat, attachment.SendId),
                         FileName = attachment.FileName
                     };
-                    
+
                     if (attachment.ContentType is not null)
                     {
                         partContent.Headers.ContentType = new MediaTypeHeaderValue(attachment.ContentType);
@@ -109,7 +114,7 @@ internal static class HttpClientExtensions
 
                 using var httpRequestMessage = new HttpRequestMessage(method, url);
                 httpRequestMessage.Content = content;
-            
+
                 httpResponseMessage = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken);
                 return httpResponseMessage;
             }
@@ -120,7 +125,7 @@ internal static class HttpClientExtensions
             }
         }
 
-        public async Task<TResult?> JsonRequestAsync<TRequest, TResult>(
+        public async Task<TResult> JsonRequestAsync<TRequest, TResult>(
             HttpMethod method,
             string url,
             TRequest request,
@@ -136,7 +141,10 @@ internal static class HttpClientExtensions
             using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
             return await response
                 .Content
-                .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: RestClient.DefaultJsonOptions);
+                .ReadFromJsonAsync<TResult>(
+                    cancellationToken: cancellationToken,
+                    options: RestClient.DefaultJsonOptions
+                ) ?? throw new ApiNullException();
         }
 
         public async Task JsonRequestAsync<TRequest>(
@@ -154,7 +162,7 @@ internal static class HttpClientExtensions
             using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
         }
 
-        public async Task<TResult?> JsonRequestAsync<TResult>(
+        public async Task<TResult> JsonRequestAsync<TResult>(
             HttpMethod method,
             string url,
             string? reason = null,
@@ -164,11 +172,15 @@ internal static class HttpClientExtensions
         {
             using var httpRequestMessage = new HttpRequestMessage(method, url);
             using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
+            
             return await response
                 .Content
-                .ReadFromJsonAsync<TResult>(cancellationToken: cancellationToken, options: RestClient.DefaultJsonOptions);
+                .ReadFromJsonAsync<TResult>(
+                    cancellationToken: cancellationToken,
+                    options: RestClient.DefaultJsonOptions
+                ) ?? throw new ApiNullException();
         }
-        
+
         public async Task RequestAsync(
             HttpMethod method,
             string url,

@@ -27,35 +27,35 @@ public class HarvestRequestBuilder(HttpClient client)
     private static readonly CompositeFormat HarvestIdUrl = CompositeFormat.Parse("users/@me/harvest/{0}");
     private static readonly CompositeFormat HarvestIdDownloadUrl = CompositeFormat.Parse("users/@me/harvest/{0}/download");
     
-    public async Task<HarvestCreationResponseSchema?> RequestAsync(
+    public Task<HarvestCreationResponseSchema> RequestAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<HarvestCreationResponseSchema>(
+    ) => client.JsonRequestAsync<HarvestCreationResponseSchema>(
         HttpMethod.Post,
         HarvestUrl,
         cancellationToken: cancellationToken
     );
     
-    public async Task<HarvestStatusResponseSchema?> GetLatestAsync(
+    public Task<HarvestStatusResponseSchema> GetLatestAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<HarvestStatusResponseSchema>(
+    ) => client.JsonRequestAsync<HarvestStatusResponseSchema>(
         HttpMethod.Get,
         LatestUrl,
         cancellationToken: cancellationToken
     );
     
-    public async Task<HarvestStatusResponseSchema?> GetAsync(
+    public Task<HarvestStatusResponseSchema> GetAsync(
         Snowflake harvestId,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<HarvestStatusResponseSchema>(
+    ) => client.JsonRequestAsync<HarvestStatusResponseSchema>(
         HttpMethod.Get,
         string.Format(FormatProvider, HarvestIdUrl, harvestId),
         cancellationToken: cancellationToken
     );
     
-    public async Task<HarvestDownloadUrlResponse?> GetDownloadAsync(
+    public Task<HarvestDownloadUrlResponse> GetDownloadAsync(
         Snowflake harvestId,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<HarvestDownloadUrlResponse>(
+    ) => client.JsonRequestAsync<HarvestDownloadUrlResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, HarvestIdDownloadUrl, harvestId),
         cancellationToken: cancellationToken

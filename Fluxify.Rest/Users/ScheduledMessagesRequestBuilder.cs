@@ -25,37 +25,37 @@ public class ScheduledMessagesRequestBuilder(HttpClient client)
     private const string ScheduledMessagesUrl = "users/@me/scheduled-messages";
     private static readonly CompositeFormat ScheduledMessageUrl = CompositeFormat.Parse("users/@me/scheduled-messages/{0}");
     
-    public async Task<ScheduleMessageResponseSchema[]?> ListScheduledMessagesAsync(
+    public Task<ScheduleMessageResponseSchema[]> ListScheduledMessagesAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<ScheduleMessageResponseSchema[]>(
+    ) => client.JsonRequestAsync<ScheduleMessageResponseSchema[]>(
         HttpMethod.Get,
         ScheduledMessagesUrl,
         cancellationToken: cancellationToken
     );
     
-    public async Task<ScheduleMessageResponseSchema?> GetScheduledMessageAsync(
+    public Task<ScheduleMessageResponseSchema> GetScheduledMessageAsync(
         Snowflake messageId,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<ScheduleMessageResponseSchema>(
+    ) => client.JsonRequestAsync<ScheduleMessageResponseSchema>(
         HttpMethod.Get,
         string.Format(FormatProvider, ScheduledMessageUrl, messageId),
         cancellationToken: cancellationToken
     );
     
-    public async Task DeleteScheduledMessageAsync(
+    public Task DeleteScheduledMessageAsync(
         Snowflake messageId,
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, ScheduledMessageUrl, messageId),
         cancellationToken: cancellationToken
     );
     
-    public async Task<ScheduleMessageResponseSchema?> UpdateScheduledMessageAsync(
+    public Task<ScheduleMessageResponseSchema> UpdateScheduledMessageAsync(
         Snowflake scheduledMessageId,
         ScheduledMessageSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.MultipartJsonRequestAsync<ScheduledMessageSchema, ScheduleMessageResponseSchema>(
+    ) => client.MultipartJsonRequestAsync<ScheduledMessageSchema, ScheduleMessageResponseSchema>(
         HttpMethod.Patch,
         string.Format(FormatProvider, ScheduledMessageUrl, scheduledMessageId),
         request,

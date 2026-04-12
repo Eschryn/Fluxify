@@ -23,38 +23,38 @@ public class PasswordChangeRequestBuilder(HttpClient client)
     private const string StartUrl = "users/@me/password-change/start";
     private const string VerifyUrl = "users/@me/password-change/verify";
     
-    public async Task CompleteAsync(
+    public Task CompleteAsync(
         PasswordChangeCompleteRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         CompleteUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task ResendAsync(
+    public Task ResendAsync(
         PasswordChangeTicketRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         ResendUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<PasswordChangeStartResponse?> StartAsync(
+    public Task<PasswordChangeStartResponse> StartAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<PasswordChangeStartResponse>(
+    ) => client.JsonRequestAsync<PasswordChangeStartResponse>(
         HttpMethod.Post,
         StartUrl,
         cancellationToken: cancellationToken
     );
 
-    public async Task<PasswordChangeVerifyResponse?> VerifyAsync(
+    public Task<PasswordChangeVerifyResponse> VerifyAsync(
         PasswordChangeVerifyRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<PasswordChangeVerifyRequest, PasswordChangeVerifyResponse>(
+    ) => client.JsonRequestAsync<PasswordChangeVerifyRequest, PasswordChangeVerifyResponse>(
         HttpMethod.Post,
         VerifyUrl,
         request,

@@ -34,22 +34,22 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
 
     public PinsRequestBuilder Pins { get; } = new(client, channelId);
 
-    public async Task<MessageResponse?> SendMessageAsync(CreateMessageRequest createRequest,
+    public Task<MessageResponse> SendMessageAsync(CreateMessageRequest createRequest,
         CancellationToken cancellationToken = default)
-        => await client.MultipartJsonRequestAsync<CreateMessageRequest, MessageResponse>(
+        => client.MultipartJsonRequestAsync<CreateMessageRequest, MessageResponse>(
             HttpMethod.Post,
             Uri(GetUrl, channelId),
             createRequest,
             cancellationToken: cancellationToken
         );
 
-    public async Task<MessageResponse[]?> ListMessagesAsync(
+    public Task<MessageResponse[]> ListMessagesAsync(
         int? limit = null,
         Snowflake? before = null,
         Snowflake? after = null,
         Snowflake? around = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<MessageResponse[]>(
+    ) => client.JsonRequestAsync<MessageResponse[]>(
         HttpMethod.Get,
         Uri(GetUrl, channelId) + new QueryBuilder()
             .AddQuery("limit", limit?.ToString(FormatProvider))
@@ -59,24 +59,24 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
         cancellationToken: cancellationToken
     );
 
-    public async Task MarkUnreadAsync(
+    public Task MarkUnreadAsync(
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(HttpMethod.Delete, Uri(AckUrl, channelId), cancellationToken: cancellationToken);
+    ) => client.RequestAsync(HttpMethod.Delete, Uri(AckUrl, channelId), cancellationToken: cancellationToken);
 
-    public async Task BulkDeleteAsync(
+    public Task BulkDeleteAsync(
         BulkDeleteMessagesRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         Uri(BulkDeleteUrl, channelId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<ScheduleMessageResponseSchema?> ScheduleMessageAsync(
+    public Task<ScheduleMessageResponseSchema> ScheduleMessageAsync(
         ScheduledMessageSchema request,
         CancellationToken cancellationToken = default
-    ) => await client.MultipartJsonRequestAsync<ScheduledMessageSchema, ScheduleMessageResponseSchema>(
+    ) => client.MultipartJsonRequestAsync<ScheduledMessageSchema, ScheduleMessageResponseSchema>(
         HttpMethod.Post,
         Uri(ScheduleUrl, channelId),
         request,

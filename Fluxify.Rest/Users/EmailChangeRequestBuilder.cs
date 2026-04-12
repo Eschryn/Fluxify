@@ -29,88 +29,88 @@ public class EmailChangeRequestBuilder(HttpClient client)
     private const string VerifyNewUrl = "users/@me/email-change/verify-new";
     private const string VerifyOriginalUrl = "users/@me/email-change/verify-original";
     
-    public async Task<EmailChangeRequestNewResponse?> BouncedRequestNewAsync(
+    public Task<EmailChangeRequestNewResponse> BouncedRequestNewAsync(
         EmailChangeBouncedRequestNewRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EmailChangeBouncedRequestNewRequest, EmailChangeRequestNewResponse>(
+    ) => client.JsonRequestAsync<EmailChangeBouncedRequestNewRequest, EmailChangeRequestNewResponse>(
         HttpMethod.Post,
         BouncedRequestNewUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task BouncedResendNewAsync(
+    public Task BouncedResendNewAsync(
         EmailChangeTicketRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         BouncedResendNewUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<UserPrivateReponse?> BouncedVerifyNewAsync(
+    public Task<UserPrivateReponse> BouncedVerifyNewAsync(
         EmailChangeBouncedRequestVerifyNewRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EmailChangeBouncedRequestVerifyNewRequest, UserPrivateReponse>(
+    ) => client.JsonRequestAsync<EmailChangeBouncedRequestVerifyNewRequest, UserPrivateReponse>(
         HttpMethod.Post,
         BouncedVerifyNewUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<EmailChangeRequestNewResponse?> RequestNewAsync(
+    public Task<EmailChangeRequestNewResponse> RequestNewAsync(
         EmailChangeRequestNewRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EmailChangeRequestNewRequest, EmailChangeRequestNewResponse>(
+    ) => client.JsonRequestAsync<EmailChangeRequestNewRequest, EmailChangeRequestNewResponse>(
         HttpMethod.Post,
         RequestNewUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task ResendNewAsync(
+    public Task ResendNewAsync(
         EmailChangeTicketRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         ResendNewUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task ResendOriginalAsync(
+    public Task ResendOriginalAsync(
         EmailChangeTicketRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         ResendOriginalUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<EmailChangeStartResponse?> StartAsync(
+    public Task<EmailChangeStartResponse> StartAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EmailChangeStartResponse>(
+    ) => client.JsonRequestAsync<EmailChangeStartResponse>(
         HttpMethod.Post,
         StartUrl,
         cancellationToken: cancellationToken
     );
 
-    public async Task<EmailTokenResponse?> VerifyNewAsync(
+    public Task<EmailTokenResponse> VerifyNewAsync(
         EmailChangeVerifyNewRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EmailChangeVerifyNewRequest, EmailTokenResponse>(
+    ) => client.JsonRequestAsync<EmailChangeVerifyNewRequest, EmailTokenResponse>(
         HttpMethod.Post,
         VerifyNewUrl,
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<EmailChangeVerifyOriginalResponse?> VerifyOriginalAsync(
+    public Task<EmailChangeVerifyOriginalResponse> VerifyOriginalAsync(
         EmailChangeVerifyOriginalRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<EmailChangeVerifyOriginalRequest, EmailChangeVerifyOriginalResponse>(
+    ) => client.JsonRequestAsync<EmailChangeVerifyOriginalRequest, EmailChangeVerifyOriginalResponse>(
         HttpMethod.Post,
         VerifyOriginalUrl,
         request,

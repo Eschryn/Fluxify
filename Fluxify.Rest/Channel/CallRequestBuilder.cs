@@ -28,37 +28,37 @@ public class CallRequestBuilder(HttpClient client, Snowflake id)
     private static readonly CompositeFormat StopRingCallUrl = CompositeFormat.Parse("channels/{0}/call/stop-ringing");
     private static string Uri(CompositeFormat format, Snowflake id) => string.Format(FormatProvider, format, id);
 
-    public async Task<CallEligibilityResponse?> GetEligibilityAsync(CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<CallEligibilityResponse>(
+    public Task<CallEligibilityResponse> GetEligibilityAsync(CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<CallEligibilityResponse>(
             HttpMethod.Get,
             Uri(CallUrl, id), 
             cancellationToken: cancellationToken
         );
     
-    public async Task UpdateRegionAsync(UpdateCallRegionRequest request, CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<UpdateCallRegionRequest>(
+    public Task UpdateRegionAsync(UpdateCallRegionRequest request, CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<UpdateCallRegionRequest>(
             HttpMethod.Patch,
             Uri(CallUrl, id), 
             cancellationToken: cancellationToken
         );
     
-    public async Task EndCallAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task EndCallAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Post,
             Uri(EndCallUrl, id), 
             cancellationToken: cancellationToken
         );
     
-    public async Task RingAsync(RingRequest request, CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync(
+    public Task RingAsync(RingRequest request, CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync(
             HttpMethod.Post,
             Uri(RingCallUrl, id),
             request, 
             cancellationToken: cancellationToken
         );
     
-    public async Task StopRingingAsync(RingRequest request, CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync(
+    public Task StopRingingAsync(RingRequest request, CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync(
             HttpMethod.Post,
             Uri(StopRingCallUrl, id),
             request, 

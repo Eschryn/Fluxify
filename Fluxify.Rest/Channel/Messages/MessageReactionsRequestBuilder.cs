@@ -27,8 +27,8 @@ public class MessageReactionsRequestBuilder(HttpClient client, Snowflake channel
     
     public MessageReactionRequestBuilder this[string emoji] => new(client, channelId, messageId, emoji);
     
-    public async Task RemoveAllReactionsAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task RemoveAllReactionsAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Delete,
             Uri(GetUrl, channelId, messageId),
             cancellationToken: cancellationToken

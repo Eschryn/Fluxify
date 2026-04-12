@@ -27,64 +27,64 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
     private static readonly CompositeFormat ResetSecretUrl = CompositeFormat.Parse("oauth2/applications/{0}/client-secret/reset");
     private static readonly CompositeFormat PublicApplicationUrl = CompositeFormat.Parse("oauth2/applications/{0}/public");
 
-    public async Task<ApplicationResponse?> GetApplicationAsync(
+    public Task<ApplicationResponse> GetApplicationAsync(
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<ApplicationResponse>(HttpMethod.Get,
+    ) => httpClient.JsonRequestAsync<ApplicationResponse>(HttpMethod.Get,
         string.Format(CultureInfo.InvariantCulture, ApplicationUrl, applicationId),
         cancellationToken: cancellationToken
     );
 
-    public async Task DeleteApplication(
+    public Task DeleteApplication(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync(HttpMethod.Delete,
+    ) => httpClient.JsonRequestAsync(HttpMethod.Delete,
         string.Format(CultureInfo.InvariantCulture, ApplicationUrl, applicationId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<ApplicationResponse?> UpdateApplication(
+    public Task<ApplicationResponse> UpdateApplication(
         ApplicationUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<ApplicationUpdateRequest, ApplicationResponse>(HttpMethod.Patch,
+    ) => httpClient.JsonRequestAsync<ApplicationUpdateRequest, ApplicationResponse>(HttpMethod.Patch,
         string.Format(CultureInfo.InvariantCulture, ApplicationUrl, applicationId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<BotProfileResponse?> UpdateBotAsync(
+    public Task<BotProfileResponse> UpdateBotAsync(
         BotProfileUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<BotProfileUpdateRequest, BotProfileResponse>(
+    ) => httpClient.JsonRequestAsync<BotProfileUpdateRequest, BotProfileResponse>(
         HttpMethod.Patch,
         string.Format(CultureInfo.InvariantCulture, BotUrl, applicationId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<BotTokenResetResponse?> ResetBotTokenAsync(
+    public Task<BotTokenResetResponse> ResetBotTokenAsync(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<SudoVerificationSchema, BotTokenResetResponse>(
+    ) => httpClient.JsonRequestAsync<SudoVerificationSchema, BotTokenResetResponse>(
         HttpMethod.Post,
         string.Format(CultureInfo.InvariantCulture, ResetTokenUrl, applicationId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<ApplicationResponse?> ResetClientSecretAsync(
+    public Task<ApplicationResponse> ResetClientSecretAsync(
         SudoVerificationSchema request,
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<SudoVerificationSchema, ApplicationResponse>(
+    ) => httpClient.JsonRequestAsync<SudoVerificationSchema, ApplicationResponse>(
         HttpMethod.Post,
         string.Format(CultureInfo.InvariantCulture, ResetSecretUrl, applicationId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<ApplicationPublicResponse?> GetPublicApplicationAsync(
+    public Task<ApplicationPublicResponse> GetPublicApplicationAsync(
         CancellationToken cancellationToken = default
-    ) => await httpClient.JsonRequestAsync<ApplicationPublicResponse>(
+    ) => httpClient.JsonRequestAsync<ApplicationPublicResponse>(
         HttpMethod.Get,
         string.Format(CultureInfo.InvariantCulture, PublicApplicationUrl, applicationId),
         cancellationToken: cancellationToken

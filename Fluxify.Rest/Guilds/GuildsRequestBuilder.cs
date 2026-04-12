@@ -24,11 +24,11 @@ public class GuildsRequestBuilder(HttpClient client)
     
     public GuildRequestBuilder this[Snowflake id] => new(client, id); 
     
-    public async Task<GuildResponse?> CreateAsync(
+    public Task<GuildResponse> CreateAsync(
         GuildCreateRequest guildCreateRequest,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildCreateRequest, GuildResponse>(
+    ) => client.JsonRequestAsync<GuildCreateRequest, GuildResponse>(
         HttpMethod.Post,
         GuildsUrl,
         guildCreateRequest,
@@ -36,13 +36,13 @@ public class GuildsRequestBuilder(HttpClient client)
         cancellationToken: cancellationToken
     );
 
-    public async Task<GuildResponse[]?> ListAsync(
+    public Task<GuildResponse[]> ListAsync(
         Snowflake? before = null,
         Snowflake? after = null,
         int? limit = null,
         bool? withCounts = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildResponse[]>(
+    ) => client.JsonRequestAsync<GuildResponse[]>(
         HttpMethod.Get,
         UserGuildsUrl + new QueryBuilder()
             .AddQuery("before", before?.ToString())

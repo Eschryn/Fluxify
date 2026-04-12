@@ -31,7 +31,6 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
     private static readonly CompositeFormat SlackWebhookUrl = CompositeFormat.Parse("webhooks/{0}/{1}/slack");
     private static readonly CompositeFormat WebhookUrl = CompositeFormat.Parse("webhooks/{0}/{1}");
     private static readonly CompositeFormat MessagesUrl = CompositeFormat.Parse("webhooks/{0}/{1}/messages/{2}");
-    private static readonly CompositeFormat MessagesWaitUrl = CompositeFormat.Parse("webhooks/{0}/{1}/messages/{2}?wait=true");
     private static readonly CompositeFormat WebhookWaitUrl = CompositeFormat.Parse("webhooks/{0}/{1}?wait=true");
 
     public Task ExecuteAsync(
@@ -64,44 +63,43 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         cancellationToken: cancellationToken
     );
 
-    public Task<MessageResponse?> SendMessageAsync(
+    public async Task<MessageResponse?> SendMessageAsync(
         CreateWebhookMessageRequest request,
         bool? wait = null,
         CancellationToken cancellationToken = default
-    ) => wait switch
+    )
     {
-        true => httpClient.MultipartJsonRequestAsync<CreateWebhookMessageRequest, MessageResponse>(
-            HttpMethod.Post,
-            string.Format(FormatProvider, WebhookWaitUrl, id, token),
-            request,
-            cancellationToken: cancellationToken
-        ),
-        _ => httpClient
-            .MultipartJsonRequestAsync(
-                HttpMethod.Post,
-                string.Format(FormatProvider, WebhookUrl, id, token),
-                request,
-                cancellationToken: cancellationToken
-            ).ContinueWith<MessageResponse?>(
-                t => null,
-                cancellationToken,
-                TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Current
-            )
-    };
+        switch (wait)
+        {
+            case true:
+                return await httpClient.MultipartJsonRequestAsync<CreateWebhookMessageRequest, MessageResponse>(
+                    HttpMethod.Post, 
+                    string.Format(FormatProvider, WebhookWaitUrl, id, token),
+                    request,
+                    cancellationToken: cancellationToken);
+            default:
+                await httpClient.MultipartJsonRequestAsync(
+                    HttpMethod.Post,
+                    string.Format(FormatProvider, WebhookUrl, id, token),
+                    request,
+                    cancellationToken: cancellationToken);
+                
+                return null;
+        }
+    }
 
-    public Task<MessageResponse?> UpdateMessageAsync(
+    public Task<MessageResponse> UpdateMessageAsync(
         Snowflake messageId,
         UpdateMessageRequest request,
         CancellationToken cancellationToken = default
     ) => httpClient.JsonRequestAsync<UpdateMessageRequest, MessageResponse>(
         HttpMethod.Patch,
-        string.Format(FormatProvider, MessagesWaitUrl, id, token, messageId),
+        string.Format(FormatProvider, MessagesUrl, id, token, messageId),
         request,
         cancellationToken: cancellationToken
     );
 
-    public Task<WebhookTokenResponse?> GetAsync(CancellationToken cancellationToken = default)
+    public Task<WebhookTokenResponse> GetAsync(CancellationToken cancellationToken = default)
         => httpClient.JsonRequestAsync<WebhookTokenResponse>(
             HttpMethod.Get,
             string.Format(FormatProvider, WebhookUrl, id, token),
@@ -115,7 +113,7 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
             cancellationToken: cancellationToken
         );
 
-    public Task<WebhookTokenResponse?> UpdateAsync(
+    public Task<WebhookTokenResponse> UpdateAsync(
         WebhookTokenUpdateRequest request,
         CancellationToken cancellationToken = default
     ) => httpClient.JsonRequestAsync<WebhookTokenUpdateRequest, WebhookTokenResponse>(

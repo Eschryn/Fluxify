@@ -12,21 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Rest;
 
-namespace Fluxify.Rest.Users;
-
-public class NotesRequestBuilder(HttpClient client)
-{
-    private const string NotesUrl = "users/@me/notes";
-
-    public NoteRequestBuilder this[Snowflake userId] => new(client, userId);
-    
-    public Task<Dictionary<Snowflake, string>> ListAllNotesAsync(
-        CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync<Dictionary<Snowflake, string>>(
-        HttpMethod.Get,
-        NotesUrl,
-        cancellationToken: cancellationToken
-    );
-}
+public class ApiNullException() : Exception("Api returned unexpected null response");

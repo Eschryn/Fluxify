@@ -29,46 +29,46 @@ public class PrivateChannelRequestBuilder(HttpClient client)
     private const string PreloadUrl = "users/@me/channels/preload";
     private static readonly CompositeFormat PinUrl = CompositeFormat.Parse("users/@me/channels/{0}/pin");
     
-    public async Task<ChannelResponse[]?> ListAsync(CancellationToken cancellationToken = default) 
-        => await client.JsonRequestAsync<ChannelResponse[]>(
+    public Task<ChannelResponse[]> ListAsync(CancellationToken cancellationToken = default) 
+        => client.JsonRequestAsync<ChannelResponse[]>(
             HttpMethod.Get,
             ChannelsUrl,
             cancellationToken: cancellationToken
         );
 
-    public async Task<ChannelResponse?> CreateAsync(
+    public Task<ChannelResponse> CreateAsync(
         CreatePrivateChannelRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<CreatePrivateChannelRequest, ChannelResponse>(
+    ) => client.JsonRequestAsync<CreatePrivateChannelRequest, ChannelResponse>(
         HttpMethod.Post,
         ChannelsUrl,
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task<Dictionary<Snowflake, MessageResponse>?> PreloadMessagesAsync(
+    public Task<Dictionary<Snowflake, MessageResponse>> PreloadMessagesAsync(
         PreloadMessagesRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<PreloadMessagesRequest, Dictionary<Snowflake, MessageResponse>>(
+    ) => client.JsonRequestAsync<PreloadMessagesRequest, Dictionary<Snowflake, MessageResponse>>(
         HttpMethod.Post,
         PreloadUrl,
         request,
         cancellationToken: cancellationToken
     );
 
-    public async Task PinChannelAsync(
+    public Task PinChannelAsync(
         Snowflake channelId,
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Put,
         string.Format(FormatProvider, PinUrl, channelId),
         cancellationToken: cancellationToken
     );
     
-    public async Task UnpinChannelAsync(
+    public Task UnpinChannelAsync(
         Snowflake channelId,
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, PinUrl, channelId),
         cancellationToken: cancellationToken

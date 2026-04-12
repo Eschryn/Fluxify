@@ -47,14 +47,14 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     public RolesRequestBuilder Roles { get; } = new(client, guildId);
     public StickersRequestBuilder Stickers { get; } = new(client, guildId);
 
-    public Task<GuildResponse?> GetAsync(CancellationToken cancellationToken = default)
+    public Task<GuildResponse> GetAsync(CancellationToken cancellationToken = default)
         => client.JsonRequestAsync<GuildResponse>(
             HttpMethod.Get,
             string.Format(FormatProvider, GetGuildUrl, guildId),
             cancellationToken: cancellationToken
         );
 
-    public Task<GuildResponse?> UpdateAsync(
+    public Task<GuildResponse> UpdateAsync(
         GuildUpdateRequest guildUpdateRequest,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildUpdateRequest, GuildResponse>(
@@ -64,7 +64,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public Task<GuildAuditLogListResponse?> ListAuditLogAsync(
+    public Task<GuildAuditLogListResponse> ListAuditLogAsync(
         int? limit = null,
         Snowflake? before = null,
         Snowflake? after = null,
@@ -82,7 +82,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public Task<ChannelResponse?> CreateChannelAsync(
+    public Task<ChannelResponse> CreateChannelAsync(
         ChannelCreateRequest channelCreateRequest,
         string? reason = null,
         CancellationToken cancellationToken = default
@@ -95,7 +95,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
             cancellationToken: cancellationToken
         );
 
-    public Task<ChannelResponse[]?> ListChannelsAsync(
+    public Task<ChannelResponse[]> ListChannelsAsync(
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<ChannelResponse[]>(
         HttpMethod.Get,
@@ -113,7 +113,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public Task<GuildBanResponse?> BanAsync(
+    public Task<GuildBanResponse> BanAsync(
         Snowflake userId,
         int? deleteMessageDays = null,
         TimeSpan? banDuration = null,
@@ -150,7 +150,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public Task<GuildResponse?> ToggleDetachedBannerAsync(
+    public Task<GuildResponse> ToggleDetachedBannerAsync(
         EnabledRequest request,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
@@ -160,7 +160,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public Task<GuildResponse?> ToggleTextChannelFlexibleNames(
+    public Task<GuildResponse> ToggleTextChannelFlexibleNames(
         EnabledRequest request,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
@@ -170,7 +170,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
     
-    public Task<GuildResponse?> TransferOwnershipAsync(
+    public Task<GuildResponse> TransferOwnershipAsync(
         GuildTransferOwnershipRequest request,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildTransferOwnershipRequest, GuildResponse>(
@@ -180,7 +180,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
     
-    public Task<GuildVanityUrlResponse?> GetVanityUrlAsync(
+    public Task<GuildVanityUrlResponse> GetVanityUrlAsync(
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildVanityUrlResponse>(
         HttpMethod.Get,
@@ -188,7 +188,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
     
-    public Task<GuildVanityUrlResponse?> UpdateVanityUrlAsync(
+    public Task<GuildVanityUrlResponse> UpdateVanityUrlAsync(
         GuildVanityUrlUpdateRequest request,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildVanityUrlUpdateRequest, GuildVanityUrlResponse>(
@@ -206,7 +206,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
     
-    public Task<InviteMetadataResponseSchema[]?> ListInvitesAsync(
+    public Task<InviteMetadataResponseSchema[]> ListInvitesAsync(
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<InviteMetadataResponseSchema[]>(
         HttpMethod.Get,
@@ -214,7 +214,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
     
-    public Task<WebhookResponse[]?> GetWebhooksAsync(
+    public Task<WebhookResponse[]> GetWebhooksAsync(
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<WebhookResponse[]>(
         HttpMethod.Get,

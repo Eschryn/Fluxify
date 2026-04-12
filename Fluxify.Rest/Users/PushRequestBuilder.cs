@@ -29,30 +29,30 @@ public class PushRequestBuilder(HttpClient client)
     private static readonly CompositeFormat SubscriptionUrl = CompositeFormat.Parse("users/@me/push/subscriptions/{0}");
     
     
-    public async Task<PushSubscribeResponse?> SubscribeAsync(
+    public Task<PushSubscribeResponse> SubscribeAsync(
         PushSubscribeRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<PushSubscribeRequest, PushSubscribeResponse>(
+    ) => client.JsonRequestAsync<PushSubscribeRequest, PushSubscribeResponse>(
         HttpMethod.Post,
         SubscribeUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<PushSubscriptionListResponse?> GetSubscriptionsAsync(
+    public Task<PushSubscriptionListResponse> GetSubscriptionsAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<PushSubscriptionListResponse>(
+    ) => client.JsonRequestAsync<PushSubscriptionListResponse>(
         HttpMethod.Get,
         SubscriptionsUrl,
         cancellationToken: cancellationToken
     );
 
-    public async Task<bool?> UnsubscribeAsync(
+    public async Task<bool> UnsubscribeAsync(
         Snowflake subscriptionId,
         CancellationToken cancellationToken = default
     ) => (await client.JsonRequestAsync<SuccessResponse>(
         HttpMethod.Delete,
         string.Format(FormatProvider, SubscriptionUrl, subscriptionId),
         cancellationToken: cancellationToken
-    ))?.Success;
+    )).Success;
 }

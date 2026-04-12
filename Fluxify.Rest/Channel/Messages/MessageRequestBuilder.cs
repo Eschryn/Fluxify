@@ -30,37 +30,37 @@ public class MessageRequestBuilder(HttpClient client, Snowflake channelId, Snowf
     
     public MessageReactionsRequestBuilder Reactions => new(client, channelId, messageId);
     
-    public async Task<MessageResponse?> GetMessageAsync(CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<MessageResponse>(
+    public Task<MessageResponse> GetMessageAsync(CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<MessageResponse>(
             HttpMethod.Get,
             Uri(GetUrl, channelId, messageId),
             cancellationToken: cancellationToken
         );
     
-    public async Task DeleteMessageAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task DeleteMessageAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Delete,
             Uri(GetUrl, channelId, messageId),
             cancellationToken: cancellationToken
         );
     
-    public async Task<MessageResponse?> UpdateMessageAsync(UpdateMessageRequest request, CancellationToken cancellationToken = default)
-        => await client.JsonRequestAsync<UpdateMessageRequest, MessageResponse>(
+    public Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request, CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<UpdateMessageRequest, MessageResponse>(
             HttpMethod.Patch,
             Uri(GetUrl, channelId, messageId),
             request,
             cancellationToken: cancellationToken
         );
     
-    public async Task AckMessageAsync(CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task AckMessageAsync(CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Post,
             Uri(AckUrl, channelId, messageId),
             cancellationToken: cancellationToken
         );
     
-    public async Task DeleteAttachmentAsync(Snowflake attachmentId, CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task DeleteAttachmentAsync(Snowflake attachmentId, CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Delete,
             string.Format(FormatProvider, AttachmentUrl, channelId, messageId, attachmentId),
             cancellationToken: cancellationToken

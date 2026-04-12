@@ -26,30 +26,30 @@ public class SavedMessagesRequestBuilder(HttpClient client)
     private const string SavedMessagesUrl = "users/@me/saved-messages";
     private static readonly CompositeFormat SavedMessageUrl = CompositeFormat.Parse("users/@me/saved-messages/{0}");
     
-    public async Task<SavedMessageEntryResponse[]?> GetSavedMessagesAsync(
+    public Task<SavedMessageEntryResponse[]> GetSavedMessagesAsync(
         int? limit = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<SavedMessageEntryResponse[]>(
+    ) => client.JsonRequestAsync<SavedMessageEntryResponse[]>(
         HttpMethod.Get,
         SavedMessagesUrl + new QueryBuilder()
             .AddQuery("limit", limit?.ToString()),
         cancellationToken: cancellationToken
     );
 
-    public async Task SaveMessageAsync(
+    public Task SaveMessageAsync(
         SaveMessageRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Post,
         SavedMessagesUrl,
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task UnsaveMessageAsync(
+    public Task UnsaveMessageAsync(
         Snowflake messageId,
         CancellationToken cancellationToken = default
-    ) => await client.RequestAsync(
+    ) => client.RequestAsync(
         HttpMethod.Delete,
         string.Format(FormatProvider, SavedMessageUrl, messageId),
         cancellationToken: cancellationToken

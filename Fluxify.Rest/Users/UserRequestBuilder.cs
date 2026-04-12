@@ -26,12 +26,12 @@ public class UserRequestBuilder(HttpClient client, Snowflake userId)
     private static readonly CompositeFormat UserUrl = CompositeFormat.Parse("users/{0}");
     private static readonly CompositeFormat UserProfileUrl = CompositeFormat.Parse("users/{0}/profile");
 
-    public async Task<UserProfileFullResponse?> GetProfileAsync(
+    public Task<UserProfileFullResponse> GetProfileAsync(
         Snowflake? guildId = null,
         bool withMutualFriends = false,
         bool withMutualGuilds = false,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<UserProfileFullResponse>(
+    ) => client.JsonRequestAsync<UserProfileFullResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, UserProfileUrl, userId) + new QueryBuilder()
             .AddQuery("guild_id", guildId?.ToString())
@@ -40,9 +40,9 @@ public class UserRequestBuilder(HttpClient client, Snowflake userId)
         cancellationToken: cancellationToken
     );
     
-    public async Task<UserPartialResponse?> GetAsync(
+    public Task<UserPartialResponse> GetAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<UserPartialResponse>(
+    ) => client.JsonRequestAsync<UserPartialResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, UserUrl, userId),
         cancellationToken: cancellationToken

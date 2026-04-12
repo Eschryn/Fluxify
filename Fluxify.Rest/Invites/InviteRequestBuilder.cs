@@ -23,7 +23,7 @@ public class InviteRequestBuilder(HttpClient httpClient, string code)
     private static readonly IFormatProvider FormatProvider = CultureInfo.InvariantCulture;
     private static readonly CompositeFormat InviteUrl = CompositeFormat.Parse("invites/{0}");
 
-    public Task<InviteMetadataResponseSchema?> GetAsync(
+    public Task<InviteMetadataResponseSchema> GetAsync(
         CancellationToken cancellationToken = default
     ) => httpClient.JsonRequestAsync<InviteMetadataResponseSchema>(
         HttpMethod.Get,
@@ -31,7 +31,7 @@ public class InviteRequestBuilder(HttpClient httpClient, string code)
         cancellationToken: cancellationToken
     );
 
-    public Task<InviteResponseSchema?> AcceptAsync(
+    public Task<InviteResponseSchema> AcceptAsync(
         CancellationToken cancellationToken = default
     ) => httpClient.JsonRequestAsync<InviteResponseSchema>(
         HttpMethod.Post,

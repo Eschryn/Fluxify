@@ -24,7 +24,7 @@ public class WebhookRequestBuilder(HttpClient httpClient, Snowflake id)
     private static readonly IFormatProvider FormatProvider = CultureInfo.InvariantCulture;
     private static readonly CompositeFormat WebhookUrl = CompositeFormat.Parse("/webhooks/{0}");
 
-    public Task<WebhookResponse?> GetAsync(CancellationToken cancellationToken = default)
+    public Task<WebhookResponse> GetAsync(CancellationToken cancellationToken = default)
         => httpClient.JsonRequestAsync<WebhookResponse>(
             HttpMethod.Get,
             string.Format(FormatProvider, WebhookUrl, id),
@@ -38,7 +38,7 @@ public class WebhookRequestBuilder(HttpClient httpClient, Snowflake id)
             cancellationToken: cancellationToken
         );
     
-    public Task<WebhookResponse?> UpdateAsync(
+    public Task<WebhookResponse> UpdateAsync(
         WebhookUpdateRequest request,
         CancellationToken cancellationToken = default
     ) => httpClient.JsonRequestAsync<WebhookUpdateRequest, WebhookResponse>(

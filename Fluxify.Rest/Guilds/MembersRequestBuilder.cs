@@ -29,11 +29,11 @@ public class MembersRequestBuilder(HttpClient client, Snowflake guildId)
 
     public MemberRequestBuilder this[Snowflake userId] => new(client, guildId, userId);
 
-    public async Task<GuildMemberResponse[]?> ListMembersAsync(
+    public Task<GuildMemberResponse[]> ListMembersAsync(
         int? limit = null,
         Snowflake? after = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildMemberResponse[]>(
+    ) => client.JsonRequestAsync<GuildMemberResponse[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, MembersUrl, guildId) + new QueryBuilder()
             .AddQuery("limit", limit?.ToString())
@@ -41,20 +41,20 @@ public class MembersRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public async Task<GuildMemberSearchResponse?> SearchAsync(
+    public Task<GuildMemberSearchResponse> SearchAsync(
         GuildMemberSearchRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GuildMemberSearchRequest, GuildMemberSearchResponse>(
+    ) => client.JsonRequestAsync<GuildMemberSearchRequest, GuildMemberSearchResponse>(
         HttpMethod.Post,
         string.Format(FormatProvider, SearchUrl, guildId),
         request,
         cancellationToken: cancellationToken
     );
     
-    public async Task<GuildMemberResponse?> UpdateMeAsync(
+    public Task<GuildMemberResponse> UpdateMeAsync(
         MyGuildMemberUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<MyGuildMemberUpdateRequest, GuildMemberResponse>(
+    ) => client.JsonRequestAsync<MyGuildMemberUpdateRequest, GuildMemberResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, MembersMeUrl, guildId),
         request,

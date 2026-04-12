@@ -23,18 +23,18 @@ public class RelationshipsRequestBuilder(HttpClient client)
     
     public RelationshipRequestBuilder this[Snowflake userId] => new(client, userId);
     
-    public async Task<RelationshipResponse[]?> GetRelationshipsAsync(
+    public Task<RelationshipResponse[]> GetRelationshipsAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<RelationshipResponse[]>(
+    ) => client.JsonRequestAsync<RelationshipResponse[]>(
         HttpMethod.Get,
         RelationshipsUrl,
         cancellationToken: cancellationToken
     );
     
-    public async Task<RelationshipResponse?> SendFriendRequestByTagAsync(
+    public Task<RelationshipResponse> SendFriendRequestByTagAsync(
         FriendRequestByTagRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<FriendRequestByTagRequest, RelationshipResponse>(
+    ) => client.JsonRequestAsync<FriendRequestByTagRequest, RelationshipResponse>(
         HttpMethod.Post,
         RelationshipsUrl,
         request,

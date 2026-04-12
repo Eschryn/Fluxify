@@ -38,13 +38,14 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     public MessagesRequestBuilder Messages { get; } = new(client, id);
     public CallRequestBuilder Call { get; } = new(client, id);
 
-    public Task<ChannelResponse?> GetAsync(CancellationToken cancellationToken = default)
+    public Task<ChannelResponse> GetAsync(CancellationToken cancellationToken = default)
         => client.JsonRequestAsync<ChannelResponse>(
             HttpMethod.Get,
             Uri(GetUrl, id),
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken
+        );
 
-    public Task<ChannelResponse?> UpdateAsync(
+    public Task<ChannelResponse> UpdateAsync(
         ChannelUpdateRequest request,
         string? reason = null,
         CancellationToken cancellationToken = default
@@ -52,7 +53,8 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         HttpMethod.Patch,
         Uri(GetUrl, id), request,
         reason: reason,
-        cancellationToken: cancellationToken);
+        cancellationToken: cancellationToken
+    );
 
     public Task DeleteAsync(bool? silent = null, CancellationToken cancellationToken = default)
         => client.RequestAsync(
@@ -106,7 +108,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         cancellationToken: cancellationToken
     );
 
-    public Task<RtcRegion[]?> GetRtcRegionsAsync(
+    public Task<RtcRegion[]> GetRtcRegionsAsync(
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<RtcRegion[]>(
         HttpMethod.Get,
@@ -121,7 +123,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
             cancellationToken: cancellationToken
         );
 
-    public Task<InviteMetadataResponseSchema[]?> GetInvitesAsync(
+    public Task<InviteMetadataResponseSchema[]> GetInvitesAsync(
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<InviteMetadataResponseSchema[]>(
         HttpMethod.Get,
@@ -129,7 +131,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         cancellationToken: cancellationToken
     );
 
-    public Task<InviteMetadataResponseSchema?> CreateInviteAsync(
+    public Task<InviteMetadataResponseSchema> CreateInviteAsync(
         ChannelInviteCreateRequest request,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<ChannelInviteCreateRequest, InviteMetadataResponseSchema>(
@@ -139,15 +141,15 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         cancellationToken: cancellationToken
     );
 
-    public Task<WebhookResponse[]?> GetWebhooksAsync(
+    public Task<WebhookResponse[]> GetWebhooksAsync(
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<WebhookResponse[]>(
         HttpMethod.Get,
         Uri(WebhooksUrl, id),
         cancellationToken: cancellationToken
     );
-    
-    public Task<WebhookResponse?> CreateWebhookAsync(
+
+    public Task<WebhookResponse> CreateWebhookAsync(
         WebhookCreateRequest request,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<WebhookCreateRequest, WebhookResponse>(

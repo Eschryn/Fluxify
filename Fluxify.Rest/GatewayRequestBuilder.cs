@@ -20,9 +20,9 @@ public class GatewayRequestBuilder(HttpClient client)
 {
     private const string BotUrl = "gateway/bot";
     
-    public async Task<GatewayBotResponse?> GetGatewayBotAsync(
+    public Task<GatewayBotResponse> GetGatewayBotAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<GatewayBotResponse>(
+    ) => client.JsonRequestAsync<GatewayBotResponse>(
         HttpMethod.Get,
         BotUrl,
         cancellationToken: cancellationToken

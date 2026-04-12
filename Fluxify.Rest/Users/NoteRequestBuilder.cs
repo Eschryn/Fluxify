@@ -24,18 +24,18 @@ public class NoteRequestBuilder(HttpClient client, Snowflake userId)
     private static readonly IFormatProvider FormatProvider = CultureInfo.InvariantCulture;
     private static readonly CompositeFormat NoteUrl = CompositeFormat.Parse("users/@me/notes/{0}");
     
-    public async Task<UserNoteResponse?> GetNoteAsync(
+    public Task<UserNoteResponse> GetNoteAsync(
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<UserNoteResponse>(
+    ) => client.JsonRequestAsync<UserNoteResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, NoteUrl, userId),
         cancellationToken: cancellationToken
     );
     
-    public async Task SetNoteAsync(
+    public Task SetNoteAsync(
         UserNoteUpdateRequest request,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync(
+    ) => client.JsonRequestAsync(
         HttpMethod.Put,
         string.Format(FormatProvider, NoteUrl, userId),
         request,

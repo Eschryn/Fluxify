@@ -28,11 +28,11 @@ public class MessageReactionRequestBuilder(HttpClient client, Snowflake channelI
     private static string Uri(CompositeFormat format, Snowflake channelId, Snowflake messageId, string emoji) 
         => string.Format(FormatProvider, format, channelId, messageId, emoji);
 
-    public async Task<UserPartialResponse[]?> ListUsersAsync(
+    public Task<UserPartialResponse[]> ListUsersAsync(
         int? limit = null,
         Snowflake? after = null,
         CancellationToken cancellationToken = default
-    ) => await client.JsonRequestAsync<UserPartialResponse[]>(
+    ) => client.JsonRequestAsync<UserPartialResponse[]>(
             HttpMethod.Get,
             Uri(GetUrl, channelId, messageId, emoji) + new QueryBuilder()
                 .AddQuery("limit", limit?.ToString())
@@ -40,31 +40,31 @@ public class MessageReactionRequestBuilder(HttpClient client, Snowflake channelI
             cancellationToken: cancellationToken
     );
 
-    public async Task ReactAsync(string sessionId, CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task ReactAsync(string sessionId, CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Put, 
             Uri(ReactUrl, channelId, messageId, emoji) + new QueryBuilder()
                 .AddQuery("session_id", sessionId),
             cancellationToken: cancellationToken
         );
     
-    public async Task RemoveOwnReactionAsync(string sessionId, CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task RemoveOwnReactionAsync(string sessionId, CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Delete, 
             Uri(ReactUrl, channelId, messageId, emoji) + new QueryBuilder()
                 .AddQuery("session_id", sessionId),
             cancellationToken: cancellationToken
         );
     
-    public async Task RemoveReactionAsync(string targetId, CancellationToken cancellationToken = default)
-        => await client.RequestAsync(
+    public Task RemoveReactionAsync(string targetId, CancellationToken cancellationToken = default)
+        => client.RequestAsync(
             HttpMethod.Delete,
             string.Format(FormatProvider, ReactionUrl, channelId, messageId, emoji, targetId),
             cancellationToken: cancellationToken
         );
     
-    public async Task RemoveAllAsync(CancellationToken cancellationToken = default) 
-        => await client.RequestAsync(
+    public Task RemoveAllAsync(CancellationToken cancellationToken = default) 
+        => client.RequestAsync(
             HttpMethod.Delete,
             Uri(GetUrl, channelId, messageId, emoji),
             cancellationToken: cancellationToken
