@@ -40,6 +40,7 @@ public abstract class PrivateTextChannel : ITextChannel
     public DateTimeOffset? LastPinTimestamp { get; internal set; }
     internal CacheRef<GlobalUser>[] RecipientsRef { get; set; }
     public GlobalUser[] Recipients => RecipientsRef.Select(x => x.Value).OfType<GlobalUser>().ToArray();
+    public virtual string DisplayName => string.Join(", ", Recipients.Select(m => m.DisplayName));
 
     internal MessageRepository MessageRepository
         => field ??= new MessageRepository(
@@ -129,6 +130,7 @@ public abstract class PrivateTextChannel : ITextChannel
         ),
         cancellationToken
     );
+
 
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch
     {

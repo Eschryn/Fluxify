@@ -16,4 +16,10 @@ using Fluxify.Application.State;
 
 namespace Fluxify.Application.Entities.Channels;
 
-public interface IChannel : IEntity, IFormattable, ICloneable<IChannel>;
+public interface IChannel : IEntity, IFormattable, ICloneable<IChannel>
+{
+    /// <summary>
+    /// Returns the name of the channel that would be displayed in the client.
+    /// </summary>
+    string DisplayName { get; }
+};

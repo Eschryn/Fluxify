@@ -47,6 +47,7 @@ public abstract class GuildChannel<TSelf, TProperties> : IGuildChannel
     public string Name { get; internal set; } = string.Empty;
     public Guild Guild => field = GuildRef.Value ?? field;
     public int? Position { get; internal set; }
+    public string DisplayName => Name;
 
     public PermissionOverwrite[]? PermissionOverwrites
     {

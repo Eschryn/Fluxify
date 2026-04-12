@@ -75,7 +75,9 @@ public partial class GuildMember : IGuildMember
     
     [MapperIgnore]
     public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(r => Guild.RolesRepository.Cache.GetCachedOrDefault(r).Value).OfType<IRole>().ToArray();
-
+    
+    public string DisplayName => Nick ?? ImmutableUser!.GetDisplayName();
+    
     private CacheRef<Guild> GuildRef { get; }
     private CacheRef<GlobalUser> UserRef { get; }
 

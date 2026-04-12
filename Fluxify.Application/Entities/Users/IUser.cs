@@ -32,6 +32,8 @@ public interface IUser : IEntity, IFormattable, ICloneable<IUser>
     public bool? System { get; }
     public PublicUserFlags Flags { get; }
     public IPresence? Presence { get; }
+    
+    public string DisplayName { get; }
 
     public Task<Dm> GetOrCreateDmAsync(CancellationToken cancellationToken = default);
     

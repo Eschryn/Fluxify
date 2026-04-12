@@ -36,6 +36,8 @@ public partial class GlobalUser(FluxerApplication fluxerApplication, Snowflake i
     public bool? System { get; internal set; }
     public PublicUserFlags Flags { get; internal set; }
     public IPresence? Presence { get; internal set; } = null;
+    
+    public string DisplayName => GlobalName ?? Username;
 
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch
     {

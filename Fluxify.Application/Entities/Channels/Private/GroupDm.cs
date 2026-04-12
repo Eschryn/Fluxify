@@ -34,6 +34,8 @@ public class GroupDm : PrivateTextChannel
     {
     }
 
+    public override string DisplayName => Name ?? base.DisplayName;
+
     public Task UpdateAsync(
         Action<GroupDmProperties> configure,
         string? reason = null,
