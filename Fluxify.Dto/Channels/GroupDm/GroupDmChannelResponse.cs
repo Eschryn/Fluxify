@@ -24,7 +24,7 @@ public record GroupDmChannelResponse(
     Snowflake? LastMessageId,
     DateTimeOffset? LastPinTimestamp,
     string? Name,
-    Dictionary<string, string> Nicks,
+    Dictionary<string, string>? Nicks,
     Snowflake? OwnerId,
     UserPartialResponse[] Recipients
 ) : PrivateChannelResponse(Id, LastMessageId, LastPinTimestamp, Recipients);

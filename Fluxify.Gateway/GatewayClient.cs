@@ -29,7 +29,7 @@ public sealed partial class GatewayClient
     private readonly ILogger _logger;
     private readonly GatewayConfig _config;
     private readonly FluxerConfig _fluxerConfig;
-    private readonly WebSocketClient<FluxerProtocol, GatewayPayload> _client;
+    private readonly WebSocketClient<FluxerJsonProtocol, GatewayPayload> _client;
 
     private int? _lastSequence;
     public string? SessionId { get; private set; }
@@ -57,8 +57,8 @@ public sealed partial class GatewayClient
     public GatewayClient(GatewayConfig config, FluxerConfig fluxerConfig, ILogger logger)
     {
         _logger = logger;
-        _client = new WebSocketClient<FluxerProtocol, GatewayPayload>(
-            new FluxerProtocol(fluxerConfig),
+        _client = new WebSocketClient<FluxerJsonProtocol, GatewayPayload>(
+            new FluxerJsonProtocol(fluxerConfig),
             config.WebSocketClientConfig
         );
         _config = config;

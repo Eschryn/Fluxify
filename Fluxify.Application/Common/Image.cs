@@ -27,7 +27,7 @@ public readonly record struct Image(
     private Uri BaseUri { get; init; } = BaseUri;
 
     private static CompositeFormat QueryParamsFormat { get; } =
-        CompositeFormat.Parse("{0}?size={1}&quality={2}&format={0}&animated={3}");
+        CompositeFormat.Parse(".{0}?size={1}&quality={2}&format={0}&animated={3}");
 
     public Uri GetUri(
         int size = 128,
@@ -35,7 +35,7 @@ public readonly record struct Image(
         ImageQuality quality = ImageQuality.High,
         bool animated = false
     ) => new(
-        BaseUri,
+        BaseUri.AbsoluteUri + 
         string.Format(
             CultureInfo.InvariantCulture,
             QueryParamsFormat,

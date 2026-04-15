@@ -23,9 +23,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Fluxify.Gateway.WebSockets;
 
-internal sealed partial class FluxerProtocol(FluxerConfig fluxerConfig) : IWebSocketProtocol<GatewayPayload>
+internal sealed partial class FluxerJsonProtocol(FluxerConfig fluxerConfig) : IWebSocketProtocol<GatewayPayload>
 {
-    private readonly ILogger _logger = fluxerConfig.LoggerFactory.CreateLogger<FluxerProtocol>();
+    public string EncodingName => "json";
+    
+    private readonly ILogger _logger = fluxerConfig.LoggerFactory.CreateLogger<FluxerJsonProtocol>();
     private readonly JsonSerializerOptions _serializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
