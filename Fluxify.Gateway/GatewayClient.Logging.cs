@@ -82,5 +82,8 @@ public sealed partial class GatewayClient
         
         [LoggerMessage(19, LogLevel.Warning, "The connection was cancelled. This was probably due to a disconnect")]
         public static partial void ConnectionCancelled(ILogger logger);
+
+        [LoggerMessage(20, LogLevel.Information, "Server acknowledged heartbeat after {latency:ss's 'fff'ms'}. Average latency: {averageLatency:ss's 'fff'ms'}")]
+        public static partial void HeartbeatAcknowledged(ILogger logger, TimeSpan latency, TimeSpan averageLatency);
     }
 }
