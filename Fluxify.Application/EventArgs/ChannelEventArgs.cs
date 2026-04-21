@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Entities.Channels;
+
 namespace Fluxify.Application.EventArgs;
 
-public class ChannelEventArgs
+public class ChannelEventArgs(CacheRef<IChannel> channel)
 {
-    
+    public CacheRef<IChannel> Channel { get; } = channel;
 }

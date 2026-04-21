@@ -404,25 +404,28 @@ public partial class FluxerApplication
 
     private async Task HandleChannelCreate(ChannelResponse arg)
     {
-        InsertChannel(arg);
+        var channel = InsertChannel(arg);
+        
+        await _channelCreatedHandlers.CallHandlersAsync(new ChannelEventArgs(channel));
     }
 
-    private Task HandleChannelUpdate(ChannelResponse arg)
+    private async Task HandleChannelUpdate(ChannelResponse arg)
     {
-        InsertChannel(arg);
-        return Task.CompletedTask;
+        var channel = InsertChannel(arg);
+        
+        await _channelUpdatedHandlers.CallHandlersAsync(new ChannelEventArgs(channel));
     }
 
-    private Task HandleChannelDelete(ChannelResponse arg)
+    private async Task HandleChannelDelete(ChannelResponse arg)
     {
         if (ChannelsRepository.GetCachedOrDefault(arg.Id) is { Value: IGuildChannel guildChannel })
         {
             guildChannel.Guild?.GuildChannels.Remove(guildChannel.Id, out _);
         }
 
-        ChannelsRepository.Remove(arg.Id, out _);
-
-        return Task.CompletedTask;
+        ChannelsRepository.Remove(arg.Id, out var channel);
+        
+        await _channelUpdatedHandlers.CallHandlersAsync(new ChannelEventArgs(channel));
     }
 
     private async Task HandleGuildRoleUpdate(GatewayGuildRole arg)

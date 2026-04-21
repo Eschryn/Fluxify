@@ -30,6 +30,8 @@ public partial class FluxerApplication
     private readonly HandlerContainer<ReactionRemoveAllEventArgs> _messageReactionRemoveAllHandlers = new();
     
     private readonly HandlerContainer<ChannelEventArgs> _channelCreatedHandlers = new();
+    private readonly HandlerContainer<ChannelEventArgs> _channelUpdatedHandlers = new();
+    private readonly HandlerContainer<ChannelEventArgs> _channelDeletedHandlers = new();
     
     private readonly HandlerContainer<GuildEventArgs> _guildCreatedHandlers = new();
     private readonly HandlerContainer<GuildEventArgs> _guildUpdatedHandlers = new();
@@ -100,6 +102,22 @@ public partial class FluxerApplication
         add => _guildDeletedHandlers.InsertDelegate(value);
         remove => _guildDeletedHandlers.RemoveDelegate(value);
     }
-
-
+    
+    public event Func<ChannelEventArgs, Task> ChannelCreated
+    {
+        add => _channelCreatedHandlers.InsertDelegate(value);
+        remove => _channelCreatedHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<ChannelEventArgs, Task> ChannelUpdated
+    {
+        add => _channelUpdatedHandlers.InsertDelegate(value);
+        remove => _channelUpdatedHandlers.RemoveDelegate(value);
+    }
+    
+    public event Func<ChannelEventArgs, Task> ChannelDeleted
+    {
+        add => _channelDeletedHandlers.InsertDelegate(value);
+        remove => _channelDeletedHandlers.RemoveDelegate(value);
+    }
 }
