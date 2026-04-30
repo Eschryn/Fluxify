@@ -72,4 +72,6 @@ namespace Fluxify.Gateway.Model;
 [JsonSerializable(typeof(bool))]
 [JsonSerializable(typeof(UpdateVoiceState))]
 [JsonSerializable(typeof(GatewayPassiveUpdate))]
+[JsonSerializable(typeof(GuildMemberCountsUpdate))]
+[JsonSerializable(typeof(GuildMemberCountRequest))]
 public partial class GatewayJsonContext : JsonSerializerContext;

@@ -406,6 +406,12 @@ public sealed partial class GatewayClient
         add => InsertHandler(GatewayEvent.PassiveUpdates, value!);
         remove => RemoveHandler(GatewayEvent.PassiveUpdates, value!);
     }
+    
+    public event Func<GuildMemberCountsUpdate, Task>? GuildMemberCountUpdate
+    {
+        add => InsertHandler(GatewayEvent.GuildCountsUpdate, value!);
+        remove => RemoveHandler(GatewayEvent.GuildCountsUpdate, value!);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private HandlerContainer<T> GetHandlerContainer<T>(string eventType) =>

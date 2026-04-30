@@ -58,5 +58,9 @@ public enum GatewayOpCode
     /// </summary>
     HeartbeatAck = 11,
     GatewayError = 12,
-    LazyRequest = 14
+    LazyRequest = 14,
+    /// <summary>
+    /// Sent by the client to request the online and member counts of the specified guilds.
+    /// </summary>
+    RequestGuildCounts = 15
 }

@@ -235,7 +235,33 @@ public sealed partial class GatewayClient
 
     public async Task UpdateVoiceStateAsync(UpdateVoiceState data, CancellationToken cancellationToken = default)
         => await _client.SendAsync(new GatewayPayload(GatewayOpCode.VoiceStateUpdate, data), cancellationToken);
-    
+
+    public Task RequestPresenceCountAsync(Snowflake[] guildIds, string? nonce = null, CancellationToken cancellationToken = default) 
+        => _client.SendAsync(new GatewayPayload(GatewayOpCode.RequestGuildCounts, new GuildMemberCountRequest(guildIds, nonce)), cancellationToken);
+
+    public async Task<GuildMemberCount[]> GetPresenceCountAsync(Snowflake[] guildIds, CancellationToken cancellationToken = default)
+    {
+        var nonce = Guid.NewGuid().ToString();
+        TaskCompletionSource<GuildMemberCount[]> tcs = new();
+        
+        GuildMemberCountUpdate += OnPresenceCountUpdate;
+
+        await RequestPresenceCountAsync(guildIds, nonce, cancellationToken);
+        return await tcs.Task;
+        
+        Task OnPresenceCountUpdate(GuildMemberCountsUpdate arg)
+        {
+            if (arg.Nonce != nonce)
+            {
+                return Task.CompletedTask;
+            }
+
+            GuildMemberCountUpdate -= OnPresenceCountUpdate;
+            tcs.SetResult(arg.Counts ?? []);
+            return Task.CompletedTask;
+        }
+    }
+
     private async Task LoginAsync(CancellationToken cancellationToken)
     {
         ConnectionState = ConnectionState.Authenticating;

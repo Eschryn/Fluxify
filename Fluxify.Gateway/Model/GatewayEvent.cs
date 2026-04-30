@@ -83,4 +83,5 @@ public static class GatewayEvent
     public const string CallDelete = "CALL_DELETE";
     public const string GuildAuditLogEntryCreate = "GUILD_AUDIT_LOG_ENTRY_CREATE";
     public const string PassiveUpdates = "PASSIVE_UPDATES";
+    public const string GuildCountsUpdate = "GUILD_COUNTS_UPDATE";
 }

@@ -123,7 +123,8 @@ internal static class EventNamePayloadClassMap
             
             { GatewayEvent.GuildAuditLogEntryCreate, Data<GuildAuditLogEntryResponse>() }, // untested
 
-            { GatewayEvent.PassiveUpdates, Data<GatewayPassiveUpdate>() }
+            { GatewayEvent.PassiveUpdates, Data<GatewayPassiveUpdate>() },
+            { GatewayEvent.GuildCountsUpdate, Data<GuildMemberCountsUpdate>() }
         };
 
         TypeTable = sourceTable.ToFrozenDictionary(k => k.Key, v => v.Value.Item1);
