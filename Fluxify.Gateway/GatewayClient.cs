@@ -15,6 +15,7 @@
 using System.Net.WebSockets;
 using Fluxify.Core;
 using Fluxify.Core.Credentials;
+using Fluxify.Core.Types;
 using Fluxify.Dto.Users;
 using Fluxify.Gateway.Model;
 using Fluxify.Gateway.Model.Data;
