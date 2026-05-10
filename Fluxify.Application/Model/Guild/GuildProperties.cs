@@ -24,7 +24,7 @@ public class GuildProperties
     public DefaultMessageNotifications? DefaultMessageNotifications { get; set; }
     public Base64Image? EmbedSplash { get; set; }
     public GuildExplicitContentFilter? ExplicitContentFilter { get; set; }
-    public GuildFeatureSchema[]? Features { get; set; } = [];
+    public GuildFeature[]? Features { get; set; } = [];
     public Base64Image? Icon { get; set; }
     public DateTimeOffset? MessageHistoryCutoff { get; set; }
     public string? Name { get; set; }

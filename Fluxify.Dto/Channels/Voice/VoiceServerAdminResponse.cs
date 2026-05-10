@@ -24,7 +24,7 @@ public record VoiceServerAdminResponse(
     string Endpoint,
     bool IsActive,
     Snowflake RegionId,
-    GuildFeatureSchema[] RequiredGuildFeatures,
+    GuildFeature[] RequiredGuildFeatures,
     Snowflake ServerId,
     DateTimeOffset? UpdatedAt,
     bool VipOnly

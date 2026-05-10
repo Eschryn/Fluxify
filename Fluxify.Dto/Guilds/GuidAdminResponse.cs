@@ -19,7 +19,7 @@ namespace Fluxify.Dto.Guilds;
 
 public record GuidAdminResponse(
     string? Banner,
-    GuildFeatureSchema[] Features,
+    GuildFeature[] Features,
     string? Icon,
     Snowflake Id,
     int MemberCount,

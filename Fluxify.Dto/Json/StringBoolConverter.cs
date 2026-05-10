@@ -17,7 +17,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Json;
 
-public class StringBoolConverter : JsonConverter<bool>
+public sealed class StringBoolConverter : JsonConverter<bool>
 {
     public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

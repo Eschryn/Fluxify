@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Fluxify.Dto.Users;
 
 namespace Fluxify.Dto.Guilds.AuditLog;
 
 public record GuildAuditLogListResponse(
+    [property: JsonPropertyName("audit_log_entries")]
     GuildAuditLogEntryResponse[] Entries,
-    UserPartialResponse[] User,
+    UserPartialResponse[] Users,
     AuditLogWebhookResponse[] Webhooks
-);
+); 

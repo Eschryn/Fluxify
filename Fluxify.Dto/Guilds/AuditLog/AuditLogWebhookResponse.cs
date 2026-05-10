@@ -23,4 +23,4 @@ public record AuditLogWebhookResponse(
     Snowflake? GuildId,
     Snowflake Id,
     string Name,
-    WebhookType type);
+    int Type);

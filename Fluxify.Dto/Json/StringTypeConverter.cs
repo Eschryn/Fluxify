@@ -17,7 +17,7 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Json;
 
-public class StringTypeConverter<T> : JsonConverter<T> where T : StringType, new()
+public sealed class StringTypeConverter<T> : JsonConverter<T> where T : StringType, new()
 {
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert,
         JsonSerializerOptions options)

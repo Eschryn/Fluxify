@@ -24,7 +24,7 @@ public record GuildUpdateRequest(
     DefaultMessageNotifications? DefaultMessageNotifications,
     Base64Image? EmbedSplash,
     GuildExplicitContentFilter? ExplicitContentFilter,
-    GuildFeatureSchema[]? Features,
+    GuildFeature[]? Features,
     Base64Image? Icon,
     DateTimeOffset? MessageHistoryCutoff,
     string? MfaCode,

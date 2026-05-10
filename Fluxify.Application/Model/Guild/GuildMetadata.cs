@@ -25,10 +25,10 @@ public class GuildMetadata
     public Image? Splash { get; internal set; }
     public Image? Banner { get; internal set; }
     public Image? EmbedSplash { get; internal set; }
-    public GuildFeatureSchema[] Features { get; internal set; }
+    public GuildFeature[] Features { get; internal set; }
     public SplashCardAlignment SplashCardAlignment { get; internal set; }
 
-    internal GuildMetadata(string name, GuildFeatureSchema[] features)
+    internal GuildMetadata(string name, GuildFeature[] features)
     {
         Name = name;
         Features = features;

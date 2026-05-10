@@ -13,10 +13,21 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
+using Fluxify.Dto.Users.Settings.Security;
 
 namespace Fluxify.Dto.Guilds.Settings;
 
 public record GuildTransferOwnershipRequest(
     Snowflake NewOwnerId,
-    string Password
+    string? MfaCode,
+    MfaMethod? MfaMethod,
+    string? Password,
+    string? WebauthnChallenge,
+    string? WebauthnResponse
+) : SudoVerificationSchema(
+    MfaCode,
+    MfaMethod,
+    Password,
+    WebauthnChallenge,
+    WebauthnResponse
 );

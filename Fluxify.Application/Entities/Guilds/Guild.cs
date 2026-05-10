@@ -93,7 +93,7 @@ public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
     internal Guild(FluxerApplication app,
         ICacheRef<IUser> owner,
         string name,
-        GuildFeatureSchema[] features
+        GuildFeature[] features
     ) : base(name, features)
     {
         _app = app;

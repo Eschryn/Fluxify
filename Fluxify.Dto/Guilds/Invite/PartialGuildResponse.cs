@@ -22,7 +22,7 @@ namespace Fluxify.Dto.Guilds.Invite;
 public record PartialGuildResponse(
     Snowflake Id,
     string Name,
-    GuildFeatureSchema[] Features,
+    GuildFeature[] Features,
     MediaHash? Icon,
     MediaHash? Banner,
     int? BannerHeight,

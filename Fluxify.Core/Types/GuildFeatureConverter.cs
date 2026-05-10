@@ -13,16 +13,15 @@
 // limitations under the License.
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Fluxify.Dto.Guilds.AuditLog;
+namespace Fluxify.Core.Types;
 
-/// <summary>
-/// Represents a change in an audit log entry
-/// </summary>
-/// <param name="Key">The field that changed</param>
-/// <param name="OldValue">Value before change</param>
-/// <param name="NewValue">Value after change</param>
-public record AuditLogChangeSchema(
-    string Key,
-    JsonElement? OldValue,
-    JsonElement? NewValue);
+public sealed class GuildFeatureConverter : JsonConverter<GuildFeature>
+{
+    public override GuildFeature Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => new(reader.GetString() ?? "");
+
+    public override void Write(Utf8JsonWriter writer, GuildFeature value, JsonSerializerOptions options)
+        => writer.WriteStringValue(value.Value);
+}

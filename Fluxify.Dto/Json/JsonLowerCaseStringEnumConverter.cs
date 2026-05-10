@@ -17,5 +17,5 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Json;
 
-public class JsonLowerCaseStringEnumConverter<T>() 
+public sealed class JsonLowerCaseStringEnumConverter<T>() 
     : JsonStringEnumConverter<T>(JsonNamingPolicy.SnakeCaseLower) where T : struct, Enum;

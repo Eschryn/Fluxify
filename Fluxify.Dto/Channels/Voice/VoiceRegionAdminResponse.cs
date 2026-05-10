@@ -27,7 +27,7 @@ public record VoiceRegionAdminResponse(
     double Latitude,
     double Longitude,
     string Name,
-    GuildFeatureSchema[] RequiredGuildFeatures,
+    GuildFeature[] RequiredGuildFeatures,
     DateTimeOffset? UpdatedAt,
     bool VipOnly
 );

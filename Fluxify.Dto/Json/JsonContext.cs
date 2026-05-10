@@ -207,4 +207,4 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(PackInviteCreateRequest))]
 [JsonSerializable(typeof(CreateWebhookMessageRequest))]
 [JsonSerializable(typeof(WellKnownFluxerResponse))]
-public partial class DtoJsonContext : JsonSerializerContext;
+public sealed partial class DtoJsonContext : JsonSerializerContext;

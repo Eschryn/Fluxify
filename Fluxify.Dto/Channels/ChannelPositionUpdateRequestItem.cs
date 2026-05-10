@@ -18,8 +18,8 @@ namespace Fluxify.Dto.Channels;
 
 public record ChannelPositionUpdateRequest(
     Snowflake Id,
-    bool? LockPermissions,
-    Snowflake? ParentId,
     long Position,
-    Snowflake? PrecedingSiblingId
+    Snowflake? ParentId = null,
+    Snowflake? PrecedingSiblingId = null,
+    bool? LockPermissions = null
 );

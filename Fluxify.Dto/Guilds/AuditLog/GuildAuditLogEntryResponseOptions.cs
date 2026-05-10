@@ -31,6 +31,6 @@ public record GuildAuditLogEntryResponseOptions(
     Snowflake? MessageId,
     string? RoleName,
     [property: JsonConverter(typeof(StringBoolConverter))] bool? Temporary,
-    string? Type,
+    int? Type,
     int? Uses
 );

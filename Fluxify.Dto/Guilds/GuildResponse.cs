@@ -34,7 +34,7 @@ public record GuildResponse(
     int? EmbedSplashHeight,
     int? EmbedSplashWidth,
     GuildExplicitContentFilter ExplicitContentFilter,
-    GuildFeatureSchema[] Features,
+    GuildFeature[] Features,
     MediaHash? Icon,
     Snowflake Id,
     DateTimeOffset? MessageHistoryCutoff,
