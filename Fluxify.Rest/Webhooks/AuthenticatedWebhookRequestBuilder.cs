@@ -98,7 +98,16 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         request,
         cancellationToken: cancellationToken
     );
-
+    
+    public Task DeleteMessageAsync(
+        Snowflake messageId,
+        CancellationToken cancellationToken = default
+    ) => httpClient.RequestAsync(
+        HttpMethod.Delete,
+        string.Format(FormatProvider, MessagesUrl, id, token, messageId),
+        cancellationToken: cancellationToken
+    );
+    
     public Task<WebhookTokenResponse> GetAsync(CancellationToken cancellationToken = default)
         => httpClient.JsonRequestAsync<WebhookTokenResponse>(
             HttpMethod.Get,

@@ -15,6 +15,7 @@
 using System.Runtime.CompilerServices;
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Users;
+using Fluxify.Application.Model.Guild;
 using Fluxify.Application.State;
 using Fluxify.Dto.Guilds.Members;
 
@@ -45,6 +46,8 @@ internal partial class MemberMapper(FluxerApplication application)
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IGuildMember MapFromResponse(MemberInsert insert) => MapMemberFromResponse(insert);
+
+    public partial GuildMemberUpdateRequest MapToRequest(GuildMemberProperties properties);
 
     [MapNestedProperties(nameof(MemberInsert.Response)),
      MapperIgnoreSource(nameof(MemberInsert.UserRef)),

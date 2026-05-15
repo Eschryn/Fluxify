@@ -24,7 +24,7 @@ public class MemberRequestBuilder(HttpClient client, Snowflake guildId, Snowflak
     private static readonly CultureInfo FormatProvider = CultureInfo.InvariantCulture;
     private static readonly CompositeFormat MemberUrl = CompositeFormat.Parse("guilds/{0}/members/{1}");
     private static readonly CompositeFormat RoleUrl = CompositeFormat.Parse("guilds/{0}/members/{1}/roles/{2}");
-    
+
     public Task<GuildMemberResponse> GetAsync(CancellationToken cancellationToken = default)
         => client.JsonRequestAsync<GuildMemberResponse>(
             HttpMethod.Get,
@@ -41,17 +41,19 @@ public class MemberRequestBuilder(HttpClient client, Snowflake guildId, Snowflak
         reason: reason,
         cancellationToken: cancellationToken
     );
-    
+
     public Task<GuildMemberResponse> UpdateAsync(
         GuildMemberUpdateRequest request,
+        string? reason = null,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildMemberUpdateRequest, GuildMemberResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, MemberUrl, guildId, userId),
         request,
-        cancellationToken: cancellationToken
+        reason,
+        cancellationToken
     );
-    
+
     public Task AddRoleAsync(
         Snowflake roleId,
         string? reason = null,
@@ -62,7 +64,7 @@ public class MemberRequestBuilder(HttpClient client, Snowflake guildId, Snowflak
         reason: reason,
         cancellationToken: cancellationToken
     );
-    
+
     public Task RemoveRoleAsync(
         Snowflake roleId,
         string? reason = null,

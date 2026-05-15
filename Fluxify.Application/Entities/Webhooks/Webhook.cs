@@ -47,21 +47,22 @@ public class Webhook(
     public Guild Guild => GuildRef.Value!;
     public IUser? CreatedBy => CreatedByRef?.Value;
 
-    public async Task<Webhook> ModifyAsync(Action<WebhookProperties> properties, CancellationToken cancellationToken = default)
+    public async Task<Webhook> ModifyAsync(Action<WebhookProperties> properties,
+        CancellationToken cancellationToken = default)
     {
         var updateRequest = fluxerApplication.WebhookMapper.ToUpdateRequest(
             fluxerApplication.WebhookMapper.ToProperties(this)
                 .Configure(properties));
-        
+
         var response = await RequestBuilder.UpdateAsync(updateRequest, cancellationToken);
-        
+
         var clonedWebhook = (Webhook)Clone();
         fluxerApplication.WebhookMapper.UpdateEntity(clonedWebhook, response);
-        
+
         return clonedWebhook;
     }
 
-    public Task DeleteAsync(CancellationToken cancellationToken = default) 
+    public Task DeleteAsync(CancellationToken cancellationToken = default)
         => RequestBuilder.DeleteAsync(cancellationToken);
 
     public async Task<Message?> SendMessageAsync(
@@ -98,6 +99,26 @@ public class Webhook(
     ) is { } response
         ? fluxerApplication.MessageMapper.MapFromResponse(response)
         : null!;
+
+    public async Task<Message> EditMessageAsync(
+        Snowflake messageId,
+        Action<MessageEdit> edit,
+        CancellationToken cancellationToken = default
+    ) => await RequestBuilder.UpdateMessageAsync(
+        messageId,
+        fluxerApplication.MessageMapper.MapToRequest(
+            new MessageEdit()
+                .Configure(edit)
+        ),
+        cancellationToken
+    ) is { } response
+        ? fluxerApplication.MessageMapper.MapFromResponse(response)
+        : null!;
+
+    public Task DeleteMessageAsync(
+        Snowflake messageId,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.DeleteMessageAsync(messageId, cancellationToken);
 
     public object Clone() => MemberwiseClone();
 }

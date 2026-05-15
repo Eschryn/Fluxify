@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Model.Guild;
 
-namespace Fluxify.Dto.Guilds.Members;
-
-public record GuildMemberUpdateRequest(
-    Snowflake? ChannelId = null,
-    DateTimeOffset? CommunicationsDisabledUntil = null,
-    string? ConnectionId = null,
-    bool? Deaf = null,
-    bool? Mute = null,
-    string? Nick = null,
-    Snowflake[]? Roles = null,
-    string? TimeoutReason = null
-);
+public class GuildMemberProperties
+{
+    public string? Nick { get; set; } = null;
+    public Snowflake[]? Roles { get; set; } = null;
+    
+    public DateTimeOffset? CommunicationsDisabledUntil { get; set; } = null;
+    public string? TimeoutReason { get; set; } = null;
+        
+    public Snowflake? ChannelId { get; set; } = null;
+    public string? ConnectionId { get; set; } = null;
+    public bool? Deaf { get; set; } = null;
+    public bool? Mute { get; set; } = null;
+}
