@@ -61,7 +61,7 @@ public partial class Guild : GuildMetadata, IEntity, ICloneable<Guild>
 
     public IReadOnlyCollection<IRole> Roles => [..RolesRepository.Cache.GetAllCached().Select(r => r.Value!)];
 
-    public IReadOnlyCollection<IGuildMember> Members =>
+    public IReadOnlyCollection<IGuildMember> CachedMembers =>
         [..MembersRepository.Cache.GetAllCached().Select(x => x.Value!)];
 
     public IReadOnlyDictionary<Snowflake, IGuildChannel> Channels

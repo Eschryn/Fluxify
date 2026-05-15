@@ -49,8 +49,10 @@ public interface IGuildMember : IUser, ICloneable<IGuildMember>
 
     Task BanAsync(
         int? deleteMessageDays = null,
+        // min 60s max 2years
         TimeSpan? banDuration = null,
-        string? reason = null,
+        string? banReason = null,
+        string? auditLogReason = null,
         CancellationToken cancellationToken = default
     );
 

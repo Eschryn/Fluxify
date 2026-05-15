@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Numerics;
 using System.Text.Json.Serialization;
 
 namespace Fluxify.Core.Types;
 
 [JsonConverter(typeof(GuildFeatureConverter))]
-public readonly struct GuildFeature
+public readonly struct GuildFeature 
+    : IEqualityOperators<GuildFeature, GuildFeature, bool>, IEquatable<GuildFeature>
 {
+
     private readonly string _value;
 
     internal GuildFeature(string value)
@@ -59,4 +62,10 @@ public readonly struct GuildFeature
 
     // TODO: Will be removed soon
     public static GuildFeature ContentWarningsBackfilled => new("CONTENT_WARNINGS_BACKFILLED");
+    
+    public static bool operator ==(GuildFeature left, GuildFeature right) => left._value == right._value;
+    public static bool operator !=(GuildFeature left, GuildFeature right) => left._value != right._value;
+    public bool Equals(GuildFeature other) => _value.Equals(other._value);
+    public override bool Equals(object? obj) => obj is GuildFeature other && Equals(other);
+    public override int GetHashCode() => _value.GetHashCode();
 }

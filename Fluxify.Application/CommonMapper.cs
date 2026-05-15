@@ -30,9 +30,15 @@ public static partial class CommonMapper
     
     public static IEmoji MapToEmoji(GuildEmojiResponse e) => e.Id.HasValue ? MapToGuildEmoji(e) : MapToUnicodeEmoji(e);
     
-    [MapDerivedType<GuildStickerResponse, GuildSticker>,
-     MapDerivedType<StickerResponse, Sticker>]
-    public static partial Sticker MapToSticker(StickerResponse e);
+    private static partial Sticker MapToStickerImpl(StickerResponse e);
+    private static partial GuildSticker MapToGuildStickerImpl(GuildStickerResponse e);
+
+
+    public static Sticker MapToSticker(StickerResponse e) => e switch
+    {
+        GuildStickerResponse g => MapToGuildStickerImpl(g),
+        _ => MapToStickerImpl(e)
+    };
     
     [MapperIgnoreSource(nameof(GuildStickerResponse.Id)),
      IncludeMappingConfiguration(nameof(MapToSticker))]

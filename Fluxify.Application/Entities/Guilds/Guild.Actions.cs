@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application.Common;
+using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Entities.Webhooks;
+using Fluxify.Application.Model.AuditLog;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Model.Guild;
+using Fluxify.Dto.Channels;
+using Fluxify.Dto.Guilds.AuditLog;
+using Fluxify.Dto.Guilds.Invite;
+using Fluxify.Dto.Guilds.Members;
+using Fluxify.Dto.Guilds.Settings;
 using Fluxify.Dto.Users.Settings.Security;
 
 namespace Fluxify.Application.Entities.Guilds;
@@ -61,8 +69,8 @@ public partial class Guild
     public async Task<Webhook[]> GetWebhooksAsync(
         CancellationToken cancellationToken = default
     ) => (await RequestBuilder.GetWebhooksAsync(cancellationToken))
-        ?.Select(_app.WebhookMapper.FromResponse)
-        .ToArray() ?? [];
+        .Select(_app.WebhookMapper.FromResponse)
+        .ToArray();
 
     public async Task<Webhook> GetWebhookAsync(
         Snowflake id,
@@ -78,13 +86,17 @@ public partial class Guild
         Snowflake userId,
         int? deleteMessageDays = null,
         TimeSpan? banDuration = null,
-        string? reason = null,
+        string? banReason = null,
+        string? auditLogReason = null,
         CancellationToken cancellationToken = default
     ) => RequestBuilder.BanAsync(
         userId,
-        deleteMessageDays,
-        banDuration,
-        reason,
+        new GuildBanCreateRequest(
+            (long?)banDuration?.TotalSeconds,
+            deleteMessageDays,
+            banReason
+        ),
+        auditLogReason,
         cancellationToken
     );
 

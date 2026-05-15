@@ -115,18 +115,15 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
 
     public Task<GuildBanResponse> BanAsync(
         Snowflake userId,
-        int? deleteMessageDays = null,
-        TimeSpan? banDuration = null,
+        GuildBanCreateRequest request,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync<GuildBanResponse>(
+    ) => client.JsonRequestAsync<GuildBanCreateRequest, GuildBanResponse>(
         HttpMethod.Put,
-        string.Format(FormatProvider, BanUrl, guildId, userId) + new QueryBuilder()
-            .AddQuery("delete_message_days", deleteMessageDays?.ToString())
-            .AddQuery("duration", ((int?)banDuration?.TotalSeconds)?.ToString())
-            .AddQuery("reason", reason),
-        reason: reason,
-        cancellationToken: cancellationToken
+        string.Format(FormatProvider, BanUrl, guildId, userId),
+        request,
+        reason,
+        cancellationToken
     );
 
     public Task UnbanAsync(

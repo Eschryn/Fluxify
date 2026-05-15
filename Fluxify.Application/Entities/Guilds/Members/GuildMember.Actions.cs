@@ -44,9 +44,10 @@ public partial class GuildMember
     public Task BanAsync(
         int? deleteMessageDays = null,
         TimeSpan? banDuration = null,
-        string? reason = null,
+        string? banReason = null,
+        string? auditLogReason = null,
         CancellationToken cancellationToken = default
-    ) => Guild.BanAsync(Id, deleteMessageDays, banDuration, reason, cancellationToken);
+    ) => Guild.BanAsync(Id, deleteMessageDays, banDuration, banReason, auditLogReason, cancellationToken);
 
     public Task UnbanAsync(
         string? reason = null,

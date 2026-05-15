@@ -13,15 +13,15 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
-using Fluxify.Dto.Guilds.Settings;
 
 namespace Fluxify.Dto.Guilds;
 
-public record GuidAdminResponse(
+public record GuildAdminResponse(
     string? Banner,
     GuildFeature[] Features,
     string? Icon,
     Snowflake Id,
     int MemberCount,
     string Name,
-    Snowflake OwnerId);
+    Snowflake OwnerId
+);
