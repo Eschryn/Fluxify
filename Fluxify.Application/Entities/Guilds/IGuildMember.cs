@@ -16,6 +16,7 @@ using System.Drawing;
 using Fluxify.Application.Entities.Roles;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model;
+using Fluxify.Application.Model.Guild;
 using Fluxify.Application.State;
 using Fluxify.Dto.Guilds.Members;
 
@@ -44,5 +45,47 @@ public interface IGuildMember : IUser, ICloneable<IGuildMember>
         ImageFormat format = ImageFormat.Webp,
         ImageQuality quality = ImageQuality.High,
         bool animated = false
+    );
+
+    Task BanAsync(
+        int? deleteMessageDays = null,
+        TimeSpan? banDuration = null,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task UnbanAsync(
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IGuildMember> UpdateAsync(
+        Action<GuildMemberProperties> update,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IGuildMember> SetNicknameAsync(
+        string? nickname,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IGuildMember> SetTimeoutAsync(
+        DateTimeOffset until,
+        string? timeoutReason = null,
+        string? auditLogReason = null,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IGuildMember> RemoveTimeoutAsync(
+        string? reason,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IGuildMember> UpdateRolesAsync(
+        Func<IReadOnlyCollection<IRole>, IEnumerable<Snowflake>> rolesSelector,
+        string? reason = null,
+        CancellationToken cancellationToken = default
     );
 }

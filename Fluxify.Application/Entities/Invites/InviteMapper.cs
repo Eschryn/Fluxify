@@ -30,9 +30,9 @@ public partial class InviteMapper(FluxerApplication fluxerApplication)
     [MapDerivedType<GuildInviteMetadataResponse, GuildChannelInviteMetadata>]
     public partial IInviteMetadata MapFromResponse(InviteMetadataResponseSchema response);
     
-    [MapPropertyFromSource(nameof(GuildInviteResponse.Inviter), Use = nameof(@CacheMapper.ResolveCachedInviter))]
+    [MapPropertyFromSource(nameof(GuildInviteResponse.Inviter), Use = nameof(@InviteMapper.CacheMapper.ResolveCachedInviter))]
     public partial GuildChannelInvite MapFromResponse(GuildInviteResponse response);
     
-    [MapPropertyFromSource(nameof(GuildInviteResponse.Inviter), Use = nameof(@CacheMapper.ResolveCachedInviter))]
+    [MapPropertyFromSource(nameof(GuildInviteResponse.Inviter), Use = nameof(@InviteMapper.CacheMapper.ResolveCachedInviter))]
     public partial GuildChannelInviteMetadata MapFromResponse(GuildInviteMetadataResponse response);
 }
