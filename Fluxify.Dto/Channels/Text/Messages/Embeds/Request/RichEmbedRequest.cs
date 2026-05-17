@@ -17,19 +17,19 @@ using System.ComponentModel.DataAnnotations;
 namespace Fluxify.Dto.Channels.Text.Messages.Embeds.Request;
 
 public sealed record RichEmbedRequest(
-    [property: StringLength(2048)]
+    // max 2048 chars
     string? Url,
-    [property: StringLength(256)]
+    // max 256 chars
     string? Title,
-    [property: Range(0x000000, 0xFFFFFF)]
+    // 24bit colors only
     int? Color,
     DateTimeOffset? Timestamp,
-    [property: StringLength(4096)]
+    // max 4096 chars
     string? Description,
     EmbedAuthorRequest? Author,
     EmbedMediaRequest? Image,
     EmbedMediaRequest? Thumbnail,
     EmbedFooterRequest? Footer,
-    [property: MaxLength(25)]
+    // max 25 fields
     EmbedFieldRequest[]? Fields
 );

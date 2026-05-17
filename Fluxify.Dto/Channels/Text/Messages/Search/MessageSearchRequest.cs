@@ -19,15 +19,21 @@ using Fluxify.Dto.Channels.Text.Messages.Embeds;
 namespace Fluxify.Dto.Channels.Text.Messages.Search;
 
 public record MessageSearchRequest(
-    [property: Range(1, 25)] int? HitsPerPage,
+    // range 1-25
+    int? HitsPerPage,
     int? Page,
     Snowflake? MaxId,
     Snowflake? MinId,
-    [property: StringLength(1024)] string? Content,
-    [property: MaxLength(100)] string[]? Contents,
-    [property: MaxLength(10)] string[]? ExactPhrases,
-    [property: MaxLength(500)] Snowflake[]? ChannelId,
-    [property: MaxLength(500)] Snowflake[]? ExcludeChannelId,
+    // max 1024 chars
+    string? Content,
+    // max 100 search contents
+    string[]? Contents,
+    // max 10 exact phrases
+    string[]? ExactPhrases,
+    // max 500 channel ids
+    Snowflake[]? ChannelId,
+    // max 500 channel ids to exclude
+    Snowflake[]? ExcludeChannelId,
     MessageAuthorType[]? AuthorType,
     MessageAuthorType[]? ExcludeAuthorType,
     Snowflake[]? AuthorId,

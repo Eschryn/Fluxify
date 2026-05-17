@@ -23,10 +23,10 @@ namespace Fluxify.Dto.Channels.Text.Messages.Embeds.Request;
 /// <param name="Name">The author's name.</param>
 /// <param name="Url">The author's URL.</param>
 public sealed record EmbedAuthorRequest(
-    [property: StringLength(2048)]
+    // max 2048 chars
     string? IconUrl,
-    [property: StringLength(256)]
+    // max 256 chars
     string Name,
-    [property: StringLength(2048)]
+    // max 2048 chars
     string? Url
 );

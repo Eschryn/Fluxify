@@ -24,11 +24,11 @@ namespace Fluxify.Dto.Channels.Text.Messages.Attachments;
 /// <param name="Flags">The attachment's flags.</param>
 public sealed record MessageAttachmentRequest(
     Snowflake Id,
-    [property: StringLength(1024)]
+    // max 1024 chars
     string? Title,
-    [property: StringLength(4096)]
+    // max 4096 chars
     string? Description,
-    [property: StringLength(255)]
+    // max 255 chars
     string Filename,
     MessageAttachmentFlags Flags
 );

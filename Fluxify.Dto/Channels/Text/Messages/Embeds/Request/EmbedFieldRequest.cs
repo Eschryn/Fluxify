@@ -18,8 +18,8 @@ namespace Fluxify.Dto.Channels.Text.Messages.Embeds.Request;
 
 public sealed record EmbedFieldRequest(
     bool Inline,
-    [property: StringLength(256)]
+    // max 256 chars
     string Name,
-    [property: StringLength(2048)]
+    // max 2048 chars
     string Value
 );

@@ -17,8 +17,8 @@ using System.ComponentModel.DataAnnotations;
 namespace Fluxify.Dto.Channels.Text.Messages.Embeds.Request;
 
 public sealed record EmbedFooterRequest(
-    [property: StringLength(2048)]
+    // max 2048 chars
     string? IconUrl,
-    [property: StringLength(2048)]
+    // max 2048 chars
     string Text
 );

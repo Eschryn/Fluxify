@@ -17,8 +17,8 @@ using System.ComponentModel.DataAnnotations;
 namespace Fluxify.Dto.Channels.Text.Messages.Embeds.Request;
 
 public sealed record EmbedMediaRequest(
-    [property: StringLength(4096)] 
+    // max 4096 chars
     string? Description,
-    [property: StringLength(2048)]
+    // max 2048 chars
     string Url
 );

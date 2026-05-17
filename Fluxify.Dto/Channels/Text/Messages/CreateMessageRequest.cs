@@ -28,9 +28,11 @@ public record CreateMessageRequest(
     AllowedMentionsSchema? AllowedMentions = null,
     MessageReferenceResponse? MessageReference = null,
     MessageFlags? Flags = null,
-    [StringLength(32)] string? Nonce = null,
+    // max 32 characters
+    string? Nonce = null,
     Snowflake? FavoriteMemeId = null,
-    [MaxLength(3)] Snowflake[]? Stickers = null,
+    // max 3 stickers
+    Snowflake[]? Stickers = null,
     bool? Tts = null,
     FileUpload[]? Files = null
 ) : MultipartDto(Files);
