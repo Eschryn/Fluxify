@@ -21,7 +21,6 @@ using Fluxify.Application.Model.AuditLog;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Model.Guild;
 using Fluxify.Dto.Channels;
-using Fluxify.Dto.Guilds.AuditLog;
 using Fluxify.Dto.Guilds.Invite;
 using Fluxify.Dto.Guilds.Members;
 using Fluxify.Dto.Guilds.Settings;
