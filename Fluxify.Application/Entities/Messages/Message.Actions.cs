@@ -14,11 +14,14 @@
 
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Guild;
 using Fluxify.Application.Model.Messages;
+using Fluxify.Dto.Channels.Text.Messages;
+using Fluxify.Dto.Channels.Text.Messages.Reference;
 
 namespace Fluxify.Application.Entities.Messages;
 
@@ -34,14 +37,51 @@ public partial class Message
         message.MessageReference = new MessageReference
         {
             MessageId = Id,
-            ChannelId = Channel.Id,
+            ChannelId = ChannelRef.Id,
             GuildId = Channel is IGuildChannel guildChannel
                 ? guildChannel.Guild.Id
                 : null,
             Type = MessageReferenceType.Reply
         };
 
+        // might happen for private channels
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (Channel is null)
+        {
+            return _application.MessageMapper.MapFromResponse(
+                await _application.Rest.Channels[ChannelRef.Id].Messages.SendMessageAsync(
+                    _application.MessageMapper.MapToRequest(message),
+                    cancellationToken
+                )
+            );
+        }
+
         return await Channel.SendMessageAsync(message, cancellationToken);
+    }
+
+    public Task<Message> ForwardAsync(
+        ITextChannel textChannel,
+        CancellationToken cancellationToken = default
+    ) => ForwardAsync(textChannel.Id, cancellationToken);
+    
+    public async Task<Message> ForwardAsync(
+        Snowflake channelId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var result = await _application.Rest.Channels[channelId].Messages.SendMessageAsync(
+            new CreateMessageRequest(
+                MessageReference: new MessageReferenceResponse(
+                    ChannelId: ChannelRef.Id,
+                    GuildId: Guild?.Id,
+                    MessageId: Id,
+                    Type: Dto.Channels.Text.Messages.Reference.MessageReferenceType.ForwardedMessage
+                )
+            ),
+            cancellationToken
+        );
+        
+        return _application.MessageMapper.MapFromResponse(result);
     }
 
     public async Task<Message?> ReplyAsync(Action<MessageBuilder> builder,
