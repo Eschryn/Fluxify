@@ -129,17 +129,16 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         cancellationToken: cancellationToken
     );
 
-    public Task<GuildBanResponse> BanAsync(
+    public Task BanAsync(
         Snowflake userId,
         GuildBanCreateRequest request,
         string? reason = null,
         CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync<GuildBanCreateRequest, GuildBanResponse>(
+    ) => client.JsonRequestAsync<GuildBanCreateRequest>(
         HttpMethod.Put,
         string.Format(FormatProvider, BanUrl, guildId, userId),
         request,
         DtoJsonContext.Default.GuildBanCreateRequest,
-        DtoJsonContext.Default.GuildBanResponse,
         reason,
         cancellationToken
     );

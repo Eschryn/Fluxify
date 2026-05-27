@@ -13,11 +13,7 @@
 // limitations under the License.
 
 using Fluxify.Core.Types;
-using Fluxify.Dto.Users;
 
 namespace Fluxify.Gateway.Model.Data.Guild;
 
-public record GatewayBanData(
-    Snowflake GuildId,
-    GatewayBanUser User
-);
+public record GatewayBanUser(Snowflake Id);
