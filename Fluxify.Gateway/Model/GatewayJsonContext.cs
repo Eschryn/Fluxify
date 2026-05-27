@@ -26,6 +26,7 @@ namespace Fluxify.Gateway.Model;
 
 [JsonSourceGenerationOptions(
     WriteIndented = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     NumberHandling = JsonNumberHandling.AllowReadingFromString,
     PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower,
     AllowOutOfOrderMetadataProperties = true

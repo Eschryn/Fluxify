@@ -44,11 +44,17 @@ internal sealed partial class FluxerJsonProtocol(FluxerConfig fluxerConfig) : IW
     {
         try
         {
-#if NET10_0_OR_GREATER
-            return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader, _serializerOptions,
+#if DEBUG
+            using var streamReader = new StreamReader(pipeReader.AsStream());
+            var rawJson = await streamReader.ReadToEndAsync(cancellationToken);
+            Log.LogJsonTrace(_logger, rawJson);
+            
+            return JsonSerializer.Deserialize<GatewayPayload>(rawJson, GatewayJsonContext.Default.GatewayPayload);
+#elif NET10_0_OR_GREATER
+            return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader, GatewayJsonContext.Default.GatewayPayload,
                 cancellationToken);
 #else
-            return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader.AsStream(), _serializerOptions,
+            return await JsonSerializer.DeserializeAsync<GatewayPayload>(pipeReader.AsStream(), GatewayJsonContext.Default.GatewayPayload,
                 cancellationToken);
 #endif
         }
@@ -74,5 +80,8 @@ internal sealed partial class FluxerJsonProtocol(FluxerConfig fluxerConfig) : IW
     {
         [LoggerMessage(0, LogLevel.Error, "Error while deserializing payload:")]
         public static partial void LogDeserializeError(ILogger logger, Exception e);
+
+        [LoggerMessage(1, LogLevel.Trace, "Received JSON payload: {payload}")]
+        public static partial void LogJsonTrace(ILogger logger, string payload);
     }
 }

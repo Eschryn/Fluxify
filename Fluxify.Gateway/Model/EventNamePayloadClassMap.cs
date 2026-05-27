@@ -13,12 +13,14 @@
 // limitations under the License.
 
 using System.Collections.Frozen;
+using System.Text.Json.Serialization.Metadata;
 using Fluxify.Core.Events;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.AuditLog;
+using Fluxify.Dto.Json;
 using Fluxify.Dto.SavedMedia;
 using Fluxify.Dto.Users;
 using Fluxify.Dto.Users.GuildSettings;
@@ -38,11 +40,12 @@ namespace Fluxify.Gateway.Model;
 internal static class EventNamePayloadClassMap
 {
     internal static readonly FrozenDictionary<string, Type> TypeTable;
+    internal static readonly FrozenDictionary<string, JsonTypeInfo?> JsonTypeInfoTable;
     internal static readonly FrozenDictionary<string, Func<IHandlerContainer>> HandlerContainerConstructorTable;
 
     static EventNamePayloadClassMap()
     {
-        var sourceTable = new Dictionary<string, (Type, Func<IHandlerContainer>)>
+        var sourceTable = new Dictionary<string, (Type, Func<IHandlerContainer>, JsonTypeInfo?)>
         {
             { GatewayEvent.Ready, Data<ReadyPayload>() },
             { GatewayEvent.Resumed, Null },
@@ -128,10 +131,19 @@ internal static class EventNamePayloadClassMap
         };
 
         TypeTable = sourceTable.ToFrozenDictionary(k => k.Key, v => v.Value.Item1);
+        JsonTypeInfoTable = sourceTable.ToFrozenDictionary(k => k.Key, v => v.Value.Item3);
         HandlerContainerConstructorTable = sourceTable.ToFrozenDictionary(k => k.Key, v => v.Value.Item2);
     }
 
-    private static readonly (Type, Func<IHandlerContainer>) Null = (typeof(object), () => new HandlerContainer());
+    private static readonly (Type, Func<IHandlerContainer>, JsonTypeInfo?) Null = (typeof(object), () => new HandlerContainer(), GatewayJsonContext.Default.Object);
 
-    private static (Type, Func<IHandlerContainer>) Data<T>() => (typeof(T), () => new HandlerContainer<T>());
+    private static (Type, Func<IHandlerContainer>, JsonTypeInfo?) Data<T>() => (typeof(T), () => new HandlerContainer<T>(), ResolveJsonTypeInfo<T>());
+
+    private static JsonTypeInfo? ResolveJsonTypeInfo<T>()
+    {
+        var type = typeof(T);
+
+        return ((IJsonTypeInfoResolver)GatewayJsonContext.Default).GetTypeInfo(type, GatewayJsonContext.Default.Options)
+               ?? ((IJsonTypeInfoResolver)DtoJsonContext.Default).GetTypeInfo(type, DtoJsonContext.Default.Options);
+    }
 }

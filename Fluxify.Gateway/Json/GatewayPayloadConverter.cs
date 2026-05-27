@@ -14,8 +14,8 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Fluxify.Gateway.Model;
-using Fluxify.Gateway.Model.Data;
 
 namespace Fluxify.Gateway.Json;
 
@@ -25,7 +25,7 @@ public class GatewayPayloadConverter : JsonConverter<GatewayPayload>
     {
         if (reader.TokenType != JsonTokenType.StartObject)
             throw new JsonException();
-        
+
         GatewayOpCode opCode = default;
         string? type = null;
         int sequence = -1;
@@ -36,11 +36,12 @@ public class GatewayPayloadConverter : JsonConverter<GatewayPayload>
             {
                 break;
             }
+
             if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-            
+
             var propertyName = reader.GetString();
             reader.Read();
-            
+
             switch (propertyName)
             {
                 case "op":
@@ -61,7 +62,7 @@ public class GatewayPayloadConverter : JsonConverter<GatewayPayload>
         var dataType = ResolveType(opCode, type);
         return new GatewayPayload(
             opCode,
-            dataType != null ? data?.Deserialize(dataType, options) : null,
+            dataType != null ? data?.Deserialize(dataType) : null,
             sequence,
             type);
     }
@@ -69,7 +70,7 @@ public class GatewayPayloadConverter : JsonConverter<GatewayPayload>
     public override void Write(Utf8JsonWriter writer, GatewayPayload value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
-        
+
         writer.WritePropertyName("op");
         writer.WriteNumberValue((int)value.Opcode);
 
@@ -84,28 +85,24 @@ public class GatewayPayloadConverter : JsonConverter<GatewayPayload>
             writer.WritePropertyName("d");
             JsonSerializer.Serialize(writer, value.Data, value.Data?.GetType() ?? typeof(object), options);
         }
-        
+
         if (value.Sequence.HasValue)
         {
             writer.WritePropertyName("s");
             writer.WriteNumberValue(value.Sequence.Value);
         }
-        
+
         writer.WriteEndObject();
     }
 
-    private Type? ResolveType(GatewayOpCode opCode, string? s)
-    {
-        switch (opCode)
+    private JsonTypeInfo? ResolveType(GatewayOpCode opCode, string? s)
+        => opCode switch
         {
-            case GatewayOpCode.Dispatch:
-                return EventNamePayloadClassMap.TypeTable.GetValueOrDefault(s ?? throw new InvalidOperationException());
-            case GatewayOpCode.Hello:
-                return typeof(HelloPayloadData);
-            case GatewayOpCode.InvalidSession:
-                return typeof(bool);
-        }
-        
-        return null;
-    }
+            GatewayOpCode.Dispatch
+                => EventNamePayloadClassMap.JsonTypeInfoTable
+                    .GetValueOrDefault(s ?? throw new InvalidOperationException()),
+            GatewayOpCode.Hello => GatewayJsonContext.Default.HelloPayloadData,
+            GatewayOpCode.InvalidSession => GatewayJsonContext.Default.Boolean,
+            _ => null
+        };
 }
