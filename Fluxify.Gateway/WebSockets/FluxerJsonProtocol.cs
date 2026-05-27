@@ -28,6 +28,7 @@ internal sealed partial class FluxerJsonProtocol(FluxerConfig fluxerConfig) : IW
     public string EncodingName => "json";
     
     private readonly ILogger _logger = fluxerConfig.LoggerFactory.CreateLogger<FluxerJsonProtocol>();
+    
     private readonly JsonSerializerOptions _serializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,

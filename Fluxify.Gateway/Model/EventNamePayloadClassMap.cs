@@ -142,8 +142,8 @@ internal static class EventNamePayloadClassMap
     private static JsonTypeInfo? ResolveJsonTypeInfo<T>()
     {
         var type = typeof(T);
-
-        return ((IJsonTypeInfoResolver)GatewayJsonContext.Default).GetTypeInfo(type, GatewayJsonContext.Default.Options)
-               ?? ((IJsonTypeInfoResolver)DtoJsonContext.Default).GetTypeInfo(type, DtoJsonContext.Default.Options);
+        
+        return GatewayJsonContext.Default.GetTypeInfo(type)
+               ?? DtoJsonContext.Default.GetTypeInfo(type);
     }
 }
