@@ -17,7 +17,6 @@ using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Entities.Webhooks;
-using Fluxify.Application.Model.AuditLog;
 using Fluxify.Application.Model.Channel;
 using Fluxify.Application.Model.Guild;
 using Fluxify.Dto.Channels;
