@@ -32,6 +32,8 @@ public class GuildsRequestBuilder(HttpClient client)
         HttpMethod.Post,
         GuildsUrl,
         guildCreateRequest,
+        DtoJsonContext.Default.GuildCreateRequest,
+        DtoJsonContext.Default.GuildResponse,
         reason: reason,
         cancellationToken: cancellationToken
     );
@@ -49,6 +51,7 @@ public class GuildsRequestBuilder(HttpClient client)
             .AddQuery("after", after?.ToString())
             .AddQuery("limit", limit?.ToString())
             .AddQuery("with_counts", withCounts?.ToString().ToLowerInvariant()),
+        DtoJsonContext.Default.GuildResponseArray,
         cancellationToken: cancellationToken
     );
 }

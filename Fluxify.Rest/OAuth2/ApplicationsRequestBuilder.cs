@@ -30,6 +30,8 @@ public class ApplicationsRequestBuilder(HttpClient httpClient)
         HttpMethod.Post,
         ApplicationsCreateUrl,
         request,
+        DtoJsonContext.Default.ApplicationCreateRequest,
+        DtoJsonContext.Default.ApplicationResponse,
         cancellationToken: cancellationToken
     );
 
@@ -38,6 +40,7 @@ public class ApplicationsRequestBuilder(HttpClient httpClient)
     ) => httpClient.JsonRequestAsync<ApplicationsMeResponse[]>(
         HttpMethod.Get,
         UserApplicationsUrl,
+        DtoJsonContext.Default.ApplicationsMeResponseArray,
         cancellationToken: cancellationToken
     );
     
@@ -47,6 +50,7 @@ public class ApplicationsRequestBuilder(HttpClient httpClient)
         => httpClient.JsonRequestAsync<OAuth2MeResponseApplication[]>(
             HttpMethod.Get,
             ApplicationsUrl,
+            DtoJsonContext.Default.OAuth2MeResponseApplicationArray,
             cancellationToken: cancellationToken
         );
 }

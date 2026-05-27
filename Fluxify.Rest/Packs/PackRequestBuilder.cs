@@ -30,6 +30,7 @@ public class PackRequestBuilder(HttpClient httpClient, Snowflake id)
     ) => httpClient.JsonRequestAsync<InviteMetadataResponseSchema[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, PackUrl, id),
+        DtoJsonContext.Default.InviteMetadataResponseSchemaArray,
         cancellationToken: cancellationToken
     );
 
@@ -40,6 +41,8 @@ public class PackRequestBuilder(HttpClient httpClient, Snowflake id)
         HttpMethod.Post,
         string.Format(FormatProvider, PackUrl, id),
         request,
+        DtoJsonContext.Default.PackInviteCreateRequest,
+        DtoJsonContext.Default.InviteMetadataResponseSchema,
         cancellationToken: cancellationToken
     );
 }

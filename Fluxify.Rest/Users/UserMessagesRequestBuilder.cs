@@ -29,6 +29,7 @@ public class UserMessagesRequestBuilder(HttpClient client)
         HttpMethod.Post,
         DeleteUrl,
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
     
@@ -37,6 +38,7 @@ public class UserMessagesRequestBuilder(HttpClient client)
     ) => (await client.JsonRequestAsync<SuccessResponse>(
         HttpMethod.Delete,
         DeleteUrl,
+        DtoJsonContext.Default.SuccessResponse,
         cancellationToken: cancellationToken
     )).Success;
     

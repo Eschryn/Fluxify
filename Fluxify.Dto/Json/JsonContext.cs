@@ -17,6 +17,7 @@ using Fluxify.Core.Types;
 using Fluxify.Dto.Channels;
 using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.Text.Messages;
+using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
 using Fluxify.Dto.Channels.Text.Messages.Pin;
 using Fluxify.Dto.Channels.Voice;
 using Fluxify.Dto.Common;
@@ -57,7 +58,9 @@ namespace Fluxify.Dto.Json;
 
 [JsonSourceGenerationOptions(
     NumberHandling = JsonNumberHandling.AllowReadingFromString,
-    AllowOutOfOrderMetadataProperties = true
+    AllowOutOfOrderMetadataProperties = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower
 )]
 [JsonSerializable(typeof(Snowflake))]
 [JsonSerializable(typeof(Snowflake[]))]
@@ -195,6 +198,7 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(ApplicationPublicResponse))]
 [JsonSerializable(typeof(WebhookCreateRequest))]
 [JsonSerializable(typeof(WebhookResponse))]
+[JsonSerializable(typeof(WebhookResponse[]))]
 [JsonSerializable(typeof(WebhookUpdateRequest))]
 [JsonSerializable(typeof(WebhookTokenUpdateRequest))]
 [JsonSerializable(typeof(WebhookTokenResponse))]
@@ -203,9 +207,14 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(SlackWebhookRequest))]
 [JsonSerializable(typeof(InviteResponseSchema))]
 [JsonSerializable(typeof(InviteMetadataResponseSchema))]
+[JsonSerializable(typeof(InviteMetadataResponseSchema[]))]
 [JsonSerializable(typeof(ChannelInviteCreateRequest))]
 [JsonSerializable(typeof(PackInviteCreateRequest))]
 [JsonSerializable(typeof(CreateWebhookMessageRequest))]
 [JsonSerializable(typeof(WellKnownFluxerResponse))]
 [JsonSerializable(typeof(GuildBanCreateRequest))]
+[JsonSerializable(typeof(BulkDeleteMessagesRequest))]
+[JsonSerializable(typeof(GuildEmojiUpdateRequest))]
+[JsonSerializable(typeof(GuildCreateRequest))]
+[JsonSerializable(typeof(PreloadMessagesRequest))]
 public sealed partial class DtoJsonContext : JsonSerializerContext;

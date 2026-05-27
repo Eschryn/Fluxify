@@ -42,6 +42,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         => client.JsonRequestAsync<ChannelResponse>(
             HttpMethod.Get,
             Uri(GetUrl, id),
+            DtoJsonContext.Default.ChannelResponse,
             cancellationToken: cancellationToken
         );
 
@@ -51,7 +52,10 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<ChannelUpdateRequest, ChannelResponse>(
         HttpMethod.Patch,
-        Uri(GetUrl, id), request,
+        Uri(GetUrl, id),
+        request,
+        DtoJsonContext.Default.ChannelUpdateRequest,
+        DtoJsonContext.Default.ChannelResponse,
         reason: reason,
         cancellationToken: cancellationToken
     );
@@ -71,6 +75,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         HttpMethod.Put,
         string.Format(FormatProvider, OverwriteUrl, id, overwrite.Id),
         overwrite,
+        DtoJsonContext.Default.ChannelPermissionOverwrite,
         cancellationToken: cancellationToken
     );
 
@@ -113,6 +118,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     ) => client.JsonRequestAsync<RtcRegion[]>(
         HttpMethod.Get,
         Uri(RtcRegionUrl, id),
+        DtoJsonContext.Default.RtcRegionArray,
         cancellationToken: cancellationToken
     );
 
@@ -128,6 +134,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     ) => client.JsonRequestAsync<InviteMetadataResponseSchema[]>(
         HttpMethod.Get,
         Uri(InvitesUrl, id),
+        DtoJsonContext.Default.InviteMetadataResponseSchemaArray,
         cancellationToken: cancellationToken
     );
 
@@ -138,6 +145,8 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         HttpMethod.Post,
         Uri(InvitesUrl, id),
         request,
+        DtoJsonContext.Default.ChannelInviteCreateRequest,
+        DtoJsonContext.Default.InviteMetadataResponseSchema,
         cancellationToken: cancellationToken
     );
 
@@ -146,6 +155,7 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
     ) => client.JsonRequestAsync<WebhookResponse[]>(
         HttpMethod.Get,
         Uri(WebhooksUrl, id),
+        DtoJsonContext.Default.WebhookResponseArray,
         cancellationToken: cancellationToken
     );
 
@@ -156,6 +166,8 @@ public class ChannelRequestBuilder(HttpClient client, Snowflake id)
         HttpMethod.Post,
         Uri(WebhooksUrl, id),
         request,
+        DtoJsonContext.Default.WebhookCreateRequest,
+        DtoJsonContext.Default.WebhookResponse,
         cancellationToken: cancellationToken
     );
 

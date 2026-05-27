@@ -32,6 +32,7 @@ public class RolesRequestBuilder(HttpClient client, Snowflake guildId)
         => client.JsonRequestAsync<GuildRoleResponse[]>(
             HttpMethod.Get,
             Uri(RolesUrl, guildId),
+            DtoJsonContext.Default.GuildRoleResponseArray,
             cancellationToken: cancellationToken
         );
 
@@ -42,6 +43,8 @@ public class RolesRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Post,
         Uri(RolesUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildRoleCreateRequest,
+        DtoJsonContext.Default.GuildRoleResponse,
         cancellationToken: cancellationToken
     );
 
@@ -52,6 +55,7 @@ public class RolesRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Patch,
         Uri(RolesUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildRolePositionItem,
         cancellationToken: cancellationToken
     );
     
@@ -69,6 +73,7 @@ public class RolesRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Patch,
         Uri(RolesHoistUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildRoleHoistPositionItem,
         cancellationToken: cancellationToken
     );
     
@@ -80,6 +85,8 @@ public class RolesRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Patch,
         Uri(RolesUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildRoleUpdateRequest,
+        DtoJsonContext.Default.GuildRoleResponse,
         cancellationToken: cancellationToken
     );
 

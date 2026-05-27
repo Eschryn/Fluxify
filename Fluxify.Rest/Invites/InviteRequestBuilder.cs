@@ -28,6 +28,7 @@ public class InviteRequestBuilder(HttpClient httpClient, string code)
     ) => httpClient.JsonRequestAsync<InviteMetadataResponseSchema>(
         HttpMethod.Get,
         string.Format(FormatProvider, InviteUrl, code),
+        DtoJsonContext.Default.InviteMetadataResponseSchema,
         cancellationToken: cancellationToken
     );
 
@@ -36,6 +37,7 @@ public class InviteRequestBuilder(HttpClient httpClient, string code)
     ) => httpClient.JsonRequestAsync<InviteResponseSchema>(
         HttpMethod.Post,
         string.Format(FormatProvider, InviteUrl, code),
+        DtoJsonContext.Default.InviteResponseSchema,
         cancellationToken: cancellationToken
     );
 

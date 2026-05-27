@@ -30,6 +30,7 @@ public class ScheduledMessagesRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<ScheduleMessageResponseSchema[]>(
         HttpMethod.Get,
         ScheduledMessagesUrl,
+        DtoJsonContext.Default.ScheduleMessageResponseSchemaArray,
         cancellationToken: cancellationToken
     );
     
@@ -39,6 +40,7 @@ public class ScheduledMessagesRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<ScheduleMessageResponseSchema>(
         HttpMethod.Get,
         string.Format(FormatProvider, ScheduledMessageUrl, messageId),
+        DtoJsonContext.Default.ScheduleMessageResponseSchema,
         cancellationToken: cancellationToken
     );
     
@@ -59,6 +61,8 @@ public class ScheduledMessagesRequestBuilder(HttpClient client)
         HttpMethod.Patch,
         string.Format(FormatProvider, ScheduledMessageUrl, scheduledMessageId),
         request,
+        DtoJsonContext.Default.ScheduledMessageSchema,
+        DtoJsonContext.Default.ScheduleMessageResponseSchema,
         cancellationToken: cancellationToken
     );
 }

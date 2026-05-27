@@ -30,6 +30,7 @@ public class OAuth2RequestBuilder(HttpClient httpClient)
         => httpClient.JsonRequestAsync<OAuth2MeResponse>(
             HttpMethod.Get,
             MeUrl,
+            DtoJsonContext.Default.OAuth2MeResponse,
             cancellationToken: cancellationToken
         );
 
@@ -38,13 +39,15 @@ public class OAuth2RequestBuilder(HttpClient httpClient)
         => httpClient.JsonRequestAsync<OAuth2AuthorizationResponse[]>(
             HttpMethod.Get,
             AuthorizationsUrl,
+            DtoJsonContext.Default.OAuth2AuthorizationResponseArray,
             cancellationToken: cancellationToken
         );
 
-    public Task RevokeAuthorizationAsync(string applicationId, CancellationToken cancellationToken = default)
+    public Task<OAuth2AuthorizationResponse> RevokeAuthorizationAsync(string applicationId, CancellationToken cancellationToken = default)
         => httpClient.JsonRequestAsync<OAuth2AuthorizationResponse>(
             HttpMethod.Delete,
             string.Format(CultureInfo.InvariantCulture, AuthorizationUrl, applicationId),
+            DtoJsonContext.Default.OAuth2AuthorizationResponse,
             cancellationToken: cancellationToken
         );
 }

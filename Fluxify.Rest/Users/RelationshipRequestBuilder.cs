@@ -31,6 +31,8 @@ public class RelationshipRequestBuilder(HttpClient client, Snowflake userId)
         HttpMethod.Put,
         string.Format(FormatProvider, RelationshipUrl, userId),
         request,
+        DtoJsonContext.Default.RelationshipTypePutRequest,
+        DtoJsonContext.Default.RelationshipResponse,
         cancellationToken: cancellationToken
     );
     
@@ -39,6 +41,7 @@ public class RelationshipRequestBuilder(HttpClient client, Snowflake userId)
     ) => client.JsonRequestAsync<RelationshipResponse>(
         HttpMethod.Post,
         string.Format(FormatProvider, RelationshipUrl, userId),
+        DtoJsonContext.Default.RelationshipResponse,
         cancellationToken: cancellationToken
     );
 
@@ -57,6 +60,8 @@ public class RelationshipRequestBuilder(HttpClient client, Snowflake userId)
         HttpMethod.Patch,
         string.Format(FormatProvider, RelationshipUrl, userId),
         request,
+        DtoJsonContext.Default.RelationshipNicknameUpdateRequest,
+        DtoJsonContext.Default.RelationshipResponse,
         cancellationToken: cancellationToken
     );
 }

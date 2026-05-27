@@ -29,6 +29,7 @@ public class MemberRequestBuilder(HttpClient client, Snowflake guildId, Snowflak
         => client.JsonRequestAsync<GuildMemberResponse>(
             HttpMethod.Get,
             string.Format(FormatProvider, MemberUrl, guildId, userId),
+            DtoJsonContext.Default.GuildMemberResponse,
             cancellationToken: cancellationToken
         );
 
@@ -50,6 +51,8 @@ public class MemberRequestBuilder(HttpClient client, Snowflake guildId, Snowflak
         HttpMethod.Patch,
         string.Format(FormatProvider, MemberUrl, guildId, userId),
         request,
+        DtoJsonContext.Default.GuildMemberUpdateRequest,
+        DtoJsonContext.Default.GuildMemberResponse,
         reason,
         cancellationToken
     );

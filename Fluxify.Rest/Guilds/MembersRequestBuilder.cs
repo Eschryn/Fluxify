@@ -38,6 +38,7 @@ public class MembersRequestBuilder(HttpClient client, Snowflake guildId)
         string.Format(FormatProvider, MembersUrl, guildId) + new QueryBuilder()
             .AddQuery("limit", limit?.ToString())
             .AddQuery("after", after?.ToString()),
+        DtoJsonContext.Default.GuildMemberResponseArray,
         cancellationToken: cancellationToken
     );
 
@@ -48,6 +49,8 @@ public class MembersRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Post,
         string.Format(FormatProvider, SearchUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildMemberSearchRequest,
+        DtoJsonContext.Default.GuildMemberSearchResponse,
         cancellationToken: cancellationToken
     );
     
@@ -58,6 +61,8 @@ public class MembersRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Patch,
         string.Format(FormatProvider, MembersMeUrl, guildId),
         request,
+        DtoJsonContext.Default.MyGuildMemberUpdateRequest,
+        DtoJsonContext.Default.GuildMemberResponse,
         cancellationToken: cancellationToken
     );
 }

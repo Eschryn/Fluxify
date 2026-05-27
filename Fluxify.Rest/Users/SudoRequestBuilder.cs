@@ -27,6 +27,7 @@ public class SudoRequestBuilder(HttpClient client)
         => client.JsonRequestAsync<SudoMfaMethodsResponse>(
             HttpMethod.Get,
             MfaMethodsUrl,
+            DtoJsonContext.Default.SudoMfaMethodsResponse,
             cancellationToken: cancellationToken
         );
     
@@ -43,6 +44,7 @@ public class SudoRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<WebAuthnChallengeResponse>(
         HttpMethod.Post,
         WebAuthnOptionsUrl,
+        DtoJsonContext.Default.WebAuthnChallengeResponse,
         cancellationToken: cancellationToken
     );
 }

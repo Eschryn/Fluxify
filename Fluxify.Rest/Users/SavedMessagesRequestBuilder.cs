@@ -33,6 +33,7 @@ public class SavedMessagesRequestBuilder(HttpClient client)
         HttpMethod.Get,
         SavedMessagesUrl + new QueryBuilder()
             .AddQuery("limit", limit?.ToString()),
+        DtoJsonContext.Default.SavedMessageEntryResponseArray,
         cancellationToken: cancellationToken
     );
 
@@ -43,6 +44,7 @@ public class SavedMessagesRequestBuilder(HttpClient client)
         HttpMethod.Post,
         SavedMessagesUrl,
         request,
+        DtoJsonContext.Default.SaveMessageRequest,
         cancellationToken: cancellationToken
     );
     

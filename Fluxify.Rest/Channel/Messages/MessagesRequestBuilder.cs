@@ -40,6 +40,8 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
             HttpMethod.Post,
             Uri(GetUrl, channelId),
             createRequest,
+            DtoJsonContext.Default.CreateMessageRequest,
+            DtoJsonContext.Default.MessageResponse,
             cancellationToken: cancellationToken
         );
 
@@ -56,6 +58,7 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
             .AddQuery("before", before?.ToString(FormatProvider))
             .AddQuery("after", after?.ToString(FormatProvider))
             .AddQuery("around", around?.ToString(FormatProvider)),
+        DtoJsonContext.Default.MessageResponseArray,
         cancellationToken: cancellationToken
     );
 
@@ -70,6 +73,7 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
         HttpMethod.Post,
         Uri(BulkDeleteUrl, channelId),
         request,
+        DtoJsonContext.Default.BulkDeleteMessagesRequest,
         cancellationToken: cancellationToken
     );
 
@@ -80,6 +84,8 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
         HttpMethod.Post,
         Uri(ScheduleUrl, channelId),
         request,
+        DtoJsonContext.Default.ScheduledMessageSchema,
+        DtoJsonContext.Default.ScheduleMessageResponseSchema,
         cancellationToken: cancellationToken
     );
 }

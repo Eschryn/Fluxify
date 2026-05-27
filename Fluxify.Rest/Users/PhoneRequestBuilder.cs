@@ -30,6 +30,7 @@ public class PhoneRequestBuilder(HttpClient client)
         HttpMethod.Post,
         PhoneUrl,
         request,
+        DtoJsonContext.Default.PhoneAddRequest,
         cancellationToken: cancellationToken
     );
     
@@ -40,6 +41,7 @@ public class PhoneRequestBuilder(HttpClient client)
         HttpMethod.Delete,
         PhoneUrl,
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
     
@@ -50,6 +52,7 @@ public class PhoneRequestBuilder(HttpClient client)
         HttpMethod.Post,
         SendVerificationUrl,
         request,
+        DtoJsonContext.Default.PhoneSendVerificationRequest,
         cancellationToken: cancellationToken
     );
     
@@ -60,6 +63,8 @@ public class PhoneRequestBuilder(HttpClient client)
         HttpMethod.Post,
         VerifyUrl,
         request,
+        DtoJsonContext.Default.PhoneVerifyRequest,
+        DtoJsonContext.Default.PhoneVerifyResponse,
         cancellationToken: cancellationToken
     );
 }

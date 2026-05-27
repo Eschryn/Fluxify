@@ -29,6 +29,7 @@ public class NoteRequestBuilder(HttpClient client, Snowflake userId)
     ) => client.JsonRequestAsync<UserNoteResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, NoteUrl, userId),
+        DtoJsonContext.Default.UserNoteResponse,
         cancellationToken: cancellationToken
     );
     
@@ -39,6 +40,7 @@ public class NoteRequestBuilder(HttpClient client, Snowflake userId)
         HttpMethod.Put,
         string.Format(FormatProvider, NoteUrl, userId),
         request,
+        DtoJsonContext.Default.UserNoteUpdateRequest,
         cancellationToken: cancellationToken
     );
 }

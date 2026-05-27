@@ -28,6 +28,7 @@ public class WebhookRequestBuilder(HttpClient httpClient, Snowflake id)
         => httpClient.JsonRequestAsync<WebhookResponse>(
             HttpMethod.Get,
             string.Format(FormatProvider, WebhookUrl, id),
+            DtoJsonContext.Default.WebhookResponse,
             cancellationToken: cancellationToken
         );
 
@@ -45,6 +46,8 @@ public class WebhookRequestBuilder(HttpClient httpClient, Snowflake id)
         HttpMethod.Patch,
         string.Format(FormatProvider, WebhookUrl, id),
         request,
+        DtoJsonContext.Default.WebhookUpdateRequest,
+        DtoJsonContext.Default.WebhookResponse,
         cancellationToken: cancellationToken
     );
 }

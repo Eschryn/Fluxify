@@ -36,6 +36,8 @@ public class PushRequestBuilder(HttpClient client)
         HttpMethod.Post,
         SubscribeUrl,
         request,
+        DtoJsonContext.Default.PushSubscribeRequest,
+        DtoJsonContext.Default.PushSubscribeResponse,
         cancellationToken: cancellationToken
     );
     
@@ -44,6 +46,7 @@ public class PushRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<PushSubscriptionListResponse>(
         HttpMethod.Get,
         SubscriptionsUrl,
+        DtoJsonContext.Default.PushSubscriptionListResponse,
         cancellationToken: cancellationToken
     );
 
@@ -53,6 +56,7 @@ public class PushRequestBuilder(HttpClient client)
     ) => (await client.JsonRequestAsync<SuccessResponse>(
         HttpMethod.Delete,
         string.Format(FormatProvider, SubscriptionUrl, subscriptionId),
+        DtoJsonContext.Default.SuccessResponse,
         cancellationToken: cancellationToken
     )).Success;
 }

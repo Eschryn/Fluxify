@@ -57,6 +57,7 @@ public class MeRequestBuilder(HttpClient client)
         => client.JsonRequestAsync<UserPrivateReponse>(
             HttpMethod.Get,
             MeUrl,
+            DtoJsonContext.Default.UserPrivateReponse,
             cancellationToken: cancellationToken
         );
 
@@ -67,6 +68,8 @@ public class MeRequestBuilder(HttpClient client)
         HttpMethod.Patch,
         MeUrl,
         request,
+        DtoJsonContext.Default.UserUpdateWithVerificationRequest,
+        DtoJsonContext.Default.UserPrivateReponse,
         cancellationToken: cancellationToken
     );
 
@@ -76,6 +79,7 @@ public class MeRequestBuilder(HttpClient client)
             HttpMethod.Delete,
             AuthorizedIpsUrl,
             request,
+            DtoJsonContext.Default.SudoVerificationSchema,
             cancellationToken: cancellationToken
         );
 
@@ -86,6 +90,7 @@ public class MeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         DeleteUrl,
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
 
@@ -96,6 +101,7 @@ public class MeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         DisableUrl,
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
 
@@ -104,6 +110,7 @@ public class MeRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<GiftCodeMetadataResponse[]>(
         HttpMethod.Get,
         GiftsUrl,
+        DtoJsonContext.Default.GiftCodeMetadataResponseArray,
         cancellationToken: cancellationToken
     );
 
@@ -114,6 +121,8 @@ public class MeRequestBuilder(HttpClient client)
         HttpMethod.Patch,
         DmSettingsUrl,
         request,
+        DtoJsonContext.Default.UserGuildSettingsRequest,
+        DtoJsonContext.Default.UserGuildSettingsResponse,
         cancellationToken: cancellationToken
     );
 
@@ -125,6 +134,8 @@ public class MeRequestBuilder(HttpClient client)
         HttpMethod.Patch,
         string.Format(FormatProvider, GuildSettingsUrl, guildId),
         request,
+        DtoJsonContext.Default.UserGuildSettingsRequest,
+        DtoJsonContext.Default.UserGuildSettingsResponse,
         cancellationToken: cancellationToken
     );
 
@@ -138,6 +149,7 @@ public class MeRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<MessageResponse[]>(
         HttpMethod.Get,
         MentionsUrl,
+        DtoJsonContext.Default.MessageResponseArray,
         cancellationToken: cancellationToken
     );
 
@@ -157,6 +169,8 @@ public class MeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         PreloadUrl,
         request,
+        DtoJsonContext.Default.PreloadMessagesRequest,
+        DtoJsonContext.Default.DictionarySnowflakeMessageResponse,
         cancellationToken: cancellationToken
     );
 
@@ -176,6 +190,7 @@ public class MeRequestBuilder(HttpClient client)
         => client.JsonRequestAsync<UserSettings>(
             HttpMethod.Get,
             SettingsUrl,
+            DtoJsonContext.Default.UserSettings,
             cancellationToken: cancellationToken
         );
 
@@ -186,6 +201,8 @@ public class MeRequestBuilder(HttpClient client)
         HttpMethod.Patch,
         SettingsUrl,
         request,
+        DtoJsonContext.Default.UserSettingsUpdateRequest,
+        DtoJsonContext.Default.UserSettings,
         cancellationToken: cancellationToken
     );
 }

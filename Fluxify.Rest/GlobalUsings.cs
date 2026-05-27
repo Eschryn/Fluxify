@@ -12,20 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Dto.Gateway;
-
-namespace Fluxify.Rest;
-
-public class GatewayRequestBuilder(HttpClient client)
-{
-    private const string BotUrl = "gateway/bot";
-    
-    public Task<GatewayBotResponse> GetGatewayBotAsync(
-        CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync<GatewayBotResponse>(
-        HttpMethod.Get,
-        BotUrl,
-        DtoJsonContext.Default.GatewayBotResponse,
-        cancellationToken: cancellationToken
-    );
-}
+global using Fluxify.Dto.Json;

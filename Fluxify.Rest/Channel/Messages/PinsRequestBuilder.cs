@@ -34,6 +34,7 @@ public class PinsRequestBuilder(HttpClient client, Snowflake channelId)
             Uri(GetUrl, channelId) + new QueryBuilder()
                 .AddQuery("limit", limit?.ToString())
                 .AddQuery("before", before?.ToString("R")),
+            DtoJsonContext.Default.ChannelPinsResponse,
             cancellationToken: cancellationToken
         );
     

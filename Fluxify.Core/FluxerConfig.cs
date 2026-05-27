@@ -47,7 +47,6 @@ public class FluxerConfig
             PooledConnectionLifetime = TimeSpan.FromMinutes(15)
         };
         
-        
         var authenticationHeaderHandler = cfg.ServiceProvider.GetRequiredService<AuthenticationHeaderHandler>();
         authenticationHeaderHandler.InnerHandler = socketsHttpHandler;
             

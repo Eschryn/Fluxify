@@ -40,6 +40,7 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         HttpMethod.Post,
         string.Format(FormatProvider, GitHubWebhookUrl, id, token),
         webhook,
+        DtoJsonContext.Default.GitHubWebhook,
         cancellationToken: cancellationToken
     );
 
@@ -50,6 +51,7 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         HttpMethod.Post,
         string.Format(FormatProvider, SentryWebhookUrl, id, token),
         webhook,
+        DtoJsonContext.Default.SentryWebhook,
         cancellationToken: cancellationToken
     );
 
@@ -60,6 +62,7 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         HttpMethod.Post,
         string.Format(FormatProvider, SlackWebhookUrl, id, token),
         webhook,
+        DtoJsonContext.Default.SlackWebhookRequest,
         cancellationToken: cancellationToken
     );
 
@@ -76,12 +79,15 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
                     HttpMethod.Post, 
                     string.Format(FormatProvider, WebhookWaitUrl, id, token),
                     request,
+                    DtoJsonContext.Default.CreateWebhookMessageRequest,
+                    DtoJsonContext.Default.MessageResponse,
                     cancellationToken: cancellationToken);
             default:
                 await httpClient.MultipartJsonRequestAsync(
                     HttpMethod.Post,
                     string.Format(FormatProvider, WebhookUrl, id, token),
                     request,
+                    DtoJsonContext.Default.CreateWebhookMessageRequest,
                     cancellationToken: cancellationToken);
                 
                 return null;
@@ -96,6 +102,8 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         HttpMethod.Patch,
         string.Format(FormatProvider, MessagesUrl, id, token, messageId),
         request,
+        DtoJsonContext.Default.UpdateMessageRequest,
+        DtoJsonContext.Default.MessageResponse,
         cancellationToken: cancellationToken
     );
     
@@ -112,6 +120,7 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         => httpClient.JsonRequestAsync<WebhookTokenResponse>(
             HttpMethod.Get,
             string.Format(FormatProvider, WebhookUrl, id, token),
+            DtoJsonContext.Default.WebhookTokenResponse,
             cancellationToken: cancellationToken
         );
 
@@ -129,6 +138,8 @@ public class AuthenticatedWebhookRequestBuilder(HttpClient httpClient, Snowflake
         HttpMethod.Patch,
         string.Format(FormatProvider, WebhookUrl, id, token),
         request,
+        DtoJsonContext.Default.WebhookTokenUpdateRequest,
+        DtoJsonContext.Default.WebhookTokenResponse,
         cancellationToken: cancellationToken
     );
 }

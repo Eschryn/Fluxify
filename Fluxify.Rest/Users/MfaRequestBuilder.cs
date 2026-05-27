@@ -39,6 +39,8 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Post,
         BackupCodesUrl,
         request,
+        DtoJsonContext.Default.MfaBackupCodesRequest,
+        DtoJsonContext.Default.MfaBackupCodesResponse,
         cancellationToken: cancellationToken
     );
     
@@ -49,6 +51,7 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Post,
         SmsDisableUrl,
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
     
@@ -59,6 +62,7 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Post,
         SmsEnableUrl,
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
     
@@ -69,6 +73,7 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Post,
         TotpDisableUrl,
         request,
+        DtoJsonContext.Default.DisableTotpRequest,
         cancellationToken: cancellationToken
     );
     
@@ -79,6 +84,8 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Post,
         TotpEnableUrl,
         request,
+        DtoJsonContext.Default.EnableMfaTotpRequest,
+        DtoJsonContext.Default.MfaBackupCodesResponse,
         cancellationToken: cancellationToken
     );
 
@@ -87,6 +94,7 @@ public class MfaRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<WebAuthnCredentialsResponse>(
         HttpMethod.Get,
         WebAuthnCredentialsUrl,
+        DtoJsonContext.Default.WebAuthnCredentialsResponse,
         cancellationToken: cancellationToken
     );
 
@@ -97,6 +105,7 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Post,
         WebAuthnCredentialsUrl,
         request,
+        DtoJsonContext.Default.WebAuthnRegisterRequest,
         cancellationToken: cancellationToken
     );
     
@@ -107,6 +116,8 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Post,
         WebAuthnCredentialsRegistrationOptionsUrl,
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
+        DtoJsonContext.Default.WebAuthnChallengeResponse,
         cancellationToken: cancellationToken
     );
     
@@ -118,6 +129,7 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Delete,
         string.Format(FormatProvider, WebAuthnCredentialUrl, credentialId),
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
     
@@ -129,6 +141,7 @@ public class MfaRequestBuilder(HttpClient client)
         HttpMethod.Patch,
         string.Format(FormatProvider, WebAuthnCredentialUrl, credentialId),
         request,
+        DtoJsonContext.Default.WebAuthnCredentialUpdateRequest,
         cancellationToken: cancellationToken
     );
 }

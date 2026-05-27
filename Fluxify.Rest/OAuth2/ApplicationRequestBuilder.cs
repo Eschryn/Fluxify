@@ -31,6 +31,7 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
         CancellationToken cancellationToken = default
     ) => httpClient.JsonRequestAsync<ApplicationResponse>(HttpMethod.Get,
         string.Format(CultureInfo.InvariantCulture, ApplicationUrl, applicationId),
+        DtoJsonContext.Default.ApplicationResponse,
         cancellationToken: cancellationToken
     );
 
@@ -40,6 +41,7 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
     ) => httpClient.JsonRequestAsync(HttpMethod.Delete,
         string.Format(CultureInfo.InvariantCulture, ApplicationUrl, applicationId),
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
         cancellationToken: cancellationToken
     );
 
@@ -49,6 +51,8 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
     ) => httpClient.JsonRequestAsync<ApplicationUpdateRequest, ApplicationResponse>(HttpMethod.Patch,
         string.Format(CultureInfo.InvariantCulture, ApplicationUrl, applicationId),
         request,
+        DtoJsonContext.Default.ApplicationUpdateRequest,
+        DtoJsonContext.Default.ApplicationResponse,
         cancellationToken: cancellationToken
     );
 
@@ -59,6 +63,8 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
         HttpMethod.Patch,
         string.Format(CultureInfo.InvariantCulture, BotUrl, applicationId),
         request,
+        DtoJsonContext.Default.BotProfileUpdateRequest,
+        DtoJsonContext.Default.BotProfileResponse,
         cancellationToken: cancellationToken
     );
 
@@ -69,6 +75,8 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
         HttpMethod.Post,
         string.Format(CultureInfo.InvariantCulture, ResetTokenUrl, applicationId),
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
+        DtoJsonContext.Default.BotTokenResetResponse,
         cancellationToken: cancellationToken
     );
     
@@ -79,6 +87,8 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
         HttpMethod.Post,
         string.Format(CultureInfo.InvariantCulture, ResetSecretUrl, applicationId),
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
+        DtoJsonContext.Default.ApplicationResponse,
         cancellationToken: cancellationToken
     );
     
@@ -87,6 +97,7 @@ public class ApplicationRequestBuilder(HttpClient httpClient, string application
     ) => httpClient.JsonRequestAsync<ApplicationPublicResponse>(
         HttpMethod.Get,
         string.Format(CultureInfo.InvariantCulture, PublicApplicationUrl, applicationId),
+        DtoJsonContext.Default.ApplicationPublicResponse,
         cancellationToken: cancellationToken
     );
     

@@ -33,6 +33,8 @@ public class EmojisRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Post,
         string.Format(FormatProvider, EmojisUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildEmojiCreateRequest,
+        DtoJsonContext.Default.GuildEmojiResponse,
         cancellationToken: cancellationToken
     );
     
@@ -43,6 +45,8 @@ public class EmojisRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Post,
         string.Format(FormatProvider, BulkEmojisUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildEmojiBulkCreateRequest,
+        DtoJsonContext.Default.GuildEmojiBulkCreateResponse,
         cancellationToken: cancellationToken
     );
 
@@ -65,6 +69,7 @@ public class EmojisRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Patch,
         string.Format(FormatProvider, EmojiUrl, guildId, emojiId),
         request,
+        DtoJsonContext.Default.GuildEmojiUpdateRequest,
         cancellationToken: cancellationToken
     );
 }

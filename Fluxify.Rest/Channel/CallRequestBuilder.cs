@@ -32,6 +32,7 @@ public class CallRequestBuilder(HttpClient client, Snowflake id)
         => client.JsonRequestAsync<CallEligibilityResponse>(
             HttpMethod.Get,
             Uri(CallUrl, id), 
+            DtoJsonContext.Default.CallEligibilityResponse,
             cancellationToken: cancellationToken
         );
     
@@ -39,6 +40,8 @@ public class CallRequestBuilder(HttpClient client, Snowflake id)
         => client.JsonRequestAsync<UpdateCallRegionRequest>(
             HttpMethod.Patch,
             Uri(CallUrl, id), 
+            request,
+            DtoJsonContext.Default.UpdateCallRegionRequest,
             cancellationToken: cancellationToken
         );
     
@@ -54,6 +57,7 @@ public class CallRequestBuilder(HttpClient client, Snowflake id)
             HttpMethod.Post,
             Uri(RingCallUrl, id),
             request, 
+            DtoJsonContext.Default.RingRequest,
             cancellationToken: cancellationToken
         );
     
@@ -61,7 +65,8 @@ public class CallRequestBuilder(HttpClient client, Snowflake id)
         => client.JsonRequestAsync(
             HttpMethod.Post,
             Uri(StopRingCallUrl, id),
-            request, 
+            request,
+            DtoJsonContext.Default.RingRequest,
             cancellationToken: cancellationToken
         );
 }

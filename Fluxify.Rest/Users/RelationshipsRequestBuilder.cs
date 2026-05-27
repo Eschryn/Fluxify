@@ -28,6 +28,7 @@ public class RelationshipsRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<RelationshipResponse[]>(
         HttpMethod.Get,
         RelationshipsUrl,
+        DtoJsonContext.Default.RelationshipResponseArray,
         cancellationToken: cancellationToken
     );
     
@@ -38,6 +39,8 @@ public class RelationshipsRequestBuilder(HttpClient client)
         HttpMethod.Post,
         RelationshipsUrl,
         request,
+        DtoJsonContext.Default.FriendRequestByTagRequest,
+        DtoJsonContext.Default.RelationshipResponse,
         cancellationToken: cancellationToken
     );
 }

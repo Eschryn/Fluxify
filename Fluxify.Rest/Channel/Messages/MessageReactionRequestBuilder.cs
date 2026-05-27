@@ -37,6 +37,7 @@ public class MessageReactionRequestBuilder(HttpClient client, Snowflake channelI
             Uri(GetUrl, channelId, messageId, emoji) + new QueryBuilder()
                 .AddQuery("limit", limit?.ToString())
                 .AddQuery("after", after?.ToString()),
+            DtoJsonContext.Default.UserPartialResponseArray,
             cancellationToken: cancellationToken
     );
 

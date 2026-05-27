@@ -17,7 +17,10 @@ using System.Text.Json.Serialization;
 namespace Fluxify.Rest.Model;
 
 [JsonSourceGenerationOptions(
-    AllowOutOfOrderMetadataProperties = true
+    NumberHandling = JsonNumberHandling.AllowReadingFromString,
+    AllowOutOfOrderMetadataProperties = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower
 )]
 [JsonSerializable(typeof(ErrorResponse))]
 public partial class RestDtoContext : JsonSerializerContext;

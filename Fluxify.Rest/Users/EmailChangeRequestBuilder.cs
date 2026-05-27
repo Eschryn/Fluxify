@@ -36,6 +36,8 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         BouncedRequestNewUrl,
         request,
+        DtoJsonContext.Default.EmailChangeBouncedRequestNewRequest,
+        DtoJsonContext.Default.EmailChangeRequestNewResponse,
         cancellationToken: cancellationToken
     );
     
@@ -46,6 +48,7 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         BouncedResendNewUrl,
         request,
+        DtoJsonContext.Default.EmailChangeTicketRequest,
         cancellationToken: cancellationToken
     );
     
@@ -56,6 +59,8 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         BouncedVerifyNewUrl,
         request,
+        DtoJsonContext.Default.EmailChangeBouncedRequestVerifyNewRequest,
+        DtoJsonContext.Default.UserPrivateReponse,
         cancellationToken: cancellationToken
     );
     
@@ -66,6 +71,8 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         RequestNewUrl,
         request,
+        DtoJsonContext.Default.EmailChangeRequestNewRequest,
+        DtoJsonContext.Default.EmailChangeRequestNewResponse,
         cancellationToken: cancellationToken
     );
     
@@ -76,6 +83,7 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         ResendNewUrl,
         request,
+        DtoJsonContext.Default.EmailChangeTicketRequest,
         cancellationToken: cancellationToken
     );
     
@@ -86,6 +94,7 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         ResendOriginalUrl,
         request,
+        DtoJsonContext.Default.EmailChangeTicketRequest,
         cancellationToken: cancellationToken
     );
     
@@ -94,6 +103,7 @@ public class EmailChangeRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<EmailChangeStartResponse>(
         HttpMethod.Post,
         StartUrl,
+        DtoJsonContext.Default.EmailChangeStartResponse,
         cancellationToken: cancellationToken
     );
 
@@ -104,6 +114,8 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         VerifyNewUrl,
         request,
+        DtoJsonContext.Default.EmailChangeVerifyNewRequest,
+        DtoJsonContext.Default.EmailTokenResponse,
         cancellationToken: cancellationToken
     );
 
@@ -114,6 +126,8 @@ public class EmailChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         VerifyOriginalUrl,
         request,
+        DtoJsonContext.Default.EmailChangeVerifyOriginalRequest,
+        DtoJsonContext.Default.EmailChangeVerifyOriginalResponse,
         cancellationToken: cancellationToken
     );
 }

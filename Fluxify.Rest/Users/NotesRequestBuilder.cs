@@ -27,6 +27,7 @@ public class NotesRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<Dictionary<Snowflake, string>>(
         HttpMethod.Get,
         NotesUrl,
+        DtoJsonContext.Default.DictionarySnowflakeString,
         cancellationToken: cancellationToken
     );
 }

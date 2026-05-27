@@ -33,6 +33,7 @@ public class PrivateChannelRequestBuilder(HttpClient client)
         => client.JsonRequestAsync<ChannelResponse[]>(
             HttpMethod.Get,
             ChannelsUrl,
+            DtoJsonContext.Default.ChannelResponseArray,
             cancellationToken: cancellationToken
         );
 
@@ -43,6 +44,8 @@ public class PrivateChannelRequestBuilder(HttpClient client)
         HttpMethod.Post,
         ChannelsUrl,
         request,
+        DtoJsonContext.Default.CreatePrivateChannelRequest,
+        DtoJsonContext.Default.ChannelResponse,
         cancellationToken: cancellationToken
     );
 
@@ -53,6 +56,8 @@ public class PrivateChannelRequestBuilder(HttpClient client)
         HttpMethod.Post,
         PreloadUrl,
         request,
+        DtoJsonContext.Default.PreloadMessagesRequest,
+        DtoJsonContext.Default.DictionarySnowflakeMessageResponse,
         cancellationToken: cancellationToken
     );
 

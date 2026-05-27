@@ -31,6 +31,7 @@ public class StickersRequestBuilder(HttpClient client, Snowflake guildId)
     ) => client.JsonRequestAsync<GuildStickerResponse[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, StickersUrl, guildId),
+        DtoJsonContext.Default.GuildStickerResponseArray,
         cancellationToken: cancellationToken
     );
     
@@ -41,6 +42,8 @@ public class StickersRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Post,
         string.Format(FormatProvider, StickersUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildStickerCreateRequest,
+        DtoJsonContext.Default.GuildStickerResponse,
         cancellationToken: cancellationToken
     );
     
@@ -51,6 +54,8 @@ public class StickersRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Post,
         string.Format(FormatProvider, StickersBulkUrl, guildId),
         request,
+        DtoJsonContext.Default.GuildStickerBulkCreateRequest,
+        DtoJsonContext.Default.GuildStickerCreateBulkResponse,
         cancellationToken: cancellationToken
     );
     
@@ -73,6 +78,8 @@ public class StickersRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Patch,
         string.Format(FormatProvider, StickerUrl, guildId, stickerId),
         request,
+        DtoJsonContext.Default.GuildStickerUpdateRequest,
+        DtoJsonContext.Default.GuildStickerResponse,
         cancellationToken: cancellationToken
     );
 }

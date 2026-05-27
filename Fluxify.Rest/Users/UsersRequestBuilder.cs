@@ -31,6 +31,8 @@ public class UsersRequestBuilder(HttpClient client)
         HttpMethod.Get,
         CheckTagUrl,
         request,
+        DtoJsonContext.Default.UserTagCheckRequest,
+        DtoJsonContext.Default.UserTagCheckResponse,
         cancellationToken: cancellationToken
     );
 }

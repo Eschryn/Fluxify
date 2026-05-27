@@ -34,6 +34,7 @@ public class MessageRequestBuilder(HttpClient client, Snowflake channelId, Snowf
         => client.JsonRequestAsync<MessageResponse>(
             HttpMethod.Get,
             Uri(GetUrl, channelId, messageId),
+            DtoJsonContext.Default.MessageResponse,
             cancellationToken: cancellationToken
         );
     
@@ -49,6 +50,8 @@ public class MessageRequestBuilder(HttpClient client, Snowflake channelId, Snowf
             HttpMethod.Patch,
             Uri(GetUrl, channelId, messageId),
             request,
+            DtoJsonContext.Default.UpdateMessageRequest,
+            DtoJsonContext.Default.MessageResponse,
             cancellationToken: cancellationToken
         );
     

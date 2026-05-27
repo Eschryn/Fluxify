@@ -37,6 +37,7 @@ public class UserRequestBuilder(HttpClient client, Snowflake userId)
             .AddQuery("guild_id", guildId?.ToString())
             .AddQuery("with_mutual_friends", withMutualFriends.ToString().ToLowerInvariant())
             .AddQuery("with_mutual_guilds", withMutualGuilds.ToString().ToLowerInvariant()),
+        DtoJsonContext.Default.UserProfileFullResponse,
         cancellationToken: cancellationToken
     );
     
@@ -45,6 +46,7 @@ public class UserRequestBuilder(HttpClient client, Snowflake userId)
     ) => client.JsonRequestAsync<UserPartialResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, UserUrl, userId),
+        DtoJsonContext.Default.UserPartialResponse,
         cancellationToken: cancellationToken
     );
 }

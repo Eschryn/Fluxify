@@ -30,6 +30,7 @@ public class PasswordChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         CompleteUrl,
         request,
+        DtoJsonContext.Default.PasswordChangeCompleteRequest,
         cancellationToken: cancellationToken
     );
     
@@ -40,6 +41,7 @@ public class PasswordChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         ResendUrl,
         request,
+        DtoJsonContext.Default.PasswordChangeTicketRequest,
         cancellationToken: cancellationToken
     );
     
@@ -48,6 +50,7 @@ public class PasswordChangeRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<PasswordChangeStartResponse>(
         HttpMethod.Post,
         StartUrl,
+        DtoJsonContext.Default.PasswordChangeStartResponse,
         cancellationToken: cancellationToken
     );
 
@@ -58,6 +61,8 @@ public class PasswordChangeRequestBuilder(HttpClient client)
         HttpMethod.Post,
         VerifyUrl,
         request,
+        DtoJsonContext.Default.PasswordChangeVerifyRequest,
+        DtoJsonContext.Default.PasswordChangeVerifyResponse,
         cancellationToken: cancellationToken
     );
 }

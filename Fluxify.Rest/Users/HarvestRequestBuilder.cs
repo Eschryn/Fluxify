@@ -32,6 +32,7 @@ public class HarvestRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<HarvestCreationResponseSchema>(
         HttpMethod.Post,
         HarvestUrl,
+        DtoJsonContext.Default.HarvestCreationResponseSchema,
         cancellationToken: cancellationToken
     );
     
@@ -40,6 +41,7 @@ public class HarvestRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<HarvestStatusResponseSchema>(
         HttpMethod.Get,
         LatestUrl,
+        DtoJsonContext.Default.HarvestStatusResponseSchema,
         cancellationToken: cancellationToken
     );
     
@@ -49,6 +51,7 @@ public class HarvestRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<HarvestStatusResponseSchema>(
         HttpMethod.Get,
         string.Format(FormatProvider, HarvestIdUrl, harvestId),
+        DtoJsonContext.Default.HarvestStatusResponseSchema,
         cancellationToken: cancellationToken
     );
     
@@ -58,6 +61,7 @@ public class HarvestRequestBuilder(HttpClient client)
     ) => client.JsonRequestAsync<HarvestDownloadUrlResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, HarvestIdDownloadUrl, harvestId),
+        DtoJsonContext.Default.HarvestDownloadUrlResponse,
         cancellationToken: cancellationToken
     );
 }

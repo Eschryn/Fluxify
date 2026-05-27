@@ -34,13 +34,19 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     private static readonly CompositeFormat DeleteUrl = CompositeFormat.Parse("guilds/{0}/delete");
     private static readonly CompositeFormat TransferOwnershipUrl = CompositeFormat.Parse("guilds/{0}/transfer-ownership");
     private static readonly CompositeFormat VanityUrl = CompositeFormat.Parse("guilds/{0}/vanity-url");
-    private static readonly CompositeFormat DetachedBannerUrl = CompositeFormat.Parse("guilds/{0}/detached-banner");
     private static readonly CompositeFormat AuditLogsUrl = CompositeFormat.Parse("guilds/{0}/audit-logs");
     private static readonly CompositeFormat ChannelsUrl = CompositeFormat.Parse("guilds/{0}/channels");
     private static readonly CompositeFormat BanUrl = CompositeFormat.Parse("guilds/{0}/bans/{1}");
-    private static readonly CompositeFormat FlexibleTextChannelNamesUrl = CompositeFormat.Parse("guilds/{0}/text-channel-flexible-names");
     private static readonly CompositeFormat InvitesUrl = CompositeFormat.Parse("guilds/{0}/invites");
     private static readonly CompositeFormat WebhooksUrl = CompositeFormat.Parse("guilds/{0}/webhooks");
+    private static readonly CompositeFormat LeaveGuildUrl = CompositeFormat.Parse("users/@me/guilds/{0}");
+    
+    private static readonly CompositeFormat FlexibleTextChannelNamesUrl = CompositeFormat.Parse("guilds/{0}/text-channel-flexible-names");
+    private static readonly CompositeFormat DetachedBannerUrl = CompositeFormat.Parse("guilds/{0}/detached-banner");
+    private static readonly CompositeFormat InvitesDisabledUrl = CompositeFormat.Parse("guilds/{0}/invites-disabled");
+    private static readonly CompositeFormat HideOwnerCrownUrl = CompositeFormat.Parse("guilds/{0}/hide-owner-crown");
+    private static readonly CompositeFormat CloneEmojiDisabledUrl = CompositeFormat.Parse("guilds/{0}/clone-emoji-disabled");
+    private static readonly CompositeFormat CloneStickerDisabledUrl = CompositeFormat.Parse("guilds/{0}/clone-sticker-disabled");
 
     public EmojisRequestBuilder Emojis { get; } = new(client, guildId);
     public MembersRequestBuilder Members { get; } = new(client, guildId);
@@ -51,17 +57,22 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         => client.JsonRequestAsync<GuildResponse>(
             HttpMethod.Get,
             string.Format(FormatProvider, GetGuildUrl, guildId),
+            DtoJsonContext.Default.GuildResponse,
             cancellationToken: cancellationToken
         );
 
     public Task<GuildResponse> UpdateAsync(
         GuildUpdateRequest guildUpdateRequest,
+        string? reason = null,  
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildUpdateRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, GetGuildUrl, guildId),
         guildUpdateRequest,
-        cancellationToken: cancellationToken
+        DtoJsonContext.Default.GuildUpdateRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
     );
 
     public Task<GuildAuditLogListResponse> ListAuditLogAsync(
@@ -79,6 +90,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
             .AddQuery("after", after?.ToString())
             .AddQuery("user_id", user?.ToString())
             .AddQuery("action_type", actionType?.ToString()),
+        DtoJsonContext.Default.GuildAuditLogListResponse,
         cancellationToken: cancellationToken
     );
 
@@ -91,6 +103,8 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
             HttpMethod.Post,
             string.Format(FormatProvider, ChannelsUrl, guildId),
             channelCreateRequest,
+            DtoJsonContext.Default.ChannelCreateRequest,
+            DtoJsonContext.Default.ChannelResponse,
             reason: reason,
             cancellationToken: cancellationToken
         );
@@ -100,6 +114,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     ) => client.JsonRequestAsync<ChannelResponse[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, ChannelsUrl, guildId),
+        DtoJsonContext.Default.ChannelResponseArray,
         cancellationToken: cancellationToken
     );
 
@@ -110,6 +125,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Patch,
         string.Format(FormatProvider, ChannelsUrl, guildId),
         request,
+        DtoJsonContext.Default.ChannelPositionUpdateRequest,
         cancellationToken: cancellationToken
     );
 
@@ -122,6 +138,8 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
         HttpMethod.Put,
         string.Format(FormatProvider, BanUrl, guildId, userId),
         request,
+        DtoJsonContext.Default.GuildBanCreateRequest,
+        DtoJsonContext.Default.GuildBanResponse,
         reason,
         cancellationToken
     );
@@ -139,42 +157,113 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
 
     public Task DeleteAsync(
         SudoVerificationSchema request,
+        string? reason = null,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync(
         HttpMethod.Post,
         string.Format(FormatProvider, DeleteUrl, guildId),
         request,
+        DtoJsonContext.Default.SudoVerificationSchema,
+        reason,
         cancellationToken: cancellationToken
     );
 
     public Task<GuildResponse> ToggleDetachedBannerAsync(
         EnabledRequest request,
+        string? reason = null,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, DetachedBannerUrl, guildId),
         request,
-        cancellationToken: cancellationToken
+        DtoJsonContext.Default.EnabledRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
     );
 
-    public Task<GuildResponse> ToggleTextChannelFlexibleNames(
+    public Task<GuildResponse> ToggleTextChannelFlexibleNamesAsync(
         EnabledRequest request,
+        string? reason = null,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, FlexibleTextChannelNamesUrl, guildId),
         request,
-        cancellationToken: cancellationToken
+        DtoJsonContext.Default.EnabledRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
+    );
+
+    public Task<GuildResponse> ToggleInvitesDisabledAsync(
+        EnabledRequest request,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
+        HttpMethod.Patch,
+        string.Format(FormatProvider, InvitesDisabledUrl, guildId),
+        request,
+        DtoJsonContext.Default.EnabledRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
+    );
+
+    public Task<GuildResponse> ToggleCloneEmojiDisabledAsync(
+        EnabledRequest request,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
+        HttpMethod.Patch,
+        string.Format(FormatProvider, CloneEmojiDisabledUrl, guildId),
+        request,
+        DtoJsonContext.Default.EnabledRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
+    );
+
+    public Task<GuildResponse> ToggleCloneStickerDisabledAsync(
+        EnabledRequest request,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
+        HttpMethod.Patch,
+        string.Format(FormatProvider, CloneStickerDisabledUrl, guildId),
+        request,
+        DtoJsonContext.Default.EnabledRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
+    );
+
+    public Task<GuildResponse> ToggleHideOwnerCrownAsync(
+        EnabledRequest request,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<EnabledRequest, GuildResponse>(
+        HttpMethod.Patch,
+        string.Format(FormatProvider, HideOwnerCrownUrl, guildId),
+        request,
+        DtoJsonContext.Default.EnabledRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
     );
     
     public Task<GuildResponse> TransferOwnershipAsync(
         GuildTransferOwnershipRequest request,
+        string? reason = null,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildTransferOwnershipRequest, GuildResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, TransferOwnershipUrl, guildId),
         request,
-        cancellationToken: cancellationToken
+        DtoJsonContext.Default.GuildTransferOwnershipRequest,
+        DtoJsonContext.Default.GuildResponse,
+        reason,
+        cancellationToken
     );
     
     public Task<GuildVanityUrlResponse> GetVanityUrlAsync(
@@ -182,25 +271,32 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     ) => client.JsonRequestAsync<GuildVanityUrlResponse>(
         HttpMethod.Get,
         string.Format(FormatProvider, VanityUrl, guildId),
+        DtoJsonContext.Default.GuildVanityUrlResponse,
         cancellationToken: cancellationToken
     );
     
     public Task<GuildVanityUrlResponse> UpdateVanityUrlAsync(
         GuildVanityUrlUpdateRequest request,
+        string? reason = null,
         CancellationToken cancellationToken = default
     ) => client.JsonRequestAsync<GuildVanityUrlUpdateRequest, GuildVanityUrlResponse>(
         HttpMethod.Patch,
         string.Format(FormatProvider, VanityUrl, guildId),
         request,
-        cancellationToken: cancellationToken
+        DtoJsonContext.Default.GuildVanityUrlUpdateRequest,
+        DtoJsonContext.Default.GuildVanityUrlResponse,
+        reason,
+        cancellationToken
     );
 
     public Task LeaveGuildAsync(
+        string? reason = null,
         CancellationToken cancellationToken = default
     ) => client.RequestAsync(
         HttpMethod.Delete,
-        string.Format(FormatProvider, GetGuildUrl, guildId),
-        cancellationToken: cancellationToken
+        string.Format(FormatProvider, LeaveGuildUrl, guildId),
+        reason,
+        cancellationToken
     );
     
     public Task<InviteMetadataResponseSchema[]> ListInvitesAsync(
@@ -208,6 +304,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     ) => client.JsonRequestAsync<InviteMetadataResponseSchema[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, InvitesUrl, guildId),
+        DtoJsonContext.Default.InviteMetadataResponseSchemaArray,
         cancellationToken: cancellationToken
     );
     
@@ -216,6 +313,7 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     ) => client.JsonRequestAsync<WebhookResponse[]>(
         HttpMethod.Get,
         string.Format(FormatProvider, WebhooksUrl, guildId),
+        DtoJsonContext.Default.WebhookResponseArray,
         cancellationToken: cancellationToken
     );
 }
