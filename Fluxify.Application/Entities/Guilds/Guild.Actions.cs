@@ -125,7 +125,7 @@ public partial class Guild
     {
         var invites = await RequestBuilder.ListInvitesAsync(cancellationToken);
 
-        return invites?
+        return invites
             .Select(_app.InviteMapper.MapFromResponse)
             .OfType<GuildChannelInviteMetadata>()
             .ToArray();
@@ -134,6 +134,7 @@ public partial class Guild
     public Task<Guild> UpdateAsync(
         SudoVerificationSchema verificationSchema,
         Action<GuildProperties> update,
+        string? reason = null,
         CancellationToken cancellationToken = default
-    ) => _app.GuildsRepository.UpdateAsync(this, verificationSchema, update, cancellationToken);
+    ) => _app.GuildsRepository.UpdateAsync(this, verificationSchema, update, reason, cancellationToken);
 }

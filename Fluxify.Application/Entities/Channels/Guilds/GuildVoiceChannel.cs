@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
 using Fluxify.Application.Entities.Guilds;
+using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Model.Channel;
 
 namespace Fluxify.Application.Entities.Channels.Guilds;
 
 public class GuildVoiceChannel : GuildNestedChannel<GuildVoiceChannel, VoiceChannelProperties>
 {
+    internal readonly ConcurrentDictionary<string, IVoiceState> VoiceStatesMap = [];
+    
     public int Bitrate { get; internal set; }
     public int? UserLimit { get; internal set; }
     public string? RtcRegion { get; internal set; }
+    public IReadOnlyDictionary<string, IVoiceState> VoiceStates => VoiceStatesMap;
 
     internal GuildVoiceChannel(
         FluxerApplication fluxerApplication,

@@ -40,7 +40,7 @@ internal sealed class GuildRepository(RestClient client, GuildMapper mapper, Cac
     internal void Reset() => Cache.Clear();
 
     public async Task<Guild> UpdateAsync(Guild guild, SudoVerificationSchema verificationSchema,
-        Action<GuildProperties> update, CancellationToken cancellationToken)
+        Action<GuildProperties> update, string? reason, CancellationToken cancellationToken)
     {
         var guildProperties = mapper.ToProperties(guild)
             .Configure(update);
@@ -54,7 +54,7 @@ internal sealed class GuildRepository(RestClient client, GuildMapper mapper, Cac
             verificationSchema.WebauthnResponse
         );
         
-        var result = await guild.RequestBuilder.UpdateAsync(request, cancellationToken)
+        var result = await guild.RequestBuilder.UpdateAsync(request, reason, cancellationToken)
                      ?? throw new Exception("Guild was not updated");
 
         return Cache.UpdateOrCreate(result.Id, result).Value!;

@@ -80,7 +80,7 @@ public partial class FluxerApplication
 
     public virtual async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        InstanceInfo = await Rest.GetWellKnownAsync();
+        InstanceInfo = await Rest.GetWellKnownAsync(cancellationToken);
 
         Uri gatewayUri;
         var credentials = await Config.FluxerConfig.CredentialProvider();
@@ -92,7 +92,7 @@ public partial class FluxerApplication
                 throw new Exception("Could not get gateway information.");
             }
 
-            gatewayUri = new Uri(gatewayBotResponse.Url);
+            gatewayUri = gatewayBotResponse.Url ?? InstanceInfo!.Endpoints.Gateway;
         }
         else
         {

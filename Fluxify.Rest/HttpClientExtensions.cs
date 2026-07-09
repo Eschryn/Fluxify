@@ -200,9 +200,9 @@ internal static class HttpClientExtensions
 #else
             return await response
                 .Content
-                .ReadFromJsonAsync<TResult>(
-                    cancellationToken: cancellationToken,
-                    resultJsonInfo
+                .ReadFromJsonAsync(
+                    jsonTypeInfo: resultJsonInfo,
+                    cancellationToken: cancellationToken
                 ) ?? throw new ApiNullException();
 #endif
         }

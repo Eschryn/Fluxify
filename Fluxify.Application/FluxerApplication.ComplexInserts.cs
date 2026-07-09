@@ -132,6 +132,11 @@ public partial class FluxerApplication
                 return target;
             }
         );
+        
+        if (guildRef.Value.Channels[voiceState.ChannelId.Value] is GuildVoiceChannel { VoiceStatesMap: var voiceStatesMap })
+        {
+            voiceStatesMap[voiceState.ConnectionId] = voiceStateList[voiceState.ConnectionId];
+        }
     }
     
     private static void GuildInsertStickers(GuildStickerResponse[] stickers, Guild guild)
