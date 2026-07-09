@@ -15,5 +15,7 @@
 namespace Fluxify.Dto.Instance;
 
 public record WellKnownFluxerResponseGif(
-    GifProvider Provider
-);
+    string? Provider,
+    string? DisplayName,
+    bool? AttributionRequired
+);  
