@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Model.AuditLog;
 
-namespace Fluxify.Dto.Guilds.AuditLog;
-
-public record GuildAuditLogEntryResponse(
-    AuditLogActionType ActionType,
-    AuditLogChangeSchema[]? Changes,
-    Snowflake Id,
-    Dictionary<string, string>? Options,
-    string? Reason,
-    string? TargetId,
-    Snowflake? UserId);
+/// <summary>
+/// Represents a change in an entity
+/// </summary>
+/// <param name="Key">The name of the property that was changed</param>
+/// <param name="OldValue">The old value, null if none</param>
+/// <param name="NewValue">The new value</param>
+/// <typeparam name="TValue">Type of the property</typeparam>
+public record AuditLogChange<TValue>(
+    string Key,
+    TValue? OldValue,
+    TValue? NewValue
+) : IAuditLogChange<TValue>;

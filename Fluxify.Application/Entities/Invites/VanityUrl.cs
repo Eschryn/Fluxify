@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Entities.Invites;
 
-namespace Fluxify.Dto.Guilds.AuditLog;
-
-public record GuildAuditLogEntryResponse(
-    AuditLogActionType ActionType,
-    AuditLogChangeSchema[]? Changes,
-    Snowflake Id,
-    Dictionary<string, string>? Options,
-    string? Reason,
-    string? TargetId,
-    Snowflake? UserId);
+public sealed record VanityUrl(Uri Url, int Uses);

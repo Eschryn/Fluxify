@@ -12,25 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
-using Fluxify.Core.Types;
-using Fluxify.Dto.Json;
+namespace Fluxify.Application.Model.AuditLog;
 
-namespace Fluxify.Dto.Guilds.AuditLog;
 
-public record GuildAuditLogEntryResponseOptions(
-    Snowflake? ChannelId,
-    int? Count,
-    string? DeleteMemberDays,
-    Snowflake? Id,
-    int? IntegrationType,
-    Snowflake? InviterId,
-    double? MaxAge,
-    int? MaxUses,
-    int? MembersRemoved,
-    Snowflake? MessageId,
-    string? RoleName,
-    [property: JsonConverter(typeof(StringBoolConverter))] bool? Temporary,
-    int? Type,
-    int? Uses
-);
+/// <summary>
+/// Represents a change in an entity
+/// </summary>
+public interface IAuditLogChange
+{
+    /// <summary>The name of the property that was changed</summary>
+    string Key { get; }
+    /// <summary>The old value, null if none</summary>
+    object? OldValue { get; }
+    /// <summary>The new value</summary>
+    object? NewValue { get; }
+}

@@ -137,4 +137,21 @@ public partial class Guild
         string? reason = null,
         CancellationToken cancellationToken = default
     ) => _app.GuildsRepository.UpdateAsync(this, verificationSchema, update, reason, cancellationToken);
+    
+    public Task<AuditLogEntry[]> GetAuditLogEntriesAsync(
+        Snowflake? pageAnchor = null,
+        Direction direction = Direction.After,
+        int? limit = null,
+        Snowflake? byUserId = null,
+        AuditLogActionType? eventType = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.ListAuditLogAsync(
+            limit,
+            direction == Direction.Before ? pageAnchor : null,
+            direction == Direction.After ? pageAnchor : null,
+            byUserId,
+            eventType,
+            cancellationToken
+        )
+        .MapAsync(_app.AuditLogMapper.MapFromResponse);
 }

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Dto.Guilds.AuditLog;
+namespace Fluxify.Core.Attributes;
 
-record AuditLogChangeSchemaNewValueOneOf5(
-    string[] Added,
-    string[] Removed
-);
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public class AuditLogPropertyAttribute(string name, Type type) : Attribute
+{
+    public string Name { get; } = name;
+    public Type Type { get; } = type;
+}

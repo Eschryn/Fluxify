@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
+namespace Fluxify.Application.Common;
 
-namespace Fluxify.Dto.Guilds.AuditLog;
-
-public record GuildAuditLogEntryResponse(
-    AuditLogActionType ActionType,
-    AuditLogChangeSchema[]? Changes,
-    Snowflake Id,
-    Dictionary<string, string>? Options,
-    string? Reason,
-    string? TargetId,
-    Snowflake? UserId);
+internal static class TaskExtensions
+{
+    extension<TResult>(Task<TResult> task)
+    {
+        public async Task<TMappedResult> MapAsync<TMappedResult>(Func<TResult, TMappedResult> mapper) => mapper(await task);
+    }
+}

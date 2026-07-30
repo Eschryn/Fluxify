@@ -20,6 +20,7 @@ using Fluxify.Application.Entities.Invites;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
 using Fluxify.Application.Entities.Webhooks;
+using Fluxify.Application.Model.AuditLog;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Credentials;
 using Fluxify.Dto.Instance;
@@ -43,7 +44,8 @@ public partial class FluxerApplication
     internal readonly ImageFactory ImageFactory;
     internal readonly CacheMapper CacheMapper;
     internal readonly MemberMapper MemberMapper;
-
+    internal readonly AuditLogMapper AuditLogMapper;
+    
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
 
@@ -69,7 +71,7 @@ public partial class FluxerApplication
         UserMapper = new UserMapper(this);
         GuildMapper = new GuildMapper(this);
         MemberMapper = new MemberMapper(this);
-
+        AuditLogMapper = new AuditLogMapper(this);
 
         ChannelsRepository = new ChannelRepository(Rest, ChannelMapper, CacheConfig);
         UsersRepository = new UserRepository(Rest, UserMapper, CacheConfig);
