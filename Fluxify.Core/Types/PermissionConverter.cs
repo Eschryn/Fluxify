@@ -19,6 +19,7 @@ namespace Fluxify.Core.Types;
 
 public class PermissionConverter : JsonConverter<Permissions>
 {
+    /// <inheritdoc/>
     public override Permissions Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.String)
@@ -30,6 +31,7 @@ public class PermissionConverter : JsonConverter<Permissions>
         throw new JsonException();
     }
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, Permissions value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(((int)value).ToString());

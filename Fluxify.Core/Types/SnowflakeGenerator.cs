@@ -14,7 +14,7 @@
 
 namespace Fluxify.Core.Types;
 
-public class SnowflakeGenerator(byte processId, byte workerId)
+public sealed class SnowflakeGenerator(byte processId, byte workerId)
 {
     public static SnowflakeGenerator Default { get; } = new(0, 0);
     

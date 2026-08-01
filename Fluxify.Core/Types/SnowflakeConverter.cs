@@ -20,6 +20,7 @@ namespace Fluxify.Core.Types;
 
 public class SnowflakeConverter : JsonConverter<Snowflake>
 {
+    /// <inheritdoc/>
     public override Snowflake Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.String)
@@ -36,11 +37,13 @@ public class SnowflakeConverter : JsonConverter<Snowflake>
         throw new JsonException();       
     }
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, Snowflake value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(((ulong)value).ToString());
     }
 
+    /// <inheritdoc/>
     public override Snowflake ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.PropertyName)
@@ -53,6 +56,7 @@ public class SnowflakeConverter : JsonConverter<Snowflake>
         return Read(ref reader, typeToConvert, options);
     }
     
+    /// <inheritdoc/>
     public override void WriteAsPropertyName(Utf8JsonWriter writer, Snowflake value, JsonSerializerOptions options) 
         => writer.WritePropertyName(value.ToString(NumberFormatInfo.InvariantInfo));
 }

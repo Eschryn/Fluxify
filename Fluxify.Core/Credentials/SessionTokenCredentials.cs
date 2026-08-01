@@ -18,10 +18,7 @@ public class SessionTokenCredentials(string token) : ITokenCredentials
 {
     public string Token { get; } = token;
     
-    public bool Validate()
-    {
-        return true;
-    }
-    
+    public bool Validate() => Token.StartsWith("flx_");
+
     public string GetAuthorizationHeaderValue() => Token;
 }

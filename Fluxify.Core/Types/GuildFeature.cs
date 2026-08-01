@@ -60,9 +60,6 @@ public readonly struct GuildFeature
     public static GuildFeature CloneStickerDisabled => new("CLONE_STICKER_DISABLED");
     public static GuildFeature HideOwnerCrown => new("HIDE_OWNER_CROWN");
 
-    // TODO: Will be removed soon
-    public static GuildFeature ContentWarningsBackfilled => new("CONTENT_WARNINGS_BACKFILLED");
-    
     public static bool operator ==(GuildFeature left, GuildFeature right) => left._value == right._value;
     public static bool operator !=(GuildFeature left, GuildFeature right) => left._value != right._value;
     public bool Equals(GuildFeature other) => _value.Equals(other._value);
