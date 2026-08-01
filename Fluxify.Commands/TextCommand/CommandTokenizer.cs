@@ -27,7 +27,7 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
     private const string WhiteSpaceCharsNoBreak =
         "\u180E\u200B\u200C\u200D\u2060\uFEFF";
 
-    private const string AllWhiteSpaceChars = WhiteSpaceChars + WhiteSpaceCharsNoBreak;
+    internal const string AllWhiteSpaceChars = WhiteSpaceChars + WhiteSpaceCharsNoBreak;
     private const string DelimiterChars = "#:<>@&!\"'";
 
     private ReadOnlyMemory<char>? _cached;

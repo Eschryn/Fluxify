@@ -1,11 +1,11 @@
 // Copyright 2026 Fluxify Contributors
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,9 @@ public class CommandReader(CommandTokenizer tokenizer)
 {
     private static readonly SearchValues<char> StringDelimiters = SearchValues.Create("\"'<>");
     private static readonly SearchValues<char> TopLevelDelimiters = SearchValues.Create("<\"'");
+
+    private static readonly SearchValues<char> TopLevelDelimitersPlusWhitespace =
+        SearchValues.Create("<\"'" + CommandTokenizer.AllWhiteSpaceChars);
 
     private static readonly Dictionary<Type, Func<ReadOnlyMemory<char>, object?>> Parsers = new()
     {
@@ -64,15 +67,15 @@ public class CommandReader(CommandTokenizer tokenizer)
 
     private object? _lastFailedRead;
 
-    public T GetNext<T>()
-        => (TryGetNext<T>(out var next)
+    public T GetNext<T>(bool ignoreWhitepace = false)
+        => (TryGetNext<T>(out var next, ignoreWhitepace)
             ? next
             : default) ?? throw new CommandException(
             $"Invalid arguments provided. Expected: {typeof(T).Name}, got {next?.GetType().Name}.");
 
-    public bool TryGetNext<T>(out T? result)
+    public bool TryGetNext<T>(out T? result, bool ignoreWhitepace = false)
     {
-        var next = _lastFailedRead ?? GetNext(true);
+        var next = _lastFailedRead ?? GetNext(ignoreWhitepace);
         _lastFailedRead = null;
 
         switch (next)
@@ -114,20 +117,20 @@ public class CommandReader(CommandTokenizer tokenizer)
         return result is not null;
     }
 
-    public object GetNext(bool ignoreSpace = false)
+    public object GetNext(bool ignoreWhitepace = false)
     {
-        var token = tokenizer.Until(TopLevelDelimiters);
-        switch (token.Span)
+        var token = tokenizer.Until(
+            ignoreWhitepace ? TopLevelDelimiters : TopLevelDelimitersPlusWhitespace
+        );
+
+        return token.Span switch
         {
-            case "<" when ParseMention() is { } mention:
-                return mention;
-            case "<": // url
-                return ParseQuotedString(token.Span, '>', escapable: false).ToString().AsMemory();
-            case "\"" or "'":
-                return ParseQuotedString(token.Span)[1..^1].ToString().AsMemory();
-            default:
-                return token;
-        }
+            "<" when ParseMention() is { } mention => mention,
+            // url
+            "<" => ParseQuotedString(token.Span, '>', escapable: false).ToString().AsMemory(),
+            "\"" or "'" => ParseQuotedString(token.Span)[1..^1].ToString().AsMemory(),
+            _ => token,
+        };
     }
 
     private ReadOnlySpan<char> ParseQuotedString(ReadOnlySpan<char> startSpan, char? endChar = null,
