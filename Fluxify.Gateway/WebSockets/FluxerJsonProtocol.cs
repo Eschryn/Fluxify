@@ -72,7 +72,7 @@ internal sealed partial class FluxerJsonProtocol(FluxerConfig fluxerConfig) : IW
 
     public async Task SerializeAsync(PipeWriter pipeWriter, GatewayPayload frame, CancellationToken cancellationToken = default)
     {
-        await JsonSerializer.SerializeAsync(pipeWriter, frame, _serializerOptions, cancellationToken);
+        await JsonSerializer.SerializeAsync(pipeWriter, frame, GatewayJsonContext.Default.GatewayPayload, cancellationToken);
         await pipeWriter.FlushAsync(cancellationToken);
         await pipeWriter.CompleteAsync();
     }

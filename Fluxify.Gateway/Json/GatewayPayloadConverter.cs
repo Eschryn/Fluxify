@@ -83,7 +83,9 @@ public class GatewayPayloadConverter : JsonConverter<GatewayPayload>
         if (value.Data != null)
         {
             writer.WritePropertyName("d");
-            JsonSerializer.Serialize(writer, value.Data, value.Data?.GetType() ?? typeof(object), options);
+            
+            var jsonTypeInfo = ResolveType(value.Opcode, value.Type);
+            JsonSerializer.Serialize(writer, value.Data, jsonTypeInfo ?? throw new InvalidOperationException("Cannot serialize gateway payload."));
         }
 
         if (value.Sequence.HasValue)
@@ -103,6 +105,12 @@ public class GatewayPayloadConverter : JsonConverter<GatewayPayload>
                     .GetValueOrDefault(s ?? throw new InvalidOperationException()),
             GatewayOpCode.Hello => GatewayJsonContext.Default.HelloPayloadData,
             GatewayOpCode.InvalidSession => GatewayJsonContext.Default.Boolean,
+            GatewayOpCode.VoiceStateUpdate => GatewayJsonContext.Default.UpdateVoiceState,
+            GatewayOpCode.RequestGuildCounts => GatewayJsonContext.Default.GuildMemberCountRequest,
+            GatewayOpCode.PresenceUpdate => GatewayJsonContext.Default.PresenceUpdate,
+            GatewayOpCode.Identify => GatewayJsonContext.Default.IdentifyPayloadData,
+            GatewayOpCode.Resume => GatewayJsonContext.Default.ResumePayloadData,
+            GatewayOpCode.Heartbeat => GatewayJsonContext.Default.NullableInt32,
             _ => null
         };
 }
