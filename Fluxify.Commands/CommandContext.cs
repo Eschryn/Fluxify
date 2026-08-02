@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Guilds;
@@ -33,9 +34,12 @@ public class CommandContext
         Reader = new CommandReader(Tokenizer);
     }
 
+    public FluxerApplication Client { get; }
     public Message Message { get; }
     public IUser Author => Message.Author;
-    public Guild? Guild => Message.Channel is IGuildChannel channel ? channel.Guild : null;
+    public Guild? Guild => Message.Channel is IGuildChannel channel 
+        ? channel.Guild
+        : Message.Author is IGuildMember member ? member.Guild : null;
     public ITextChannel TextChannel => Message.Channel;
     public IServiceProvider Services { get; }
     internal CommandTokenizer Tokenizer { get; }

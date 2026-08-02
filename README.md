@@ -106,7 +106,7 @@ Alternatively you could also get the voice channel from the author if they are i
 var voiceChannel = context switch
 {
     // get voice channel from author
-    { Author: GuildUser { VoiceState.VoiceChannel: { } authorChannel } } => authorChannel,
+    { Author: GuildMember { VoiceState.VoiceChannel: { } authorChannel } } => authorChannel,
 
     // alternative try getting from parameter
     { Reader: { } reader, Guild.Channels: { } guildChannels }
