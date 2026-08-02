@@ -140,6 +140,77 @@ public partial class Guild
         CancellationToken cancellationToken = default
     ) => _app.GuildsRepository.UpdateAsync(this, verificationSchema, update, reason, cancellationToken);
     
+    public Task DeleteAsync(
+        SudoVerificationSchema verificationSchema,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => _app.GuildsRepository.DeleteAsync(Id, verificationSchema, reason, cancellationToken);
+
+    public Task LeaveAsync(
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => _app.GuildsRepository.LeaveAsync(Id, reason, cancellationToken);
+
+    public Task TransferOwnership(
+        Snowflake newOwnerId,
+        SudoVerificationSchema verificationSchema,
+        string? reason = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (CurrentMember.Id != Owner.Id)
+        {
+            throw new InvalidOperationException("You must be the owner of the guild to transfer ownership.");
+        }
+
+        return RequestBuilder.TransferOwnershipAsync(
+            new GuildTransferOwnershipRequest(
+                NewOwnerId: newOwnerId,
+                MfaCode: verificationSchema.MfaCode,
+                MfaMethod: verificationSchema.MfaMethod,
+                Password: verificationSchema.Password,
+                WebauthnChallenge: verificationSchema.WebauthnChallenge,
+                WebauthnResponse: verificationSchema.WebauthnResponse
+            ),
+            reason,
+            cancellationToken
+        );
+    }
+
+    public Task GetVanityUrlAsync()
+        => RequestBuilder
+            .GetVanityUrlAsync()
+            .MapAsync(_app.InviteMapper.MapVanity);
+
+    public Task SetVanityUrlAsync(
+        string code,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.UpdateVanityUrlAsync(
+        new GuildVanityUrlUpdateRequest(
+            Code: code
+        ),
+        reason,
+        cancellationToken
+    ).MapAsync(_app.InviteMapper.MapVanity);
+
+    public Task MoveChannelAsync(
+        IGuildChannel channel,
+        long position,
+        IGuildChannel? parent = null,
+        IGuildChannel? after = null,
+        bool? lockPermissions = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.UpdateChannelPositionAsync(
+        new ChannelPositionUpdateRequest(
+            channel.Id,
+            position,
+            parent?.Id,
+            after?.Id,
+            lockPermissions
+        ),
+        cancellationToken
+    );
+
     public Task<AuditLogEntry[]> GetAuditLogEntriesAsync(
         Snowflake? pageAnchor = null,
         Direction direction = Direction.After,
@@ -156,4 +227,64 @@ public partial class Guild
             cancellationToken
         )
         .MapAsync(_app.AuditLogMapper.MapFromResponse);
+
+    public Task<CacheRef<Guild>> SetDetachedBannerAsync(
+        bool detached,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.ToggleDetachedBannerAsync(
+        new EnabledRequest(detached),
+        reason,
+        cancellationToken
+    ).MapAsync(_app.GuildsRepository.Insert);
+
+    public Task<CacheRef<Guild>> SetFlexibleChannelNamesAsync(
+        bool flexibleChannelNames,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.ToggleTextChannelFlexibleNamesAsync(
+        new EnabledRequest(flexibleChannelNames),
+        reason,
+        cancellationToken
+    ).MapAsync(_app.GuildsRepository.Insert);
+
+    public Task<CacheRef<Guild>> SetInvitesDisabledAsync(
+        bool disabled,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.ToggleInvitesDisabledAsync(
+        new EnabledRequest(disabled),
+        reason,
+        cancellationToken
+    ).MapAsync(_app.GuildsRepository.Insert);
+
+    public Task<CacheRef<Guild>> SetCloneEmojiDisabledAsync(
+        bool disabled,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.ToggleCloneEmojiDisabledAsync(
+        new EnabledRequest(disabled),
+        reason,
+        cancellationToken
+    ).MapAsync(_app.GuildsRepository.Insert);
+
+    public Task<CacheRef<Guild>> SetCloneStickerDisabledAsync(
+        bool disabled,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.ToggleCloneStickerDisabledAsync(
+        new EnabledRequest(disabled),
+        reason,
+        cancellationToken
+    ).MapAsync(_app.GuildsRepository.Insert);
+
+    public Task<CacheRef<Guild>> SetHideOwnerCrownAsync(
+        bool hide,
+        string? reason = null,
+        CancellationToken cancellationToken = default
+    ) => RequestBuilder.ToggleHideOwnerCrownAsync(
+        new EnabledRequest(hide),
+        reason,
+        cancellationToken
+    ).MapAsync(_app.GuildsRepository.Insert);
 }

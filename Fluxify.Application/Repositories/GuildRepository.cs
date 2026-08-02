@@ -39,6 +39,21 @@ internal sealed class GuildRepository(RestClient client, GuildMapper mapper, Cac
 
     internal void Reset() => Cache.Clear();
 
+    public async Task DeleteAsync(Snowflake id, SudoVerificationSchema verificationSchema, string? reason,
+        CancellationToken cancellationToken)
+    {
+        await client.Guilds[id].DeleteAsync(verificationSchema, reason, cancellationToken);
+        
+        Cache.Remove(id, out _);
+    }
+
+    public async Task LeaveAsync(Snowflake id, string? reason, CancellationToken cancellationToken)
+    {
+        await client.Guilds[id].LeaveGuildAsync(reason, cancellationToken);
+        
+        Cache.Remove(id, out _);
+    }
+
     public async Task<Guild> UpdateAsync(Guild guild, SudoVerificationSchema verificationSchema,
         Action<GuildProperties> update, string? reason, CancellationToken cancellationToken)
     {
