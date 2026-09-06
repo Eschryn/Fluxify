@@ -22,14 +22,14 @@ See `Example.cs` for a simple starting point
 ### Building a Bot
 Start with the `Fluxify.Bot` package.
 ```csharp
-var cfg = new FluxerConfig
+var cfg = new BotConfig("!")
 {
     // for configuring the fluxer instance you can provide the instance option
     // InstanceUri = new Uri("https://api.<your-instance>/"),
     Credentials = new BotTokenCredentials("...")
 };
 
-var bot = new Bot("!", cfg)
+var bot = new Bot(cfg)
 
 // the parameters to the command will be resolved from the configured service provider
 //   or (still in progress as of 0.1.0-preview) from the command reader

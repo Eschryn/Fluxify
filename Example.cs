@@ -1,5 +1,5 @@
 #!/usr/bin/env dotnet
-#:package Fluxify.Bot@0.1.1-preview
+#:package Fluxify.Bot@0.2.3-preview
 #:package Microsoft.Extensions.Logging.Console@10.0.3
 
 // This is a Single file app -> run with `dotnet run Example.cs`
@@ -7,18 +7,20 @@
 
 using Fluxify.Bot;
 using Fluxify.Commands;
-using Fluxify.Commands.CommandCollection;
-using Fluxify.Core;
+using Fluxify.Core.Credentials;
 using Microsoft.Extensions.Logging;
 
-var loggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Trace));
-var config = new FluxerConfig(loggerFactory)
+var botConfig = new BotConfig("f!")
 {
     Credentials = new BotTokenCredentials(Environment.GetEnvironmentVariable("FLUXIFY_BOT_TOKEN")
-                                          ?? throw new Exception("FLUXIFY_BOT_TOKEN environment variable is not set"))
+                                          ?? throw new Exception("FLUXIFY_BOT_TOKEN environment variable is not set")),
+    FluxerConfig =
+    {
+        LoggerFactory = LoggerFactory.Create(b => b.AddConsole().SetMinimumLevel(LogLevel.Trace)),
+    },
 };
 
-var bot = new Bot("f!", config);
+var bot = new Bot(botConfig);
 
 bot.Commands.Command("ping", (CommandContext ctx) => ctx.ReplyAsync("Pong!"));
 
