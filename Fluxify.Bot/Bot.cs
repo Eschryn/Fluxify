@@ -23,22 +23,6 @@ namespace Fluxify.Bot;
 
 public class Bot(BotConfig config) : FluxerApplication(config)
 {
-    [Obsolete("Use Bot(BotConfig config) instead", false)]
-    public Bot(string prefix, FluxerConfig config, GatewayConfig? gatewayConfig = null) 
-        : this(new BotConfig(prefix)
-        {
-            FluxerConfig =
-            {
-                CredentialProvider = config.CredentialProvider,
-                LoggerFactory = config.LoggerFactory,
-                ServiceProvider = config.ServiceProvider,
-                Credentials = config.Credentials,
-                HttpClientFactory = config.HttpClientFactory,
-                InstanceUri = config.InstanceUri
-            },
-            GatewayConfig = gatewayConfig ?? new GatewayConfig()
-        }) {}
-    
     public CommandCollection Commands { get; } = new();
     private TextCommandDispatcher Dispatcher { get; set; } = null!;
 

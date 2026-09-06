@@ -60,21 +60,6 @@ public class FluxerConfig
     public Func<Task<ITokenCredentials>> CredentialProvider { get; set; } 
         = () => Task.FromException<ITokenCredentials>(new InvalidOperationException("No credentials provider set."));
 
-    [Obsolete("Use BotConfig/FluxerConfig.Credentials instead", false)]
-    public ITokenCredentials? Credentials
-    {
-        get;
-        set
-        {
-            field = value;
-            
-            if (value is not null)
-            {
-                CredentialProvider = () => Task.FromResult(value);
-            }
-        }
-    }
-
     public Uri GetApiBaseUri() => 
         new(InstanceUri, string.Format(CultureInfo.InvariantCulture, VersionPathFormat, ApiVersion));
 }
