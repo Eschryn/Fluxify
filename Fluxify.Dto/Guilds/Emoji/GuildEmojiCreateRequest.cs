@@ -17,8 +17,8 @@ using Fluxify.Dto.Common;
 namespace Fluxify.Dto.Guilds.Emoji;
 
 /// <summary>
-/// 
+/// Represents an emoji create request.
 /// </summary>
-/// <param name="Image">Base64ImageType</param>
-/// <param name="Name"></param>
+/// <param name="Image">The image that should later be the emoji.</param>
+/// <param name="Name">The name of the emoji.</param>
 public record GuildEmojiCreateRequest(Base64Image Image, string Name);

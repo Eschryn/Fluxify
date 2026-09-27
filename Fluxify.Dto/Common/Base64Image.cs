@@ -16,10 +16,27 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Common;
 
+/// <summary>
+/// Base64 encoded image data.
+/// </summary>
+/// <param name="data">The contents of the image file.</param>
+/// <param name="mimeType">The mime type of the image file.</param>
+/// <param name="charset">The encoding for base64 encoded image file.</param>
 [JsonConverter(typeof(Base64ImageConverter))]
 public readonly struct Base64Image(byte[] data, string mimeType, string? charset = null)
 {
+    /// <summary>
+    /// The contents of the image file.
+    /// </summary>
     public byte[] Data { get; } = data;
+
+    /// <summary>
+    /// The mime type of the image file.
+    /// </summary>
     public string MimeType { get; } = mimeType;
+    
+    /// <summary>
+    /// The encoding for base64 encoded image file.
+    /// </summary>
     public string? Charset { get; } = charset;
 }

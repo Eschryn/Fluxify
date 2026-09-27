@@ -14,4 +14,9 @@
 
 namespace Fluxify.Dto.Guilds.Emoji;
 
+/// <summary>
+/// Represents the response of a bulk emoji create operation.
+/// </summary>
+/// <param name="Failed">All emojis that failed to be created, with their respective error messages.</param>
+/// <param name="Success">All emojis that were successfully created.</param>
 public record GuildEmojiBulkCreateResponse(GuildEmojiBulkCreateResponseFailedItem[] Failed, GuildEmojiResponse[] Success);

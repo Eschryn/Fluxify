@@ -18,6 +18,9 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Core.Types;
 
+/// <summary>
+/// Converts a <see cref="Snowflake"/> from or to JSON.
+/// </summary>
 public class SnowflakeConverter : JsonConverter<Snowflake>
 {
     /// <inheritdoc/>

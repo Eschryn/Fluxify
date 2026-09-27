@@ -16,4 +16,10 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Guilds.Emoji;
 
+/// <summary>
+/// Represents an emoji.
+/// </summary>
+/// <param name="Animated">True when the emoji is an animated image.</param>
+/// <param name="Id">The id of the emoji.</param>
+/// <param name="Name">The name of the emoji.</param>
 public record GuildEmojiResponse(bool Animated, Snowflake? Id, string Name);

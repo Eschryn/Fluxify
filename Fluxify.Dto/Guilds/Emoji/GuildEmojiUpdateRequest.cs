@@ -14,4 +14,8 @@
 
 namespace Fluxify.Dto.Guilds.Emoji;
 
+/// <summary>
+/// Request object that contains the new name for the emoji. 
+/// </summary>
+/// <param name="Name">The new name that should be assigned to the emoji.</param>
 public record GuildEmojiUpdateRequest(string Name);

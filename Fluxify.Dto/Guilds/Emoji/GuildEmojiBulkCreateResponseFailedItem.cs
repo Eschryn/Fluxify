@@ -14,4 +14,9 @@
 
 namespace Fluxify.Dto.Guilds.Emoji;
 
+/// <summary>
+/// Represents information about emojis that were failed to be created.
+/// </summary>
+/// <param name="Error">Error message explaining why it failed to create the emoji.</param>
+/// <param name="Name">The name of the emoji that failed to be created.</param>
 public record GuildEmojiBulkCreateResponseFailedItem(string Error, string Name);

@@ -14,11 +14,24 @@
 
 namespace Fluxify.Core.Types;
 
+/// <summary>
+/// Creates <see cref="Snowflake"/>s with <see name="processId"/> and <paramref name="workerId"/>.
+/// </summary>
+/// <param name="processId">The internal process ID.</param>
+/// <param name="workerId">The worker ID.</param>
 public sealed class SnowflakeGenerator(byte processId, byte workerId)
 {
+    /// <summary>
+    /// The default <see cref="Snowflake"/> generator uses process ID 0 and worker ID 0.
+    /// </summary>
     public static SnowflakeGenerator Default { get; } = new(0, 0);
     
     private uint _processCounter = 0;
+    
+    /// <summary>
+    /// Creates a new <see cref="Snowflake"/>.
+    /// </summary>
+    /// <returns>The <see cref="Snowflake"/> that was created.</returns>
     public Snowflake Create()
     {
         var timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - 1420070400000;

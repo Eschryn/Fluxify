@@ -14,4 +14,8 @@
 
 namespace Fluxify.Dto.Guilds.Emoji;
 
+/// <summary>
+/// Represents a bulk emoji create request.
+/// </summary>
+/// <param name="Emojis">All emojis that should be created.</param>
 public record GuildEmojiBulkCreateRequest(GuildEmojiCreateRequest[] Emojis);
