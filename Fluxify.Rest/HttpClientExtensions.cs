@@ -36,6 +36,7 @@ internal static class HttpClientExtensions
             TRequest request,
             JsonTypeInfo<TRequest> requestJsonInfo,
             JsonTypeInfo<TResult> resultJsonInfo,
+            string? bucket = null,
             CancellationToken cancellationToken = default)
             where TRequest : MultipartDto
             where TResult : class
@@ -49,12 +50,13 @@ internal static class HttpClientExtensions
                     requestJsonInfo,
                     resultJsonInfo,
                     reason: null,
+                    bucket: bucket,
                     cancellationToken: cancellationToken
                 );
             }
 
             using var httpResponseMessage =
-                await client.MultipartJsonRequestImpl(method, url, request, requestJsonInfo, cancellationToken);
+                await client.MultipartJsonRequestImpl(method, url, request, requestJsonInfo, bucket, cancellationToken);
 
             return await HttpClient.DeserializeResponseAsync(resultJsonInfo, cancellationToken, httpResponseMessage);
         }
@@ -64,6 +66,7 @@ internal static class HttpClientExtensions
             string url,
             TRequest request,
             JsonTypeInfo<TRequest> requestJsonInfo,
+            string? bucket = null,
             CancellationToken cancellationToken = default)
             where TRequest : MultipartDto
         {
@@ -75,7 +78,7 @@ internal static class HttpClientExtensions
             }
 
             using var httpResponseMessage =
-                await client.MultipartJsonRequestImpl(method, url, request, requestJsonInfo, cancellationToken);
+                await client.MultipartJsonRequestImpl(method, url, request, requestJsonInfo, bucket, cancellationToken);
         }
 
         private async Task<HttpResponseMessage> MultipartJsonRequestImpl<TRequest>(
@@ -83,6 +86,7 @@ internal static class HttpClientExtensions
             string url,
             TRequest request,
             JsonTypeInfo<TRequest> requestJsonInfo,
+            string? bucket,
             CancellationToken cancellationToken
         ) where TRequest : MultipartDto
         {
@@ -122,6 +126,7 @@ internal static class HttpClientExtensions
 
                 using var httpRequestMessage = new HttpRequestMessage(method, url);
                 httpRequestMessage.Content = content;
+                httpRequestMessage.SetBucketIfNotNull(bucket);
 
                 httpResponseMessage = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken);
                 return httpResponseMessage;
@@ -140,6 +145,7 @@ internal static class HttpClientExtensions
             JsonTypeInfo<TRequest> requestJsonInfo,
             JsonTypeInfo<TResult> resultJsonInfo,
             string? reason = null,
+            string? bucket = null,
             CancellationToken cancellationToken = default
         )
             where TRequest : notnull
@@ -147,6 +153,7 @@ internal static class HttpClientExtensions
         {
             using var httpRequestMessage = new HttpRequestMessage(method, url);
             httpRequestMessage.Content = JsonContent.Create(request, requestJsonInfo);
+            httpRequestMessage.SetBucketIfNotNull(bucket);
 
             using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
 
@@ -159,12 +166,14 @@ internal static class HttpClientExtensions
             TRequest request,
             JsonTypeInfo<TRequest> requestJsonInfo,
             string? reason = null,
+            string? bucket = null,
             CancellationToken cancellationToken = default
         )
             where TRequest : notnull
         {
             using var httpRequestMessage = new HttpRequestMessage(method, url);
             httpRequestMessage.Content = JsonContent.Create(request, requestJsonInfo);
+            httpRequestMessage.SetBucketIfNotNull(bucket);
 
             using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
         }
@@ -174,12 +183,14 @@ internal static class HttpClientExtensions
             string url,
             JsonTypeInfo<TResult> resultJsonInfo,
             string? reason = null,
+            string? bucket = null,
             CancellationToken cancellationToken = default
         )
             where TResult : class
         {
             using var httpRequestMessage = new HttpRequestMessage(method, url);
             using var response = await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
+            httpRequestMessage.SetBucketIfNotNull(bucket);
 
             return await HttpClient.DeserializeResponseAsync(resultJsonInfo, cancellationToken, response);
         }
@@ -211,10 +222,13 @@ internal static class HttpClientExtensions
             HttpMethod method,
             string url,
             string? reason = null,
+            string? bucket = null,
             CancellationToken cancellationToken = default
         )
         {
             using var httpRequestMessage = new HttpRequestMessage(method, url);
+            httpRequestMessage.SetBucketIfNotNull(bucket);
+
             await client.SendFluxerRequestAsync(httpRequestMessage, cancellationToken, reason);
         }
 
@@ -254,7 +268,7 @@ internal static class HttpClientExtensions
                 }
                 else
                 {
-                    throw new RatelimitException(errorResponse!.Code, errorResponse.Message,
+                    throw new RateLimitException(errorResponse!.Code, errorResponse.Message,
                         errorResponse.RetryAfter!.Value, errorResponse.Global!.Value);
                 }
             }

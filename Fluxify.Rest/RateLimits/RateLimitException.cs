@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Rest;
+namespace Fluxify.Rest.RateLimits;
 
-public class RatelimitException(string code, string message, int retryAfter, bool global) : Exception(message)
+/// <summary>
+/// An exception that gets thrown when the request was rate limited.
+/// </summary>
+/// <param name="code">Error code.</param>
+/// <param name="message">The message that belongs to the error.</param>
+/// <param name="retryAfter">When to retry the request.</param>
+/// <param name="global">True if the global rate limit was hit. When false this error is scoped to the route rate limit.</param>
+public class RateLimitException(string code, string message, int retryAfter, bool global) : Exception(message)
 {
     public string Code { get; } = code;
     public int RetryAfter { get; } = retryAfter;

@@ -12,6 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-global using Fluxify.Dto.Json;
-global using Fluxify.Rest.RateLimits;
-global using Fluxify.Rest.RateLimits.Defaults;
+namespace Fluxify.Rest.RateLimits;
+
+internal static class HttpRequestExtensions
+{
+    private static readonly HttpRequestOptionsKey<string> Bucket = new("792F5737-E5E4-4D97-AF76-520CD4C4A7A9.rate-limit");
+
+    extension(HttpRequestMessage request)
+    {
+        public void SetBucketIfNotNull(string? bucket)
+        {
+            if (bucket != null)
+            {
+                request.Options.Set(Bucket, bucket);
+            }
+        }
+
+        public bool TryGetBucket(out string? bucket)
+        {
+            return request.Options.TryGetValue(Bucket, out bucket);
+        }
+    }
+}
