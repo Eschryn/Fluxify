@@ -17,18 +17,23 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Dto.Common;
 
+/// <summary>
+/// Converts a <see cref="MediaHash"/> from and to JSON.
+/// </summary>
 public class MediaHashConverter : JsonConverter<MediaHash>
 {
+    /// <inheritdoc />
     public override MediaHash Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.String)
+        {
             throw new JsonException("Expected string for MediaHash, but got " + reader.TokenType);
-        
+        }
+
         return new MediaHash(reader.GetString()!);
     }
 
+    /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, MediaHash value, JsonSerializerOptions options)
-    {
-        writer.WriteStringValue(value.Hash);
-    }
+        => writer.WriteStringValue(value.Hash);
 }

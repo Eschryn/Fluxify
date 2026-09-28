@@ -12,20 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Dto.Guilds.Members;
+namespace Fluxify.Dto.Users;
 
 /// <summary>
-/// Provides known attributes of a member profile.
+/// Provides attributes that tell whether the user wants to be mentioned or not.
 /// </summary>
-[Flags]
-public enum GuildMemberProfileFlags : uint
+public enum MentionFlags
 {
     /// <summary>
-    /// The member profile has no avatar override.
+    /// The user has stated no preference whether they should be mentioned or not.
     /// </summary>
-    AvatarUnset = 1,
+    NoPreference = 0,
+
     /// <summary>
-    /// The member profile has no banner override.
+    /// The user prefers to be mentioned.
     /// </summary>
-    BannerUnset = 2,
+    PreferMention = 1,
+
+    /// <summary>
+    /// The user prefers not to be mentioned.
+    /// </summary>
+    PreferNoMention = 2
 }

@@ -14,13 +14,47 @@
 
 namespace Fluxify.Dto.Users;
 
+/// <summary>
+/// Provides known publicly visible attributes of a global user.
+/// </summary>
 [Flags]
 public enum PublicUserFlags : uint
 {
-    Staff = 1,
-    CtpMember = 2,
-    Partner = 4,
-    BugHunter = 8,
-    FriendlyBot = 16,
-    FriendlyBotManualApproval = 32,
+    /// <summary>
+    /// The user is a staff member of the instance.
+    /// </summary>
+    Staff = 1 << 0,
+    
+    /*
+     Has been removed
+    /// <summary>
+    /// Community team p???? member
+    /// </summary>
+    CtpMember = 1 << 1,
+    */
+    
+    /// <summary>
+    /// The user is participating in the partner program of the instance.
+    /// </summary>
+    Partner = 1 << 2,
+    
+    /// <summary>
+    /// The user has found security related bugs (main fluxer instance) or for other instances it could also just mean generally the user found bugs.
+    /// </summary>
+    BugHunter = 1 << 3,
+    
+    /// <summary>
+    /// The user is a bot account that accepts friend requests.
+    /// </summary>
+    FriendlyBot = 1 << 4,
+    
+    /// <summary>
+    /// The user is a bot account that accepts friend requests after manual approval of the application owner.
+    /// </summary>
+    FriendlyBotManualApproval = 1 << 5,
+    
+    /// <summary>
+    /// The user has been flagged as a spammer on the instance.
+    /// </summary>
+    Spammer = 1 << 6
 }
