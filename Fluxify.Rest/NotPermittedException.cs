@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Rest.Model;
+using Fluxify.Rest.Model;
+
+namespace Fluxify.Rest;
 
 /// <summary>
-/// Represents a specific error from the backend. For example: validation fail.
+/// Exception for when the caller is not permitted to execute the api request.
 /// </summary>
-/// <param name="Path">JSON path to the property that failed to validate.</param>
-/// <param name="Message">Human-readable error message that explains what failed about this property.</param>
-/// <param name="Code">An error code that represents the fail reason.</param>
-public record Error(string Path, string Message, string Code);
+/// <inheritdoc/>
+public class NotPermittedException(string code, string message, Error[] errors) 
+    : RestApiException(code, message, errors);

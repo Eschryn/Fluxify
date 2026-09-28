@@ -23,6 +23,8 @@ partial class RateLimitDefaults
     public const string GuildEmojiBulkCreate = "guild:emoji:bulk_create::guild_id";
     public const string GuildEmojiDelete = "guild:emoji:delete::guild_id";
     public const string GuildEmojiUpdate = "guild:emoji:update::guild_id";
+    public const string GuildMembers = "guild:members::guild_id";
+    public const string GuildEmojiClone = "guild:emoji:clone::guild_id";
 
     public static partial FrozenDictionary<string, TokenBucketRateLimiterOptions> Guild { get => field; } =
         new Dictionary<string, TokenBucketRateLimiterOptions>()
@@ -81,7 +83,7 @@ partial class RateLimitDefaults
                 TokensPerPeriod = 10,
                 ReplenishmentPeriod = TimeSpan.FromMinutes(1)
             },
-            ["guild:members::guild_id"] = new()
+            [GuildMembers] = new()
             {
                 TokenLimit = 40,
                 TokensPerPeriod = 40,
@@ -201,7 +203,7 @@ partial class RateLimitDefaults
                 TokensPerPeriod = 6,
                 ReplenishmentPeriod = TimeSpan.FromMinutes(1)
             },
-            ["guild:emoji:clone::guild_id"] = new()
+            [GuildEmojiClone] = new()
             {
                 TokenLimit = 10,
                 TokensPerPeriod = 10,

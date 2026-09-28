@@ -217,4 +217,5 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(GuildEmojiUpdateRequest))]
 [JsonSerializable(typeof(GuildCreateRequest))]
 [JsonSerializable(typeof(PreloadMessagesRequest))]
+[JsonSerializable(typeof(GuildEmojiCloneRequest))]
 public sealed partial class DtoJsonContext : JsonSerializerContext;

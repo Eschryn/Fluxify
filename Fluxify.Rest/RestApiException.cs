@@ -16,8 +16,21 @@ using Fluxify.Rest.Model;
 
 namespace Fluxify.Rest;
 
+/// <summary>
+/// An exception that gets thrown when something went wrong or the server rejected the request.
+/// </summary>
+/// <param name="code">Error code that represents the reason why the request was rejected.</param>
+/// <param name="message">Error message that contains the reason why the request was rejected in human readable form.</param>
+/// <param name="errors">Property/field specific errors.</param>
 public class RestApiException(string code, string message, Error[] errors) : Exception(message)
 {
+    /// <summary>
+    /// Error code that represents the reason why the request was rejected.
+    /// </summary>
     public string Code { get; } = code;
+    
+    /// <summary>
+    /// Property/field specific errors.
+    /// </summary>
     public Error[] Errors { get; } = errors;
 }

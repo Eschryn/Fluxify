@@ -72,7 +72,8 @@ internal static class HttpClientExtensions
         {
             if (request.Files is not { Length: > 0 })
             {
-                await client.JsonRequestAsync(method, url, request, requestJsonInfo, reason: null, cancellationToken: cancellationToken);
+                await client.JsonRequestAsync(method, url, request, requestJsonInfo, reason: null,
+                    cancellationToken: cancellationToken);
 
                 return;
             }
@@ -262,14 +263,19 @@ internal static class HttpClientExtensions
                     cancellationToken: cancellationToken
                 );
 
-                if (httpResponseMessage.StatusCode != HttpStatusCode.TooManyRequests)
+                switch (httpResponseMessage.StatusCode)
                 {
-                    throw new RestApiException(errorResponse!.Code, errorResponse.Message, errorResponse.Errors!);
-                }
-                else
-                {
-                    throw new RateLimitException(errorResponse!.Code, errorResponse.Message,
-                        errorResponse.RetryAfter!.Value, errorResponse.Global!.Value);
+                    case HttpStatusCode.TooManyRequests:
+                        throw new RateLimitException(errorResponse!.Code, errorResponse.Message,
+                            errorResponse.RetryAfter!.Value, errorResponse.Global!.Value);
+                    case HttpStatusCode.Unauthorized:
+                        throw new NotPermittedException(errorResponse!.Code, errorResponse.Message,
+                            errorResponse.Errors!);
+                    case HttpStatusCode.NotFound:
+                        throw new NotFoundException(errorResponse!.Code, errorResponse.Message,
+                            errorResponse.Errors!);
+                    default:
+                        throw new RestApiException(errorResponse!.Code, errorResponse.Message, errorResponse.Errors!);
                 }
             }
             finally

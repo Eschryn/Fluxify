@@ -23,7 +23,18 @@ namespace Fluxify.Rest.RateLimits;
 /// <param name="global">True if the global rate limit was hit. When false this error is scoped to the route rate limit.</param>
 public class RateLimitException(string code, string message, int retryAfter, bool global) : Exception(message)
 {
+    /// <summary>
+    /// The error code that represents the reason.
+    /// </summary>
     public string Code { get; } = code;
+
+    /// <summary>
+    /// When to retry the request.
+    /// </summary>
     public int RetryAfter { get; } = retryAfter;
+
+    /// <summary>
+    /// True if the global rate limit was hit. When false this error is scoped to the route rate limit.
+    /// </summary>
     public bool Global { get; } = global;
 }

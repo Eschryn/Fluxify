@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Rest.Model;
+using Fluxify.Core.Types;
+
+namespace Fluxify.Dto.Guilds.Emoji;
 
 /// <summary>
-/// Represents a specific error from the backend. For example: validation fail.
+/// Represents a clone emoji request.
 /// </summary>
-/// <param name="Path">JSON path to the property that failed to validate.</param>
-/// <param name="Message">Human-readable error message that explains what failed about this property.</param>
-/// <param name="Code">An error code that represents the fail reason.</param>
-public record Error(string Path, string Message, string Code);
+/// <param name="SourceEmojiId">The id of the emoji that should be cloned.</param>
+public record GuildEmojiCloneRequest(Snowflake SourceEmojiId);
