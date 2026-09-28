@@ -17,6 +17,9 @@ using System.Text.Json.Serialization;
 
 namespace Fluxify.Core.Types;
 
+/// <summary>
+/// Converts <see cref="Permissions"/> from and to JSON.
+/// </summary>
 public class PermissionConverter : JsonConverter<Permissions>
 {
     /// <inheritdoc/>
