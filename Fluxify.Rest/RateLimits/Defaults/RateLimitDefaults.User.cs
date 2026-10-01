@@ -19,6 +19,10 @@ namespace Fluxify.Rest.RateLimits.Defaults;
 
 partial class RateLimitDefaults
 {
+    public const string UserEmailChangeStart = "user:email_change:start";
+    public const string UserEmailChangeResendOriginal = "user:email_change:resend_original";
+    public const string UserEmailChangeVerifyOriginal = "user:email_change:verify_original";
+
     public static partial FrozenDictionary<string, TokenBucketRateLimiterOptions> User
     {
         get => field;
@@ -48,19 +52,19 @@ partial class RateLimitDefaults
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:start"] = new()
+        [UserEmailChangeStart] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:resend_original"] = new()
+        [UserEmailChangeResendOriginal] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:verify_original"] = new()
+        [UserEmailChangeVerifyOriginal] = new()
         {
             TokenLimit = 20,
             TokensPerPeriod = 20,

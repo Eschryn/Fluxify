@@ -22,4 +22,5 @@ namespace Fluxify.Dto.Guilds.Emoji;
 /// <param name="Animated">True when the emoji is an animated image.</param>
 /// <param name="Id">The id of the emoji.</param>
 /// <param name="Name">The name of the emoji.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/guild-emojis/#guild-emoji-object"/>
 public record GuildEmojiResponse(bool Animated, Snowflake? Id, string Name);

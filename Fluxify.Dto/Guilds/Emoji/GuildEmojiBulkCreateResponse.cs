@@ -19,4 +19,5 @@ namespace Fluxify.Dto.Guilds.Emoji;
 /// </summary>
 /// <param name="Failed">All emojis that failed to be created, with their respective error messages.</param>
 /// <param name="Success">All emojis that were successfully created.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/guild-emojis/#emoji-bulk-create-response-object"/>
 public record GuildEmojiBulkCreateResponse(GuildEmojiBulkCreateResponseFailedItem[] Failed, GuildEmojiResponse[] Success);

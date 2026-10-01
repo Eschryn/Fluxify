@@ -40,7 +40,12 @@ public class MeRequestBuilder(HttpClient client)
     private static readonly CompositeFormat MentionsIdUrl = CompositeFormat.Parse("users/@me/mentions/{0}");
 
     public PrivateChannelRequestBuilder PrivateChannels { get; } = new(client);
+    
+    /// <summary>
+    /// Provides email change requests for the current user.
+    /// </summary>
     public EmailChangeRequestBuilder EmailChange { get; } = new(client);
+
     public HarvestRequestBuilder Harvest { get; } = new(client);
     public UserMessagesRequestBuilder Messages { get; } = new(client);
     public MfaRequestBuilder Mfa { get; } = new(client);

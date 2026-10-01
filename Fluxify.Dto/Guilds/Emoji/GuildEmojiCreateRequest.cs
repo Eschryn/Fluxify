@@ -21,4 +21,5 @@ namespace Fluxify.Dto.Guilds.Emoji;
 /// </summary>
 /// <param name="Image">The image that should later be the emoji.</param>
 /// <param name="Name">The name of the emoji.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/guild-emojis/#emoji-create-object"/>
 public record GuildEmojiCreateRequest(Base64Image Image, string Name);
