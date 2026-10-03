@@ -20,7 +20,7 @@ public record GuildAuditLogEntryResponse(
     AuditLogActionType ActionType,
     AuditLogChangeSchema[]? Changes,
     Snowflake Id,
-    Dictionary<string, string>? Options,
+    Dictionary<string, object>? Options,
     string? Reason,
     string? TargetId,
     Snowflake? UserId);

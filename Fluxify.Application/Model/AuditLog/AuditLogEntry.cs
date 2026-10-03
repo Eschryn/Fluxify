@@ -16,7 +16,7 @@ public record AuditLogEntry(
     Snowflake Id,
     AuditLogActionType Type,
     IAuditLogChange[]? Changes,
-    Dictionary<string, string>? Options,
+    Dictionary<string, object>? Options,
     string? TargetId,
     string? Reason,
     Snowflake? UserId
