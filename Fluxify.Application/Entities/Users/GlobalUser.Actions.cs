@@ -29,7 +29,7 @@ public partial class GlobalUser
         ImageQuality quality = ImageQuality.High,
         bool animated = false
     ) => Avatar?.GetUri(size, format, quality, animated) ?? new Uri(
-        fluxerApplication.InstanceInfo!.Endpoints.StaticCdn,
+        fluxerApplication.Endpoints!.StaticCdn,
         string.Format(
             CultureInfo.InvariantCulture,
             FallbackAvatarUriFormat,

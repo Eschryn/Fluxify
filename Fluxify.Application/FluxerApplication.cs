@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net.Http.Json;
+using System.Text.Json;
 using Fluxify.Application.Common;
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Private;
@@ -24,9 +26,11 @@ using Fluxify.Application.Model.AuditLog;
 using Fluxify.Application.Repositories;
 using Fluxify.Core.Credentials;
 using Fluxify.Dto.Instance;
+using Fluxify.Dto.Json;
 using Fluxify.Dto.Users;
 using Fluxify.Gateway;
 using Fluxify.Rest;
+using Microsoft.Extensions.DependencyInjection;
 using MemberMapper = Fluxify.Application.Entities.Guilds.Members.MemberMapper;
 
 namespace Fluxify.Application;
@@ -45,15 +49,21 @@ public partial class FluxerApplication
     internal readonly CacheMapper CacheMapper;
     internal readonly MemberMapper MemberMapper;
     internal readonly AuditLogMapper AuditLogMapper;
-    
+
     public GatewayClient Gateway { get; }
     public RestClient Rest { get; }
 
     private ICacheRef<PrivateUser>? CurrentUserRef { get; set; }
-    public PrivateUser CurrentUser => CurrentUserRef?.Value 
+
+    public PrivateUser CurrentUser => CurrentUserRef?.Value
                                       ?? throw new InvalidOperationException("Clients needs to be logged in.");
 
-    internal WellKnownFluxerResponse? InstanceInfo { get; private set; }
+    internal WellKnownFluxerResponseEndpoints? Endpoints { get; private set; }
+    
+    internal ChannelRepository ChannelsRepository { get; }
+    internal UserRepository UsersRepository { get; }
+    internal GuildRepository GuildsRepository { get; }
+
 
     public FluxerApplication(ApplicationConfig config)
     {
@@ -63,7 +73,7 @@ public partial class FluxerApplication
 
         CacheMapper = new CacheMapper(this);
         ImageFactory = new ImageFactory(this);
-        
+
         WebhookMapper = new WebhookMapper(this);
         MessageMapper = new MessageMapper(this);
         InviteMapper = new InviteMapper(this);
@@ -82,7 +92,7 @@ public partial class FluxerApplication
 
     public virtual async Task RunAsync(CancellationToken cancellationToken = default)
     {
-        InstanceInfo = await Rest.GetWellKnownAsync(cancellationToken);
+        Endpoints = await GetEndpointsAsync(cancellationToken);
 
         Uri gatewayUri;
         var credentials = await Config.FluxerConfig.CredentialProvider();
@@ -94,19 +104,15 @@ public partial class FluxerApplication
                 throw new Exception("Could not get gateway information.");
             }
 
-            gatewayUri = gatewayBotResponse.Url ?? InstanceInfo!.Endpoints.Gateway;
+            gatewayUri = gatewayBotResponse.Url ?? Endpoints!.Gateway;
         }
         else
         {
-            gatewayUri = InstanceInfo!.Endpoints.Gateway;
+            gatewayUri = Endpoints!.Gateway;
         }
 
         await Gateway.RunAsync(gatewayUri, cancellationToken);
     }
-
-    internal ChannelRepository ChannelsRepository { get; }
-    internal UserRepository UsersRepository { get; }
-    internal GuildRepository GuildsRepository { get; }
 
     public IReadOnlyCollection<CacheRef<Guild>> Guilds => GuildsRepository.Cache.GetAllCached();
 
@@ -133,4 +139,20 @@ public partial class FluxerApplication
         Snowflake userId,
         bool bypassCache = false
     ) => (await UsersRepository.GetAsync(userId, bypassCache)).Value!;
+
+    private async Task<WellKnownFluxerResponseEndpoints?> GetEndpointsAsync(CancellationToken cancellationToken)
+    {
+        using var client = Config.FluxerConfig.ServiceProvider.GetService<HttpClient>();
+
+        using var json = await client!.GetFromJsonAsync<JsonDocument>(
+            "/.well-known/fluxer",
+            cancellationToken: cancellationToken
+        );
+
+        return json!.RootElement
+            .GetProperty("endpoints")
+            .Deserialize<WellKnownFluxerResponseEndpoints>(
+                DtoJsonContext.Default.WellKnownFluxerResponseEndpoints
+            );
+    }
 }

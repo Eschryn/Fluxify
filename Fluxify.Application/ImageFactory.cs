@@ -77,7 +77,7 @@ internal class ImageFactory(FluxerApplication app)
         ? null
         : new Image(
             new Uri(
-                app.InstanceInfo?.Endpoints.Media ?? throw new InvalidOperationException(),
+                app.Endpoints?.Media ?? throw new InvalidOperationException(),
                 string.Format(CultureInfo.InvariantCulture, template, targetId, hash.Value.Hash)
             ),
             width,
@@ -95,7 +95,7 @@ internal class ImageFactory(FluxerApplication app)
         ? null
         : new Image(
             new Uri(
-                app.InstanceInfo?.Endpoints.Media ?? throw new InvalidOperationException(),
+                app.Endpoints?.Media ?? throw new InvalidOperationException(),
                 string.Format(CultureInfo.InvariantCulture, template, guildId, targetId, hash.Value.Hash)
             ),
             width,

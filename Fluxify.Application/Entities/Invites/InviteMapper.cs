@@ -39,5 +39,5 @@ public partial class InviteMapper(FluxerApplication fluxerApplication)
     [MapProperty(nameof(GuildVanityUrlResponse.Code), nameof(VanityUrl.Url), Use = nameof(MapVanityUri))]
     public partial VanityUrl MapVanity(GuildVanityUrlResponse arg);
 
-    private Uri MapVanityUri(string code) => new(fluxerApplication.InstanceInfo!.Endpoints.Invite, code);
+    private Uri MapVanityUri(string code) => new(fluxerApplication.Endpoints!.Invite, code);
 }
