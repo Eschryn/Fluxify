@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Dto.Channels;
+using Fluxify.Core.Types;
 
-public enum ChannelType
-{
-    TextChannel = 0,
-    Dm = 1,
-    VoiceChannel = 2,
-    GroupDm = 3,
-    Category = 4,
-    GuildAnnouncement = 5,
-    LinkChannel = 998,
-    DmPersonalNotes = 999
-}
+namespace Fluxify.Dto.Channels.Text.Announcement;
+
+public record ChannelCreateAnnouncementRequest(
+    string Name,
+    bool? Nsfw,
+    Snowflake? ParentId,
+    ChannelPermissionOverwrite[]? PermissionOverwrites,
+    int? RateLimitPerUser,
+    string? Topic
+) : ChannelCreateTextRequest(Name, Nsfw, ParentId, PermissionOverwrites, RateLimitPerUser, Topic);

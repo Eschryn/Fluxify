@@ -14,6 +14,7 @@
 
 using System.Text.Json.Serialization;
 using Fluxify.Core.Types;
+using Fluxify.Dto.Channels.Text.Announcement;
 
 namespace Fluxify.Dto.Channels;
 
@@ -24,4 +25,5 @@ namespace Fluxify.Dto.Channels;
 [JsonDerivedType(typeof(GuildCategoryResponse), (int)ChannelType.Category)]
 [JsonDerivedType(typeof(GroupDmChannelResponse), (int)ChannelType.GroupDm)]
 [JsonDerivedType(typeof(DmChannelResponse), (int)ChannelType.Dm)]
+[JsonDerivedType(typeof(GuildAnnouncementChannelResponse), (int)ChannelType.GuildAnnouncement)]
 public abstract record ChannelResponse(Snowflake Id);

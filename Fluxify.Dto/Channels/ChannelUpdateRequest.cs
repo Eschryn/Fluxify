@@ -17,6 +17,7 @@ using Fluxify.Dto.Channels.Category;
 using Fluxify.Dto.Channels.GroupDm;
 using Fluxify.Dto.Channels.LinkChannel;
 using Fluxify.Dto.Channels.Text;
+using Fluxify.Dto.Channels.Text.Announcement;
 using Fluxify.Dto.Channels.Voice;
 
 namespace Fluxify.Dto.Channels;
@@ -27,4 +28,5 @@ namespace Fluxify.Dto.Channels;
 [JsonDerivedType(typeof(ChannelUpdateGroupDmRequest), (int)ChannelType.GroupDm)]
 [JsonDerivedType(typeof(ChannelUpdateTextRequest), (int)ChannelType.TextChannel)]
 [JsonDerivedType(typeof(ChannelUpdateLinkRequest), (int)ChannelType.LinkChannel)]
+[JsonDerivedType(typeof(ChannelUpdateAnnouncementRequest), (int)ChannelType.GuildAnnouncement)]
 public abstract record ChannelUpdateRequest;

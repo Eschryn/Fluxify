@@ -16,6 +16,7 @@ using System.Text.Json.Serialization;
 using Fluxify.Dto.Channels.Category;
 using Fluxify.Dto.Channels.LinkChannel;
 using Fluxify.Dto.Channels.Text;
+using Fluxify.Dto.Channels.Text.Announcement;
 using Fluxify.Dto.Channels.Voice;
 
 namespace Fluxify.Dto.Channels;
@@ -25,6 +26,7 @@ namespace Fluxify.Dto.Channels;
 [JsonDerivedType(typeof(ChannelCreateTextRequest), (int)ChannelType.TextChannel)]
 [JsonDerivedType(typeof(ChannelCreateLinkRequest), (int)ChannelType.LinkChannel)]
 [JsonDerivedType(typeof(ChannelCreateVoiceRequest), (int)ChannelType.VoiceChannel)]
+[JsonDerivedType(typeof(ChannelCreateAnnouncementRequest), (int)ChannelType.GuildAnnouncement)]
 public abstract record ChannelCreateRequest(
     string Name,
     ChannelPermissionOverwrite[]? PermissionOverwrites
