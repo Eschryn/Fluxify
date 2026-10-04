@@ -16,4 +16,20 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
-public record EmailChangeRequestNewRequest(string NewEmail, string OriginalProof, string Ticket);
+/// <summary>
+/// Request object of the new email verification start request.
+/// </summary>
+/// <param name="Ticket">The ticket of the email change process.</param>
+/// <param name="OriginalProof">Proof returned from the original email verification.</param>
+/// <param name="NewEmail">The email address that the ticket should be bound to.</param>
+/// <param name="NewPassword">This can be provided when claiming an account.</param>
+/// <remarks>
+/// Providing <paramref name="NewPassword"/> during account claim process will verify the password and might result in a PASSWORD_IS_TOO_COMMON api error.
+/// </remarks>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#json-body-3"/>
+public record EmailChangeRequestNewRequest(
+    string OriginalProof,
+    string Ticket,
+    string NewEmail,
+    string? NewPassword
+);

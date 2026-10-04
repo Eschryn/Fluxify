@@ -14,6 +14,14 @@
 
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
+/// <summary>
+/// Response object for the new email set/change process request.
+/// </summary>
+/// <param name="NewCodeExpiresAt">From this moment on the code that was sent will expire, requiring a new one to be requested.</param>
+/// <param name="NewEmail">The new email where the code was sent to.</param>
+/// <param name="ResendAvailableAt">Timestamp from when on a new code can be requested to be sent to the new email.</param>
+/// <param name="Ticket">The identifying ticket for this email change/set process.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#new-email-request-object"/>
 public record EmailChangeRequestNewResponse(
     DateTimeOffset NewCodeExpiresAt,
     string NewEmail,

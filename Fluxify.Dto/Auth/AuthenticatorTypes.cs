@@ -14,9 +14,17 @@
 
 namespace Fluxify.Dto.Auth;
 
+/// <summary>
+/// Represents available authenticator types.
+/// </summary>
 public enum AuthenticatorTypes
 {
+    /// <summary>
+    /// One time password authentication
+    /// </summary>
     Otp = 0,
-    Sms = 1,
+    /// <summary>
+    /// WebAuthn for example Passkeys authentication.
+    /// </summary>
     Webauthn = 2,
 }

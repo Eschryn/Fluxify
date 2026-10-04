@@ -14,4 +14,9 @@
 
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
+/// <summary>
+/// The response object of the new email verification request.
+/// </summary>
+/// <param name="EmailToken">The token that can be redeemed at the apply email change request or for claiming an account at the modify user request.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#new-email-verification-object"/>
 public record EmailTokenResponse(string EmailToken);

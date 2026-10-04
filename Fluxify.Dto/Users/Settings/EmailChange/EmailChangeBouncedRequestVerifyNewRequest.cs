@@ -14,4 +14,10 @@
 
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
+/// <summary>
+/// Request object for the verify replacement email for bounced address request.
+/// </summary>
+/// <param name="Code">The code that was sent to the users replacement email.</param>
+/// <param name="Ticket">The ticket of the bounced email change process.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#verify-replacement-email-for-bounced-address"/>
 public record EmailChangeBouncedRequestVerifyNewRequest(string Code, string Ticket);

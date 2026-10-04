@@ -12,10 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Dto.Users.Settings.EmailChange;
+namespace Fluxify.Dto.Users;
 
 /// <summary>
-/// Request object for the resend new and old email change verification code requests.
+/// Represents information about a scheduled deletion of every message the user sent.
 /// </summary>
-/// <param name="Ticket">The ticket for which a new verification code should be sent.</param>
-public record EmailChangeTicketRequest(string Ticket);
+/// <param name="ChannelCount">The number of channels holding messages that will be deleted.</param>
+/// <param name="MessageCount">The number of messages that will be deleted.</param>
+/// <param name="ScheduledAt">When the deletion occurs.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/#pending-bulk-message-deletion-object"/>
+public record PendingBulkMessageDeletion(
+    int ChannelCount,
+    int MessageCount,
+    DateTimeOffset ScheduledAt
+);

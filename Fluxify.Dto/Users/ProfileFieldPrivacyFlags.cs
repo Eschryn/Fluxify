@@ -14,8 +14,22 @@
 
 namespace Fluxify.Dto.Users;
 
-public record UserPrivateResponsePendingBulkMessageDeletion(
-    int ChannelCount,
-    int MessageCount,
-    DateTimeOffset ScheduledAt
-);
+/// <summary>
+/// Defines the privacy settings for a profile field.
+/// </summary>
+[Flags]
+public enum ProfileFieldPrivacyFlags
+{
+    /// <summary>
+    /// Everyone can see the profile field
+    /// </summary>
+    Everyone = 1 << 0,
+    /// <summary>
+    /// Only friends can see the profile field
+    /// </summary>
+    Friends = 1 << 1,
+    /// <summary>
+    /// Only users that share a guild with the user can see the profile field
+    /// </summary>
+    MutualGuilds = 1 << 2,
+}

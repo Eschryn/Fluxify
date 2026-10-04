@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Fluxify.Dto.Users.Settings.EmailChange;
+namespace Fluxify.Dto.Users.Settings.Security.Webauth;
 
 /// <summary>
-/// Request object for the resend new and old email change verification code requests.
+/// WebAuthn credential properties
 /// </summary>
-/// <param name="Ticket">The ticket for which a new verification code should be sent.</param>
-public record EmailChangeTicketRequest(string Ticket);
+/// <param name="Rk">Whenever the created credential is discoverable.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/mfa/#webauthn-credential-properties-object"/>
+public record WebAuthnCredentialProperties(
+    bool? Rk
+);

@@ -31,15 +31,17 @@ namespace Fluxify.Dto.Users;
 /// <param name="Bot">True when the user is a bot account, otherwise false.</param>
 /// <param name="Username">The username part of the user handle.</param>
 public record UserPartialResponse(
+    Snowflake Id,
+    string Username,
+    string Discriminator,
+    string? GlobalName,
     MediaHash? Avatar,
     Color? AvatarColor,
-    string Discriminator,
-    PublicUserFlags Flags,
-    string? GlobalName,
-    Snowflake Id,
     bool? System,
     bool? Bot,
-    string Username)
+    PublicUserFlags Flags,
+    MentionFlags? MentionFlags
+)
 {
     /// <summary>The four digit discriminator of the user handle.</summary>
     /// <remarks>

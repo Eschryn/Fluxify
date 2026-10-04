@@ -12,12 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Dto.Users.Settings.Security.Webauth;
+
 namespace Fluxify.Dto.Users.Settings.Security;
 
+/// <summary>
+/// Base verification schema for many authenticated calls.
+/// </summary>
+/// <param name="MfaCode">MFA Code as received by the authenticator.</param>
+/// <param name="MfaMethod">Which method should be used for authentication.</param>
+/// <param name="Password">Password of the account.</param>
+/// <param name="WebauthnChallenge">WebAuthn challenge.</param>
+/// <param name="WebauthnResponse">WebAuthn response.</param>
 public record SudoVerificationSchema(
     string? MfaCode,
     MfaMethod? MfaMethod,
     string? Password,
     string? WebauthnChallenge,
-    string? WebauthnResponse
+    WebAuthnAssertion? WebauthnResponse
 );

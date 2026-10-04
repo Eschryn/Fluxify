@@ -14,4 +14,9 @@
 
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
+/// <summary>
+/// Request object for the bounced replacement email request.
+/// </summary>
+/// <param name="NewEmail">The new email that should be linked to the account.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#request-replacement-email-for-bounced-address"/>
 public record EmailChangeBouncedRequestNewRequest(string NewEmail);

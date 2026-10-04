@@ -14,4 +14,11 @@
 
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
+/// <summary>
+/// Request object for the new email verification request.
+/// </summary>
+/// <param name="Code">The code that was sent to the new object.</param>
+/// <param name="OriginalProof">The proof for the original email verification.</param>
+/// <param name="Ticket">The identifying ticket that belongs to the email verification process that should be verified.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#verify-new-email"/>
 public record EmailChangeVerifyNewRequest(string Code, string OriginalProof, string Ticket);

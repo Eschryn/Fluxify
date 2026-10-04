@@ -14,9 +14,23 @@
 
 namespace Fluxify.Dto.Users;
 
+/// <summary>
+/// Represents which premium type the user has.
+/// </summary>
 public enum UserPremiumTypes
 {
+    /// <summary>
+    /// The user has no premium subscription.
+    /// </summary>
     None = 0,
-    ActivePremium = 1,
-    LifetimePremium = 2,
+
+    /// <summary>
+    /// The user has an active premium subscription.
+    /// </summary>
+    Subscription = 1,
+
+    /// <summary>
+    /// The user has a lifetime premium subscription.
+    /// </summary>
+    Lifetime = 2,
 }

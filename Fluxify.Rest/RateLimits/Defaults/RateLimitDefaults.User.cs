@@ -22,6 +22,13 @@ partial class RateLimitDefaults
     public const string UserEmailChangeStart = "user:email_change:start";
     public const string UserEmailChangeResendOriginal = "user:email_change:resend_original";
     public const string UserEmailChangeVerifyOriginal = "user:email_change:verify_original";
+    public const string UserEmailChangeRequestNew = "user:email_change:request_new";
+    public const string UserEmailChangeResendNew = "user:email_change:resend_new";
+    public const string UserEmailChangeVerifyNew = "user:email_change:verify_new";
+    public const string UserEmailChangeApply = "user:email_change:apply";
+    public const string UserEmailChangeBouncedRequestNew = "user:email_change:bounced:request_new";
+    public const string UserEmailChangeBouncedResendNew = "user:email_change:bounced:resend_new";
+    public const string UserEmailChangeBouncedVerifyNew = "user:email_change:bounced:verify_new";
 
     public static partial FrozenDictionary<string, TokenBucketRateLimiterOptions> User
     {
@@ -70,43 +77,43 @@ partial class RateLimitDefaults
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:request_new"] = new()
+        [UserEmailChangeRequestNew] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:resend_new"] = new()
+        [UserEmailChangeResendNew] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:verify_new"] = new()
+        [UserEmailChangeVerifyNew] = new()
         {
             TokenLimit = 20,
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:apply"] = new()
+        [UserEmailChangeApply] = new()
         {
             TokenLimit = 20,
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:bounced:request_new"] = new()
+        [UserEmailChangeBouncedRequestNew] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:bounced:resend_new"] = new()
+        [UserEmailChangeBouncedResendNew] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:email_change:bounced:verify_new"] = new()
+        [UserEmailChangeBouncedVerifyNew] = new()
         {
             TokenLimit = 20,
             TokensPerPeriod = 20,

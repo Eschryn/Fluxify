@@ -12,10 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Dto.Users.Settings.Security;
+using Fluxify.Dto.Users.Settings.Security.Webauth;
+
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
 /// <summary>
-/// Request object for the resend new and old email change verification code requests.
+/// Request body for the apply email change request.
 /// </summary>
-/// <param name="Ticket">The ticket for which a new verification code should be sent.</param>
-public record EmailChangeTicketRequest(string Ticket);
+/// <param name="EmailToken">The email token that should be applied to the account.</param>
+/// <inheritdoc/>
+public record EmailChangeApplyRequest(
+    string EmailToken,
+    string? Password,
+    MfaMethod? MfaMethod,
+    string? MfaCode,
+    WebAuthnAssertion? WebauthnResponse,
+    string? WebauthnChallenge
+) : SudoVerificationSchema(
+    MfaCode, MfaMethod, Password, WebauthnChallenge, WebauthnResponse
+);

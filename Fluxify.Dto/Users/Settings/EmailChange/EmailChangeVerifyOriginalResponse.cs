@@ -14,4 +14,9 @@
 
 namespace Fluxify.Dto.Users.Settings.EmailChange;
 
+/// <summary>
+/// The response object of the original email verification process.
+/// </summary>
+/// <param name="OriginalProof">The email verification proof used to request a new email & its verification.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#response-2" />
 public record EmailChangeVerifyOriginalResponse(string OriginalProof);
