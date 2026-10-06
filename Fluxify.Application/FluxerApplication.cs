@@ -144,11 +144,12 @@ public partial class FluxerApplication
     {
         using var client = Config.FluxerConfig.ServiceProvider.GetService<HttpClient>();
 
-        using var json = await client!.GetFromJsonAsync<JsonDocument>(
+        await using var jsonStream = await client!.GetStreamAsync(
             "/.well-known/fluxer",
             cancellationToken: cancellationToken
         );
 
+        using var json = await JsonDocument.ParseAsync(jsonStream, cancellationToken: cancellationToken);
         return json!.RootElement
             .GetProperty("endpoints")
             .Deserialize<WellKnownFluxerResponseEndpoints>(
