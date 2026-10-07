@@ -29,7 +29,7 @@ public class VoiceSession : IAsyncDisposable
     private Snowflake? _channelId;
     private Snowflake? _guildId;
     private string? _connectionId;
-    private readonly GatewayClient _gatewayClient;
+    private readonly IGatewayClient _gatewayClient;
     private readonly Room _room;
     private readonly AudioSource _audioSource;
     private readonly LocalAudioTrack _localAudioTrack;
@@ -74,7 +74,7 @@ public class VoiceSession : IAsyncDisposable
     
     public AudioSourceSink AudioSourceSink { get; }
 
-    public VoiceSession(GatewayClient gatewayClient)
+    public VoiceSession(IGatewayClient gatewayClient)
     {
         _gatewayClient = gatewayClient;
         _room = new Room();

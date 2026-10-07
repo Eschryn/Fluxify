@@ -25,7 +25,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Fluxify.Gateway;
 
-public sealed partial class GatewayClient
+/// <inheritdoc />
+public sealed partial class GatewayClient : IGatewayClient
 {
     private readonly ILogger _logger;
     private readonly GatewayConfig _config;
@@ -33,10 +34,12 @@ public sealed partial class GatewayClient
     private readonly WebSocketClient<FluxerJsonProtocol, GatewayPayload> _client;
 
     private int? _lastSequence;
+    /// <inheritdoc />
     public string? SessionId { get; private set; }
     private ITokenCredentials _credentials = null!;
     private CancellationTokenSource? _connectionTokenSource;
 
+    /// <inheritdoc />
     public ConnectionState ConnectionState
     {
         get;
@@ -47,6 +50,7 @@ public sealed partial class GatewayClient
         }
     } = ConnectionState.Connecting;
 
+    /// <inheritdoc />
     public GatewayClient(FluxerConfig config, GatewayConfig? gatewayConfig = null)
         : this(
             gatewayConfig ?? new GatewayConfig(),
@@ -80,7 +84,7 @@ public sealed partial class GatewayClient
         ConnectionStateChanged += state =>
         {
             Log.ConnectionStateChanged(_logger, state);
-            
+
             if (ConnectionState is ConnectionState.Disconnected or ConnectionState.Reconnecting)
             {
                 _connectionTokenSource?.Cancel();
@@ -88,13 +92,14 @@ public sealed partial class GatewayClient
         };
     }
 
+    /// <inheritdoc />
     public async Task RunAsync(Uri endpoint, CancellationToken cancellationToken = default)
     {
         if (ConnectionState is not ConnectionState.Connecting)
         {
             throw new InvalidOperationException("GatewayClient is already running.");
         }
-        
+
         _credentials = await _fluxerConfig.CredentialProvider();
         if (!_credentials.Validate())
         {
@@ -105,7 +110,7 @@ public sealed partial class GatewayClient
         {
             Query = "v=1&encoding=json"
         }.Uri;
-        
+
         await LoopAsync(endpoint, cancellationToken);
     }
 
@@ -116,7 +121,7 @@ public sealed partial class GatewayClient
         while (!cancellationToken.IsCancellationRequested)
         {
             _client.ResetSocket();
-            
+
             try
             {
                 using var connectionTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -157,7 +162,7 @@ public sealed partial class GatewayClient
             }
             finally
             {
-                _connectionTokenSource = null;   
+                _connectionTokenSource = null;
             }
 
             StopHeartbeat();
@@ -212,6 +217,7 @@ public sealed partial class GatewayClient
         }
     }
 
+    /// <inheritdoc />
     public async Task UpdatePresenceAsync(
         UserStatus status,
         bool? afk = null,
@@ -228,28 +234,31 @@ public sealed partial class GatewayClient
                 customStatus
             )
         ), cancellationToken
-    ); 
-    
-    [Obsolete("Use UpdatePresenceAsync(UserStatus, bool?, bool?, CustomStatus?) instead.", false)]
-    public async Task UpdatePresenceAsync(PresenceUpdate data, CancellationToken cancellationToken = default) 
-        => await _client.SendAsync(new GatewayPayload(GatewayOpCode.PresenceUpdate, data), cancellationToken);
+    );
 
+    /// <inheritdoc />
     public async Task UpdateVoiceStateAsync(UpdateVoiceState data, CancellationToken cancellationToken = default)
         => await _client.SendAsync(new GatewayPayload(GatewayOpCode.VoiceStateUpdate, data), cancellationToken);
 
-    public Task RequestPresenceCountAsync(Snowflake[] guildIds, string? nonce = null, CancellationToken cancellationToken = default) 
-        => _client.SendAsync(new GatewayPayload(GatewayOpCode.RequestGuildCounts, new GuildMemberCountRequest(guildIds, nonce)), cancellationToken);
+    /// <inheritdoc />
+    public Task RequestPresenceCountAsync(Snowflake[] guildIds, string? nonce = null,
+        CancellationToken cancellationToken = default)
+        => _client.SendAsync(
+            new GatewayPayload(GatewayOpCode.RequestGuildCounts, new GuildMemberCountRequest(guildIds, nonce)),
+            cancellationToken);
 
-    public async Task<GuildMemberCount[]> GetPresenceCountAsync(Snowflake[] guildIds, CancellationToken cancellationToken = default)
+    /// <inheritdoc />
+    public async Task<GuildMemberCount[]> GetPresenceCountAsync(Snowflake[] guildIds,
+        CancellationToken cancellationToken = default)
     {
         var nonce = Guid.NewGuid().ToString();
         TaskCompletionSource<GuildMemberCount[]> tcs = new();
-        
+
         GuildMemberCountUpdate += OnPresenceCountUpdate;
 
         await RequestPresenceCountAsync(guildIds, nonce, cancellationToken);
         return await tcs.Task;
-        
+
         Task OnPresenceCountUpdate(GuildMemberCountsUpdate arg)
         {
             if (arg.Nonce != nonce)
@@ -296,7 +305,20 @@ public sealed partial class GatewayClient
             SessionId = null;
         }
 
-        await _client.DisconnectAsync(status, description, cancellationToken);
-        ConnectionState = ConnectionState.Disconnected;
+        try
+        {
+            await _client.DisconnectAsync(status, description, cancellationToken);
+        }
+        finally
+        {
+            // We do not care if the socket was actually disconnected.
+            // it might be that we cannot disconnect. (Websocket connection dead or broken)
+            // Since the disconnected state means that we need to abort event processing,
+            // the socket will be thrown away and recreated anyway.
+            // Worst case: we will reconnect, and have two open sessions.
+            // The server will end the old session anyway.
+
+            ConnectionState = ConnectionState.Disconnected;
+        }
     }
 }

@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
-using Fluxify.Dto.Users;
+namespace Fluxify.Application.Common;
 
-namespace Fluxify.Gateway.Model.Data.Channel;
-
-public record GatewayGroupChange(Snowflake ChannelId, UserPartialResponse UserPartial);
+/// <summary>
+/// Represents the asnyc event handlers Fluxify uses.
+/// </summary>
+/// <typeparam name="TEventArgs">The type of the event argument container.</typeparam>
+public delegate Task AsyncEventHandler<in TEventArgs>(FluxerApplication sender, TEventArgs args);

@@ -27,6 +27,10 @@ public class MembersRequestBuilder(HttpClient client, Snowflake guildId)
     private static readonly CompositeFormat MembersMeUrl = CompositeFormat.Parse("guilds/{0}/members/@me");
     private static readonly CompositeFormat SearchUrl = CompositeFormat.Parse("guilds/{0}/members-search");
 
+    /// <summary>
+    /// Exposes endpoints for the specified member.
+    /// </summary>
+    /// <param name="userId">The member that the requests should be scoped to.xx</param>
     public MemberRequestBuilder this[Snowflake userId] => new(client, guildId, userId);
 
     public Task<GuildMemberResponse[]> ListMembersAsync(

@@ -39,8 +39,16 @@ namespace Fluxify.Gateway;
 
 public sealed partial class GatewayClient
 {
-    private readonly FrozenDictionary<string, IHandlerContainer> _eventHandlers =
-        EventNamePayloadClassMap.HandlerContainerConstructorTable.ToFrozenDictionary(k => k.Key, v => v.Value());
+    private readonly FrozenDictionary<string, (IHandlerContainer container, Func<object, Task> invoker)>
+        _eventHandlers =
+            EventNamePayloadClassMap.HandlerContainerConstructorTable.ToFrozenDictionary(
+                k => k.Key,
+                v =>
+                {
+                    var instance = v.Value.constructor();
+                    
+                    return (instance, v.Value.invoker.Method.CreateDelegate<Func<object, Task>>(instance));
+                });
 
     public event Action<ConnectionState>? ConnectionStateChanged;
 
@@ -52,8 +60,8 @@ public sealed partial class GatewayClient
 
     public event Func<Task>? Resumed
     {
-        add => GetHandlerContainer(GatewayEvent.Resumed).InsertDelegate(value!);
-        remove => GetHandlerContainer(GatewayEvent.Resumed).RemoveDelegate(value!);
+        add => _eventHandlers[GatewayEvent.Resumed].container.InsertDelegate(value!);
+        remove => _eventHandlers[GatewayEvent.Resumed].container.RemoveDelegate(value!);
     }
 
     public event Func<GatewaySession[], Task>? SessionsReplace
@@ -139,13 +147,13 @@ public sealed partial class GatewayClient
         add => InsertHandler(GatewayEvent.PresenceUpdate, value!);
         remove => RemoveHandler(GatewayEvent.PresenceUpdate, value!);
     }
-    
+
     public event Func<GuildAuditLogEntryResponse, Task>? GuildAuditLogEntryCreate
     {
         add => InsertHandler(GatewayEvent.GuildAuditLogEntryCreate, value!);
         remove => RemoveHandler(GatewayEvent.GuildAuditLogEntryCreate, value!);
     }
-    
+
     public event Func<GatewayGuildCreate, Task>? GuildCreate
     {
         add => InsertHandler(GatewayEvent.GuildCreate, value!);
@@ -406,7 +414,7 @@ public sealed partial class GatewayClient
         add => InsertHandler(GatewayEvent.PassiveUpdates, value!);
         remove => RemoveHandler(GatewayEvent.PassiveUpdates, value!);
     }
-    
+
     public event Func<GuildMemberCountsUpdate, Task>? GuildMemberCountUpdate
     {
         add => InsertHandler(GatewayEvent.GuildCountsUpdate, value!);
@@ -414,24 +422,16 @@ public sealed partial class GatewayClient
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private HandlerContainer<T> GetHandlerContainer<T>(string eventType) =>
-        (HandlerContainer<T>)_eventHandlers[eventType];
+    private void InsertHandler<T>(string eventType, Func<T, Task> handler) 
+        => _eventHandlers[eventType].container.InsertDelegate(handler);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private HandlerContainer GetHandlerContainer(string eventType) =>
-        (HandlerContainer)_eventHandlers[eventType];
-
-    private void InsertHandler<T>(string eventType, Func<T, Task> handler)
-        => GetHandlerContainer<T>(eventType)
-            .InsertDelegate(handler);
-
     private void RemoveHandler<T>(string eventType, Func<T, Task> handler)
-        => GetHandlerContainer<T>(eventType)
-            .RemoveDelegate(handler);
+        => _eventHandlers[eventType].container.RemoveDelegate(handler);
 
     private void HandleDispatch(string packetType, object packetData)
     {
-        if (_eventHandlers.TryGetValue(packetType, out var handlerContainer))
+        if (_eventHandlers.TryGetValue(packetType, out var handlerContainerTuple))
         {
             Log.EventReceived(_logger, packetType);
 
@@ -441,14 +441,14 @@ public sealed partial class GatewayClient
             Task.Run(async () =>
             {
                 using var _ = _logger.BeginScope(packetType);
-                await handlerContainer.CallHandlersAsync(packetData);
-            }).ContinueWith(t 
-                => Log.UserCodeException(
-                    _logger,
-                    t.Exception!.InnerExceptions.Count == 1 
-                        ? t.Exception.InnerExceptions.First()
-                        : t.Exception!
-                ),
+                await handlerContainerTuple.invoker(packetData);
+            }).ContinueWith(t
+                    => Log.UserCodeException(
+                        _logger,
+                        t.Exception!.InnerExceptions.Count == 1
+                            ? t.Exception.InnerExceptions.First()
+                            : t.Exception!
+                    ),
                 TaskContinuationOptions.OnlyOnFaulted
             );
         }

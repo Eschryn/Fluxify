@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Drawing;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Common;
 using Fluxify.Dto.Guilds.Members;
@@ -21,7 +22,7 @@ namespace Fluxify.Gateway.Model.Data.User;
 
 public record GatewayGuildMember(
     Snowflake GuildId,
-    int? AccentColor,
+    Color? AccentColor,
     MediaHash? Avatar,
     MediaHash? Banner,
     DateTimeOffset? JoinedAt,
@@ -30,6 +31,7 @@ public record GatewayGuildMember(
     bool Mute,
     string? Nick,
     GuildMemberProfileFlags ProfileFlags,
+    MentionFlags MentionFlags,
     Snowflake[] Roles,
     UserPartialResponse User
 ) : GuildMemberResponse(
@@ -42,6 +44,7 @@ public record GatewayGuildMember(
     Mute,
     Nick,
     ProfileFlags,
+    MentionFlags,
     Roles,
     User
 );

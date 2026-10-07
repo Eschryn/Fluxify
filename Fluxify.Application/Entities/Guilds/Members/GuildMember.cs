@@ -30,11 +30,10 @@ public partial class GuildMember : IGuildMember
 
     public Snowflake Id => UserRef.Id;
     internal Snowflake[] AssignedRoleIds { get; set; } = [];
-    public Color? AccentColor { get; internal set;  }
-    
+    public Color? AccentColor { get; internal set; }
+
     public Guild Guild => field = GuildRef.Value ?? field;
-    [MapperIgnore]
-    public GlobalUser User => field = UserRef.Value ?? field;
+    [MapperIgnore] public GlobalUser User => field = UserRef.Value ?? field;
 
     public Image? Avatar
     {
@@ -43,20 +42,20 @@ public partial class GuildMember : IGuildMember
     }
 
     public Image? Banner { get; internal set; }
-    public DateTimeOffset? JoinedAt { get; internal set;  }
-    public DateTimeOffset? CommunicationsDisabledUntil { get; internal set;  }
-    public bool Deaf { get; internal set;  }
-    public bool Mute { get; internal set;  }
-    public string? Nick { get; internal set;  }
-    public GuildMemberProfileFlags ProfileFlags { get; internal set;  }
+    public DateTimeOffset? JoinedAt { get; internal set; }
+    public DateTimeOffset? CommunicationsDisabledUntil { get; internal set; }
+    public bool Deaf { get; internal set; }
+    public bool Mute { get; internal set; }
+    public string? Nick { get; internal set; }
+    public GuildMemberProfileFlags ProfileFlags { get; internal set; }
 
-    
+
     internal GlobalUser? ImmutableUser
     {
         get => field ??= UserRef.Value;
         set => field = null;
     }
-    
+
     public bool? Bot => ImmutableUser!.Bot;
     public string Username => ImmutableUser!.Username;
     public string? Discriminator => ImmutableUser!.Discriminator;
@@ -65,19 +64,24 @@ public partial class GuildMember : IGuildMember
     public Color? AvatarColor => ImmutableUser!.AvatarColor;
     public bool? System => ImmutableUser!.System;
     public PublicUserFlags Flags => ImmutableUser!.Flags;
-    public IPresence? Presence  => ImmutableUser!.Presence;
+    public IPresence? Presence => ImmutableUser!.Presence;
 
-    [MapperIgnore]
-    internal readonly ConcurrentDictionary<string, VoiceState> VoiceStateList = [];
+    [MapperIgnore] internal readonly ConcurrentDictionary<string, VoiceState> VoiceStateList = [];
 
     [MapperIgnore]
     public IReadOnlyCollection<IVoiceState> VoiceStates => VoiceStateList.Values.Cast<IVoiceState>().ToArray();
-    
+
     [MapperIgnore]
-    public IReadOnlyCollection<IRole> Roles => AssignedRoleIds.Select(r => Guild.RolesRepository.Cache.GetCachedOrDefault(r).Value).OfType<IRole>().ToArray();
-    
+    public IReadOnlyCollection<IRole> Roles =>
+    [
+        .. AssignedRoleIds
+            .Select(r => Guild.RolesRepository.Cache.GetCachedOrDefault(r).Value)
+            .OfType<IRole>()
+            .OrderBy(r => r.Position) // TODO: Do i need this? Should i expect the ordering to be right from the backend?
+    ];
+
     public string DisplayName => Nick ?? ImmutableUser!.DisplayName;
-    
+
     private CacheRef<Guild> GuildRef { get; }
     private CacheRef<GlobalUser> UserRef { get; }
 
@@ -89,12 +93,12 @@ public partial class GuildMember : IGuildMember
         _fluxerApplication = fluxerApplication;
         GuildRef = guildRef;
         UserRef = userRef;
-        
+
         // we consider guild and user to be non-null on creation
         Guild = guildRef.Value!;
         User = userRef.Value!;
     }
-    
+
     public string ToString(string? format, IFormatProvider? formatProvider) => User.ToString(format, formatProvider);
     public object Clone() => MemberwiseClone();
 }

@@ -35,6 +35,7 @@ public class MemberRequestBuilder(HttpClient client, Snowflake guildId, Snowflak
     /// Gets the guild member profile.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+    /// <returns>The user that was requested.</returns>
     /// <exception cref="NotPermittedException">This exception is thrown when the caller is not a member of the guild or the guild is unavailable.</exception>
     /// <exception cref="NotFoundException">This exception is thrown when the guild does not exist or the target is not a member.</exception>
     /// <exception cref="RateLimitException">This exception is thrown when a rate limit has been hit without the <see cref="FluxerRateLimitingHandler"/>.</exception>

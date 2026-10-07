@@ -44,13 +44,9 @@ internal sealed class RoleRepository(Snowflake guildId, RestClient client, RoleM
         return role ?? throw new Exception($"Role with id {arg} not found");
     }
 
-    internal void Insert(GuildRoleResponse role, CacheRef<Guild> guildRef)
-    { 
-        Cache.UpdateOrCreate(role.Id, new RoleInsert(role, guildRef));
-    }
+    internal CacheRef<IRole> Insert(GuildRoleResponse role, CacheRef<Guild> guildRef)
+        => Cache.UpdateOrCreate(role.Id, new RoleInsert(role, guildRef));
 
-    internal void Delete(Snowflake argRoleId)
-    {
-        Cache.Remove(argRoleId, out _);
-    }
+    internal void Delete(Snowflake argRoleId, out CacheRef<IRole> oldRoleRef) 
+        => Cache.Remove(argRoleId, out oldRoleRef);
 }

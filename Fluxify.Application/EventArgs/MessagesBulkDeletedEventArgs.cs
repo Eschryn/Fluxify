@@ -21,7 +21,8 @@ namespace Fluxify.Application.EventArgs;
 [method: SetsRequiredMembers]
 public class MessagesBulkDeletedEventArgs(
     ICacheRef<ITextChannel> channel,
-    CacheRef<Message>[] messages)
+    CacheRef<Message>[] messages
+)
 {
     public required ICacheRef<ITextChannel> Channel { get; init; } = channel;
     public required CacheRef<Message>[] Messages { get; init; } = messages;

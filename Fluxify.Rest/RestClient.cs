@@ -29,6 +29,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fluxify.Rest;
 
+/// <summary>
+/// Fluxer REST Client.
+/// </summary>
 public class RestClient
 {
     private readonly FluxerConfig _config;
@@ -58,15 +61,51 @@ public class RestClient
         NumberHandling = JsonNumberHandling.AllowReadingFromString
     };
 
+    /// <summary>
+    /// Gateway-related requests.
+    /// </summary>
     public GatewayRequestBuilder Gateway { get; }
+    
+    /// <summary>
+    /// User-related requests.
+    /// </summary>
     public UsersRequestBuilder Users { get; }
+    
+    /// <summary>
+    /// Guild-related requests.
+    /// </summary>
     public GuildsRequestBuilder Guilds { get; }
+    
+    /// <summary>
+    /// Channel-related requests.
+    /// </summary>
     public ChannelsRequestBuilder Channels { get; }
+    
+    /// <summary>
+    /// OAuth2-related requests.
+    /// </summary>
     public OAuth2RequestBuilder OAuth2 { get; }
+    
+    /// <summary>
+    /// Invite-related requests.
+    /// </summary>
     public InvitesRequestBuilder Invites { get; }
+    
+    /// <summary>
+    /// Pack-related requests.
+    /// </summary>
     public PacksRequestBuilder Packs { get; }
+    
+    /// <summary>
+    /// Webhook-related requests.
+    /// </summary>
     public WebhooksRequestBuilder Webhooks { get; }
 
+    /// <summary>
+    /// Gets the instance well-known response.
+    /// </summary>
+    /// <param name="cancellationToken">This token can be used to cancel the request.</param>
+    /// <returns>The well-known response.</returns>
     public Task<WellKnownFluxerResponse> GetWellKnownAsync(CancellationToken cancellationToken = default)
         => _httpClient.JsonRequestAsync<WellKnownFluxerResponse>(
             HttpMethod.Get,

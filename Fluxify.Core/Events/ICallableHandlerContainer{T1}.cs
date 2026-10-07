@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
-using Fluxify.Dto.Users;
+namespace Fluxify.Core.Events;
 
-namespace Fluxify.Gateway.Model.Data.Channel;
-
-public record GatewayGroupChange(Snowflake ChannelId, UserPartialResponse UserPartial);
+public interface ICallableHandlerContainer<in T1> : IHandlerContainer
+{
+    /// <inheritdoc cref="ICallableHandlerContainer.CallHandlersAsync" />
+    /// <param name="arg1"></param>
+    /// <returns></returns>
+    Task CallHandlersAsync(T1 arg1);
+}

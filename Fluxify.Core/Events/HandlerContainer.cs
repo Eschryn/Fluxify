@@ -12,19 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Immutable;
-
 namespace Fluxify.Core.Events;
 
-public sealed class HandlerContainer : IHandlerContainer
+/// <summary>
+/// Parameterless handler container.
+/// </summary>
+public sealed class HandlerContainer : HandlerContainerBase<Func<Task>>, ICallableHandlerContainer
 {
-    private ImmutableArray<Func<Task>> _handlers = [];
-    public void InsertDelegate(Func<Task> handler) => _handlers = _handlers.Add(handler);
-    public void RemoveDelegate(Func<Task> handler) => _handlers = _handlers.Remove(handler);
-
-    public async Task CallHandlersAsync(object eventPayload)
-    {
-        var tasks = _handlers.Select(h => h.Invoke());
-        await Task.WhenAll(tasks).ConfigureAwait(false);
-    }
+    /// <inheritdoc />
+    public async Task CallHandlersAsync() 
+        => await Task
+            .WhenAll(Handlers.Select(h => h.Invoke()))
+            .ConfigureAwait(false);
 }

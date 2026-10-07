@@ -26,6 +26,7 @@ public class Bot(BotConfig config) : FluxerApplication(config)
     public CommandCollection Commands { get; } = new();
     private TextCommandDispatcher Dispatcher { get; set; } = null!;
 
+    /// <inheritdoc/>
     public override async Task RunAsync(CancellationToken cancellationToken = default)
     {
         Dispatcher = Commands.BuildDispatcher(config.CommandConfig);
@@ -35,5 +36,6 @@ public class Bot(BotConfig config) : FluxerApplication(config)
         await base.RunAsync(cancellationToken);
     }
 
-    private Task OnMessageReceived(MessageEventArgs args) => Dispatcher.DispatchAsync(args.Message);
+    private Task OnMessageReceived(FluxerApplication sender, MessageEventArgs args) 
+        => Dispatcher.DispatchAsync(args.Message, this);
 }

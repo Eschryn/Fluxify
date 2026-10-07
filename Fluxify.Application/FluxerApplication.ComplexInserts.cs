@@ -250,10 +250,11 @@ public partial class FluxerApplication
         );
     }
 
-    private ICacheRef<IUser> InsertGuildMemberData(GatewayGuildMember arg)
+    private ICacheRef<IUser> InsertGuildMemberData(GatewayGuildMember arg, out CacheRef<Guild> guildRef)
     {
         var userRef = UsersRepository.Insert(arg.User!);
-        var guildRef = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId);
+        
+        guildRef = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId);
         if (guildRef.Value is not {} guild)
         {
             return userRef;

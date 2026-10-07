@@ -1,3 +1,4 @@
+
 // Copyright 2026 Fluxify Contributors
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
-using Fluxify.Dto.Users;
+namespace Fluxify.Core.Events;
 
-namespace Fluxify.Gateway.Model.Data.Channel;
-
-public record GatewayGroupChange(Snowflake ChannelId, UserPartialResponse UserPartial);
+public interface ICallableHandlerContainer<in T1, in T2> : IHandlerContainer
+{
+    /// <inheritdoc cref="ICallableHandlerContainer{T1}.CallHandlersAsync" />
+    /// <param name="arg1"></param>
+    /// <param name="arg2"></param>
+    Task CallHandlersAsync(T1 arg1, T2 arg2);
+}

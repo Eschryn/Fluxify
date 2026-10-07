@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Core;
 using Fluxify.Gateway.Model.Data;
 using Fluxify.Gateway.WebSockets;
 
@@ -19,6 +20,9 @@ namespace Fluxify.Gateway;
 
 public class GatewayConfig
 {
+    public Func<FluxerConfig, GatewayConfig, IGatewayClient> GatewayClientFactory { get; set; } 
+        = (fluxerConfig, gatewayConfig) => new GatewayClient(fluxerConfig, gatewayConfig);
+
     public WebSocketClientConfig WebSocketClientConfig { get; set; } = new();
     public TimeSpan SendTimeout { get; set; } = TimeSpan.FromMinutes(30);
 

@@ -48,7 +48,14 @@ public class GuildRequestBuilder(HttpClient client, Snowflake guildId)
     private static readonly CompositeFormat CloneEmojiDisabledUrl = CompositeFormat.Parse("guilds/{0}/clone-emoji-disabled");
     private static readonly CompositeFormat CloneStickerDisabledUrl = CompositeFormat.Parse("guilds/{0}/clone-sticker-disabled");
 
+    /// <summary>
+    /// Exposes emoji related REST endpoints for this guild.
+    /// </summary>
     public EmojisRequestBuilder Emojis { get; } = new(client, guildId);
+    
+    /// <summary>
+    /// Exposes member related REST endpoints for this guild.
+    /// </summary>
     public MembersRequestBuilder Members { get; } = new(client, guildId);
     public RolesRequestBuilder Roles { get; } = new(client, guildId);
     public StickersRequestBuilder Stickers { get; } = new(client, guildId);

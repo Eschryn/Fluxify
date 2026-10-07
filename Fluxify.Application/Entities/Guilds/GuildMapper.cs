@@ -20,6 +20,7 @@ using Fluxify.Dto;
 using Fluxify.Dto.Guilds;
 using Fluxify.Dto.Guilds.Invite;
 using Fluxify.Dto.Guilds.Settings;
+using Fluxify.Dto.Users.Settings.Security.Webauth;
 
 namespace Fluxify.Application.Entities.Guilds;
 
@@ -66,7 +67,7 @@ internal partial class GuildMapper(FluxerApplication app)
         MfaMethod? mfaMethod = null,
         string? password = null,
         string? webauthnChallenge = null,
-        string? webauthnResponse = null
+        WebAuthnAssertion? webauthnResponse = null
     );
 
     [MapPropertyFromSource(nameof(Guild.Icon), Use = nameof(CreateIcon)),

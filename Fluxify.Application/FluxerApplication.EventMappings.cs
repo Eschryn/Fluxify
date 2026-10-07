@@ -15,7 +15,6 @@
 using Fluxify.Application.Entities.Channels;
 using Fluxify.Application.Entities.Channels.Guilds;
 using Fluxify.Application.Entities.Channels.Private;
-using Fluxify.Application.Entities.Guilds;
 using Fluxify.Application.Entities.Guilds.Members;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Application.Entities.Users;
@@ -110,7 +109,7 @@ public partial class FluxerApplication
 
     private async Task HandlePassiveUpdate(GatewayPassiveUpdate arg)
     {
-        var guild = await GuildsRepository.GetAsync(arg.GuildId);
+        //var guild = await GuildsRepository.GetAsync(arg.GuildId);
         foreach (var channelChanges in arg.CreatedChannels?.Concat(arg.UpdatedChannels ?? []) ??
                                        arg.UpdatedChannels ?? [])
         {
@@ -197,7 +196,7 @@ public partial class FluxerApplication
             channel.Value is GuildTextChannel guildTextChannel ? guildTextChannel.GuildRef : null
         );
 
-        return _messageReactionRemoveEmojiHandlers.CallHandlersAsync(args);
+        return _messageReactionRemoveEmojiHandlers.CallHandlersAsync(this, args);
     }
 
     private Task HandleMessageReactionRemoveAll(GatewayReactionRemoveAll arg)
@@ -210,7 +209,7 @@ public partial class FluxerApplication
             _ => throw new InvalidOperationException("Channel type not implemented!")
         };
 
-        return _messageReactionRemoveAllHandlers.CallHandlersAsync(new ReactionRemoveAllEventArgs(
+        return _messageReactionRemoveAllHandlers.CallHandlersAsync(this, new ReactionRemoveAllEventArgs(
             channel.Value is GuildTextChannel guildTextChannel ? guildTextChannel.GuildRef : null,
             channel.Cast<ITextChannel>(),
             message
@@ -218,10 +217,10 @@ public partial class FluxerApplication
     }
 
     private Task HandleMessageReactionAdd(GatewayReaction arg)
-        => _messageReactionAddHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
+        => _messageReactionAddHandlers.CallHandlersAsync(this, CreateReactionEventArgs(arg));
 
     private Task HandleMessageReactionRemove(GatewayReaction arg)
-        => _messageReactionRemoveHandlers.CallHandlersAsync(CreateReactionEventArgs(arg));
+        => _messageReactionRemoveHandlers.CallHandlersAsync(this, CreateReactionEventArgs(arg));
 
 
     private Task HandleChannelPinsUpdate(GatewayChannelPinsAck arg)
@@ -236,12 +235,12 @@ public partial class FluxerApplication
 
     private Task HandleChannelRecipientRemove(GatewayGroupChange arg)
     {
-        return Task.CompletedTask;
+        return _groupMemberRemovedHandlers.CallHandlersAsync();
     }
 
     private Task HandleChannelRecipientAdd(GatewayGroupChange arg)
     {
-        return Task.CompletedTask;
+        return _groupMemberAddedHandlers.CallHandlersAsync();
     }
 
     private Task HandleChannelUpdateBulk(GatewayBulkChannelUpdate arg)
@@ -257,49 +256,84 @@ public partial class FluxerApplication
             return;
         }
 
-        foreach (var guildRoleResponse in arg.Roles)
-        {
-            guildRef.Value.RolesRepository.Insert(guildRoleResponse, guildRef);
-        }
+        await _roleUpdateBulkHandlers.CallHandlersAsync(this, new GuildRolesEventArgs(
+            [.. arg.Roles.Select(x => guildRef.Value.RolesRepository.Insert(x, guildRef))],
+            guildRef
+        ));
     }
 
-    private Task HandleGuildBanRemove(GatewayBanData arg)
+    private async Task HandleGuildBanRemove(GatewayBanData arg)
     {
-        return Task.CompletedTask;
+        var guildRef = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId);
+        var userRef = UsersRepository.Cache.GetCachedOrDefault(arg.User.Id);
+
+        await _guildBanRemoveHandlers.CallHandlersAsync(this, new GuildBanEventArgs(
+            guildRef,
+            userRef
+        ));
     }
 
-    private Task HandleGuildBanAdd(GatewayBanData arg)
+    private async Task HandleGuildBanAdd(GatewayBanData arg)
     {
-        return Task.CompletedTask;
+        var guildRef = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId);
+        var userRef = UsersRepository.Cache.GetCachedOrDefault(arg.User.Id);
+
+        await _guildBanAddHandlers.CallHandlersAsync(this, new GuildBanEventArgs(
+            guildRef,
+            userRef
+        ));
     }
 
     private async Task HandleGuildMemberRemove(GatewayGuildMemberDelete arg)
     {
-        var guild = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId);
+        var guildRef = GuildsRepository.Cache.GetCachedOrDefault(arg.GuildId);
 
-        guild.Value?.MembersRepository.Cache.Remove(arg.User.Id, out var userRef);
+        if (guildRef.Value is null)
+        {
+            await _guildMemberRemovedHandlers.CallHandlersAsync(this, new GuildMemberEventArgs(
+                new CacheRef<IUser>(arg.User.Id, null),
+                guildRef
+            ));
+
+            return;
+        }
+
+        guildRef.Value.MembersRepository.Cache.Remove(arg.User.Id, out var userRef);
+
+        await _guildMemberRemovedHandlers.CallHandlersAsync(this, new GuildMemberEventArgs(
+            userRef,
+            guildRef
+        ));
     }
 
     private async Task HandleGuildMemberUpdate(GatewayGuildMember arg)
     {
-        var userRef = InsertGuildMemberData(arg);
+        await _guildMemberUpdatedHandlers.CallHandlersAsync(this, new GuildMemberEventArgs(
+            InsertGuildMemberData(arg, out var guildRef),
+            guildRef
+        ));
     }
 
     private async Task HandleGuildMemberAdd(GatewayGuildMember arg)
     {
-        var userRef = InsertGuildMemberData(arg);
+        await _guildMemberAddedHandlers.CallHandlersAsync(this, new GuildMemberEventArgs(
+            InsertGuildMemberData(arg, out var guildRef),
+            guildRef
+        ));
     }
 
     private async Task HandleMessageCreate(GatewayMessage arg)
     {
-        await _messageCreateHandlers.CallHandlersAsync(
-            new MessageEventArgs((await InsertGatewayMessage(arg)).Value!));
+        await _messageCreateHandlers.CallHandlersAsync(this, new MessageEventArgs(
+            (await InsertGatewayMessage(arg)).Value!)
+        );
     }
 
     private async Task HandleMessageUpdate(GatewayMessage arg)
     {
-        await _messageUpdateHandlers.CallHandlersAsync(
-            new MessageEventArgs((await InsertGatewayMessage(arg)).Value!));
+        await _messageUpdateHandlers.CallHandlersAsync(this, new MessageEventArgs(
+            (await InsertGatewayMessage(arg)).Value!)
+        );
     }
 
     private async Task HandleMessageDelete(GatewayMessageDelete arg)
@@ -313,8 +347,9 @@ public partial class FluxerApplication
                 cachedMessageRef = removedMessageRef;
             }
         }
-        
+
         await _messageDeleteHandlers.CallHandlersAsync(
+            this,
             new MessageDeletedEventArgs(
                 channel.Cast<ITextChannel>(),
                 cachedMessageRef ?? new CacheRef<Message>(arg.Id, null),
@@ -329,8 +364,14 @@ public partial class FluxerApplication
         var channel = ChannelsRepository.GetCachedOrDefault(arg.ChannelId);
         var cache = channel.Value switch
         {
-            GuildTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageResponse, MessageMapper> gtcCache } => gtcCache,
-            PrivateTextChannel { MessageRepository.Cache: OrderedCache<Message, MessageResponse, MessageMapper> ptcCache } => ptcCache,
+            GuildTextChannel
+            {
+                MessageRepository.Cache: OrderedCache<Message, MessageResponse, MessageMapper> gtcCache
+            } => gtcCache,
+            PrivateTextChannel
+            {
+                MessageRepository.Cache: OrderedCache<Message, MessageResponse, MessageMapper> ptcCache
+            } => ptcCache,
             _ => null
         };
 
@@ -338,6 +379,7 @@ public partial class FluxerApplication
         cache?.RemoveAll(arg.Ids, out messages);
 
         await _messageBulkDeletedHandlers.CallHandlersAsync(
+            this,
             new MessagesBulkDeletedEventArgs(
                 channel.Cast<ITextChannel>(),
                 messages
@@ -358,14 +400,16 @@ public partial class FluxerApplication
             arg.VoiceStates
         ).Value!;
 
-        await _guildCreatedHandlers.CallHandlersAsync(new GuildEventArgs(guild, (GuildMember)guild.CurrentMember));
+        await _guildCreatedHandlers.CallHandlersAsync(this,
+            new GuildEventArgs(guild, (GuildMember)guild.CurrentMember));
     }
 
     private async Task HandleGuildUpdate(GuildResponse arg)
     {
         var guild = GuildsRepository.Insert(arg).Value!;
 
-        await _guildUpdatedHandlers.CallHandlersAsync(new GuildEventArgs(guild, (GuildMember)guild.CurrentMember));
+        await _guildUpdatedHandlers.CallHandlersAsync(this,
+            new GuildEventArgs(guild, (GuildMember)guild.CurrentMember));
     }
 
     private async Task HandleGuildDelete(GatewayGuildDelete arg)
@@ -377,7 +421,7 @@ public partial class FluxerApplication
             user = (GuildMember)guild.Value.CurrentMember;
         }
 
-        await _guildDeletedHandlers.CallHandlersAsync(new GuildDeletedEventArgs(guild, user, arg.Unavailable));
+        await _guildDeletedHandlers.CallHandlersAsync(this, new GuildDeletedEventArgs(guild, user, arg.Unavailable));
     }
 
     private async Task HandleGuildStickersUpdate(GatewayStickerUpdate arg)
@@ -405,27 +449,28 @@ public partial class FluxerApplication
     private async Task HandleChannelCreate(ChannelResponse arg)
     {
         var channel = InsertChannel(arg);
-        
-        await _channelCreatedHandlers.CallHandlersAsync(new ChannelEventArgs(channel));
+
+        await _channelCreatedHandlers.CallHandlersAsync(this, new ChannelEventArgs(channel));
     }
 
     private async Task HandleChannelUpdate(ChannelResponse arg)
     {
+        var oldChannel = ChannelsRepository.GetCachedOrDefault(arg.Id).Value;
         var channel = InsertChannel(arg);
-        
-        await _channelUpdatedHandlers.CallHandlersAsync(new ChannelEventArgs(channel));
+
+        await _channelUpdatedHandlers.CallHandlersAsync(this, new ChannelUpdatedEventArgs(channel, oldChannel));
     }
 
     private async Task HandleChannelDelete(ChannelResponse arg)
     {
         if (ChannelsRepository.GetCachedOrDefault(arg.Id) is { Value: IGuildChannel guildChannel })
         {
-            guildChannel.Guild?.GuildChannels.Remove(guildChannel.Id, out _);
+            guildChannel.Guild.GuildChannels.Remove(guildChannel.Id, out _);
         }
 
         ChannelsRepository.Remove(arg.Id, out var channel);
-        
-        await _channelUpdatedHandlers.CallHandlersAsync(new ChannelEventArgs(channel));
+
+        await _channelUpdatedHandlers.CallHandlersAsync(this, new ChannelEventArgs(channel));
     }
 
     private async Task HandleGuildRoleUpdate(GatewayGuildRole arg)
@@ -435,8 +480,11 @@ public partial class FluxerApplication
         {
             return;
         }
-        
-        guild.RolesRepository.Insert(arg.Role, guildRef);
+
+        await _roleUpdateHandlers.CallHandlersAsync(this, new GuildRoleEventArgs(
+            guild.RolesRepository.Insert(arg.Role, guildRef),
+            guildRef
+        ));
     }
 
     private async Task HandleGuildRoleDelete(GatewayGuildRoleDelete arg)
@@ -446,8 +494,13 @@ public partial class FluxerApplication
         {
             return;
         }
-        
-        guild.RolesRepository.Delete(arg.RoleId);
+
+        guild.RolesRepository.Delete(arg.RoleId, out var oldRoleRef);
+
+        await _roleUpdateHandlers.CallHandlersAsync(this, new GuildRoleEventArgs(
+            oldRoleRef,
+            guildRef
+        ));
     }
 
     private async Task HandleGuildRoleCreate(GatewayGuildRole arg)
@@ -457,7 +510,10 @@ public partial class FluxerApplication
         {
             return;
         }
-        
-        guild.RolesRepository.Insert(arg.Role, guildRef);
+
+        await _roleUpdateHandlers.CallHandlersAsync(this, new GuildRoleEventArgs(
+            guild.RolesRepository.Insert(arg.Role, guildRef),
+            guildRef
+        ));
     }
 }

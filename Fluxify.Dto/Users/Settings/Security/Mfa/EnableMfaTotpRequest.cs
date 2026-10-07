@@ -12,14 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Dto.Users.Settings.Security.Webauth;
+
 namespace Fluxify.Dto.Users.Settings.Security.Mfa;
 
+
 public record EnableMfaTotpRequest(
+    string Secret,
     string Code,
     string? MfaCode,
     MfaMethod? MfaMethod,
     string? Password,
     string TotpSecret,
     string? WebauthnChallenge,
-    string? WebauthnResponse
+    WebAuthnAssertion? WebauthnResponse
+) : SudoVerificationSchema(
+    MfaCode,
+    MfaMethod,
+    Password,
+    WebauthnChallenge,
+    WebauthnResponse
 );

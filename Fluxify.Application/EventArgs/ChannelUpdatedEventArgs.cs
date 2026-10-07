@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Fluxify.Core.Types;
-using Fluxify.Dto.Users;
+using Fluxify.Application.Entities.Channels;
 
-namespace Fluxify.Gateway.Model.Data.Channel;
+namespace Fluxify.Application.EventArgs;
 
-public record GatewayGroupChange(Snowflake ChannelId, UserPartialResponse UserPartial);
+public record ChannelUpdatedEventArgs(
+    CacheRef<IChannel> Channel,
+    IChannel? OldChannel
+);

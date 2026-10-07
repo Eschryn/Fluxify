@@ -31,7 +31,8 @@ using MemberMapper = Fluxify.Application.Entities.Guilds.Members.MemberMapper;
 
 namespace Fluxify.Application;
 
-public partial class FluxerApplication
+/// <inheritdoc />
+public partial class FluxerApplication : IFluxerApplication
 {
     protected readonly ApplicationConfig Config;
     internal readonly MessageMapper MessageMapper;
@@ -45,12 +46,17 @@ public partial class FluxerApplication
     internal readonly CacheMapper CacheMapper;
     internal readonly MemberMapper MemberMapper;
     internal readonly AuditLogMapper AuditLogMapper;
-    
-    public GatewayClient Gateway { get; }
+
+    /// <inheritdoc />
+    public IGatewayClient Gateway { get; }
+
+    /// <inheritdoc />
     public RestClient Rest { get; }
 
     private ICacheRef<PrivateUser>? CurrentUserRef { get; set; }
-    public PrivateUser CurrentUser => CurrentUserRef?.Value 
+
+    /// <inheritdoc />
+    public PrivateUser CurrentUser => CurrentUserRef?.Value
                                       ?? throw new InvalidOperationException("Clients needs to be logged in.");
 
     internal WellKnownFluxerResponse? InstanceInfo { get; private set; }
@@ -58,12 +64,12 @@ public partial class FluxerApplication
     public FluxerApplication(ApplicationConfig config)
     {
         Config = config;
-        Gateway = new GatewayClient(config.FluxerConfig, config.GatewayConfig);
-        Rest = new RestClient(config.FluxerConfig);
+        Gateway = config.GatewayConfig.GatewayClientFactory(config.FluxerConfig, config.GatewayConfig);
+        Rest = new RestClient(config.FluxerConfig, config.FluxerRestConfig);
 
         CacheMapper = new CacheMapper(this);
         ImageFactory = new ImageFactory(this);
-        
+
         WebhookMapper = new WebhookMapper(this);
         MessageMapper = new MessageMapper(this);
         InviteMapper = new InviteMapper(this);
@@ -80,6 +86,7 @@ public partial class FluxerApplication
         InitializeEvents();
     }
 
+    /// <inheritdoc />
     public virtual async Task RunAsync(CancellationToken cancellationToken = default)
     {
         InstanceInfo = await Rest.GetWellKnownAsync(cancellationToken);
@@ -108,27 +115,33 @@ public partial class FluxerApplication
     internal UserRepository UsersRepository { get; }
     internal GuildRepository GuildsRepository { get; }
 
+    /// <inheritdoc />
     public IReadOnlyCollection<CacheRef<Guild>> Guilds => GuildsRepository.Cache.GetAllCached();
 
+    /// <inheritdoc />
     public IReadOnlyCollection<PrivateTextChannel> PrivateChannels
         => ChannelsRepository.Cache.GetAllCached().Select(c => c.Value).OfType<PrivateTextChannel>().ToArray();
 
 
+    /// <inheritdoc />
     public Task<Dm> GetOrCreateDmAsync(Snowflake userId,
         CancellationToken cancellationToken = default)
         => ChannelsRepository.CreateOrGetPrivateChannelAsync<Dm>(
             new CreatePrivateChannelRequest(RecipientId: userId, Recipients: null), cancellationToken);
 
+    /// <inheritdoc />
     public async Task<Guild> GetGuildAsync(
         Snowflake guildId,
         bool bypassCache = false
     ) => (await GuildsRepository.GetAsync(guildId, bypassCache)).Value!;
 
+    /// <inheritdoc />
     public async Task<IChannel> GetChannelAsync(
         Snowflake channelId,
         bool bypassCache = false
     ) => (await ChannelsRepository.GetAsync(channelId, bypassCache)).Value!;
 
+    /// <inheritdoc />
     public async Task<GlobalUser> GetUserAsync(
         Snowflake userId,
         bool bypassCache = false

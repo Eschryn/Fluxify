@@ -23,15 +23,28 @@ namespace Fluxify.Rest.Users;
 public class MfaRequestBuilder(HttpClient client)
 {
     private static readonly IFormatProvider FormatProvider = CultureInfo.InvariantCulture;
-    private const string BackupCodesUrl = "users/@me/mfa/backup-codes";
-    private const string SmsDisableUrl = "users/@me/mfa/sms/disable";
-    private const string SmsEnableUrl = "users/@me/mfa/sms/enable";
-    private const string TotpDisableUrl = "users/@me/mfa/totp/disable";
     private const string TotpEnableUrl = "users/@me/mfa/totp/enable";
+    private const string TotpDisableUrl = "users/@me/mfa/totp/disable";
+    private const string BackupCodesUrl = "users/@me/mfa/backup-codes";
     private const string WebAuthnCredentialsUrl = "users/@me/mfa/webauthn/credentials";
     private const string WebAuthnCredentialsRegistrationOptionsUrl = "users/@me/mfa/webauthn/credentials/registration-options";
+    private const string MfaMethodsUrl = "users/@me/sudo/mfa-methods";
+    private const string WebAuthnOptionsUrl = "users/@me/sudo/webauthn/authentication-options";
     private static readonly CompositeFormat WebAuthnCredentialUrl = CompositeFormat.Parse("users/@me/mfa/webauthn/credentials/{0}");
-    
+
+
+    public Task<MfaBackupCodesResponse> EnableTotpAsync(
+        EnableMfaTotpRequest request,
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<EnableMfaTotpRequest, MfaBackupCodesResponse>(
+        HttpMethod.Post,
+        TotpEnableUrl,
+        request,
+        DtoJsonContext.Default.EnableMfaTotpRequest,
+        DtoJsonContext.Default.MfaBackupCodesResponse,
+        cancellationToken: cancellationToken
+    );
+
     public Task<MfaBackupCodesResponse> GetBackupCodes(
         MfaBackupCodesRequest request,
         CancellationToken cancellationToken = default
@@ -43,29 +56,7 @@ public class MfaRequestBuilder(HttpClient client)
         DtoJsonContext.Default.MfaBackupCodesResponse,
         cancellationToken: cancellationToken
     );
-    
-    public Task DisableSmsAsync(
-        SudoVerificationSchema request,
-        CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync(
-        HttpMethod.Post,
-        SmsDisableUrl,
-        request,
-        DtoJsonContext.Default.SudoVerificationSchema,
-        cancellationToken: cancellationToken
-    );
-    
-    public Task EnableSmsAsync(
-        SudoVerificationSchema request,
-        CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync(
-        HttpMethod.Post,
-        SmsEnableUrl,
-        request,
-        DtoJsonContext.Default.SudoVerificationSchema,
-        cancellationToken: cancellationToken
-    );
-    
+
     public Task DisableTotpAsync(
         DisableTotpRequest request,
         CancellationToken cancellationToken = default
@@ -74,18 +65,6 @@ public class MfaRequestBuilder(HttpClient client)
         TotpDisableUrl,
         request,
         DtoJsonContext.Default.DisableTotpRequest,
-        cancellationToken: cancellationToken
-    );
-    
-    public Task<MfaBackupCodesResponse> EnableTotpAsync(
-        EnableMfaTotpRequest request,
-        CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync<EnableMfaTotpRequest, MfaBackupCodesResponse>(
-        HttpMethod.Post,
-        TotpEnableUrl,
-        request,
-        DtoJsonContext.Default.EnableMfaTotpRequest,
-        DtoJsonContext.Default.MfaBackupCodesResponse,
         cancellationToken: cancellationToken
     );
 
@@ -142,6 +121,23 @@ public class MfaRequestBuilder(HttpClient client)
         string.Format(FormatProvider, WebAuthnCredentialUrl, credentialId),
         request,
         DtoJsonContext.Default.WebAuthnCredentialUpdateRequest,
+        cancellationToken: cancellationToken
+    );
+
+    public Task<SudoMfaMethodsResponse> GetMfaMethodsAsync(CancellationToken cancellationToken = default)
+        => client.JsonRequestAsync<SudoMfaMethodsResponse>(
+            HttpMethod.Get,
+            MfaMethodsUrl,
+            DtoJsonContext.Default.SudoMfaMethodsResponse,
+            cancellationToken: cancellationToken
+        );
+    
+    public Task<WebAuthnChallengeResponse> GetWebAuthnOptionsAsync(
+        CancellationToken cancellationToken = default
+    ) => client.JsonRequestAsync<WebAuthnChallengeResponse>(
+        HttpMethod.Post,
+        WebAuthnOptionsUrl,
+        DtoJsonContext.Default.WebAuthnChallengeResponse,
         cancellationToken: cancellationToken
     );
 }

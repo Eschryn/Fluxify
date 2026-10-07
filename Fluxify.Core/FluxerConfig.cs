@@ -26,8 +26,8 @@ public class FluxerConfig
 {
     public FluxerConfig(ILoggerFactory? loggerFactory = null, IServiceProvider? serviceProvider = null)
     {
-        LoggerFactory = loggerFactory ?? serviceProvider?.GetService<ILoggerFactory>() ?? new NullLoggerFactory();
         ServiceProvider = serviceProvider ?? new BasicProvider(this);
+        LoggerFactory = loggerFactory ?? serviceProvider?.GetService<ILoggerFactory>() ?? new NullLoggerFactory();
     }
 
     private const int ApiVersion  = 1;

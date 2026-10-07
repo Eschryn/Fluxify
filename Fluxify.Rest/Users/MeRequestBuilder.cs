@@ -48,8 +48,13 @@ public class MeRequestBuilder(HttpClient client)
 
     public HarvestRequestBuilder Harvest { get; } = new(client);
     public UserMessagesRequestBuilder Messages { get; } = new(client);
+    
     public MfaRequestBuilder Mfa { get; } = new(client);
     public NotesRequestBuilder Notes { get; } = new(client);
+    
+    /// <summary>
+    /// Provides password change requests for the current user.
+    /// </summary>
     public PasswordChangeRequestBuilder PasswordChange { get; } = new(client);
 
     public PushRequestBuilder Push { get; } = new(client);

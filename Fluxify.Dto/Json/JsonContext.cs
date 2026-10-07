@@ -41,11 +41,9 @@ using Fluxify.Dto.Users.DataHarvest;
 using Fluxify.Dto.Users.GuildSettings;
 using Fluxify.Dto.Users.Push;
 using Fluxify.Dto.Users.Relationships;
-using Fluxify.Dto.Users.ScheduledMessages;
 using Fluxify.Dto.Users.Settings;
 using Fluxify.Dto.Users.Settings.EmailChange;
 using Fluxify.Dto.Users.Settings.PasswordChange;
-using Fluxify.Dto.Users.Settings.PhoneChange;
 using Fluxify.Dto.Users.Settings.Security;
 using Fluxify.Dto.Users.Settings.Security.Mfa;
 using Fluxify.Dto.Users.Settings.Security.Webauth;
@@ -83,7 +81,6 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(RingRequest))]
 [JsonSerializable(typeof(UserPartialResponse[]))]
 [JsonSerializable(typeof(MessageResponse[]))]
-[JsonSerializable(typeof(ScheduleMessageResponseSchema))]
 [JsonSerializable(typeof(ChannelPinsResponse))]
 [JsonSerializable(typeof(CallEligibilityResponse))]
 [JsonSerializable(typeof(UpdateCallRegionRequest))]
@@ -122,10 +119,6 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(PasswordChangeStartResponse))]
 [JsonSerializable(typeof(PasswordChangeVerifyResponse))]
 [JsonSerializable(typeof(PasswordChangeVerifyRequest))]
-[JsonSerializable(typeof(PhoneAddRequest))]
-[JsonSerializable(typeof(PhoneSendVerificationRequest))]
-[JsonSerializable(typeof(PhoneVerifyResponse))]
-[JsonSerializable(typeof(PhoneVerifyRequest))]
 [JsonSerializable(typeof(CreatePrivateChannelRequest))]
 [JsonSerializable(typeof(Dictionary<Snowflake, MessageResponse>))]
 [JsonSerializable(typeof(PushSubscribeResponse))]
@@ -139,8 +132,6 @@ namespace Fluxify.Dto.Json;
 [JsonSerializable(typeof(FriendRequestByTagRequest))]
 [JsonSerializable(typeof(SavedMessageEntryResponse[]))]
 [JsonSerializable(typeof(SaveMessageRequest))]
-[JsonSerializable(typeof(ScheduleMessageResponseSchema[]))]
-[JsonSerializable(typeof(ScheduledMessageSchema))]
 [JsonSerializable(typeof(SudoMfaMethodsResponse))]
 [JsonSerializable(typeof(SudoMfaMethodsResponse))]
 [JsonSerializable(typeof(WebAuthnChallengeResponse))]

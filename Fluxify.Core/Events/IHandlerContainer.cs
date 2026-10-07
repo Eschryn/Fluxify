@@ -16,5 +16,15 @@ namespace Fluxify.Core.Events;
 
 public interface IHandlerContainer
 {
-    Task CallHandlersAsync(object eventPayload);
+    /// <summary>
+    /// Inserts a delegate into the handler container.
+    /// </summary>
+    /// <param name="handler">The delegate that should be inserted.</param>
+    void InsertDelegate(Delegate handler);
+    
+    /// <summary>
+    /// Removes a delegate from the handler container.
+    /// </summary>
+    /// <param name="handler">The delegate that should be removed.</param>
+    void RemoveDelegate(Delegate handler);
 }
