@@ -732,10 +732,6 @@ public enum ValidationErrorCodeSchema
 	/// </summary>
 	PayloadJsonRequiredForMultipart,
 	/// <summary>
-	/// Phone number has an invalid format
-	/// </summary>
-	PhoneNumberInvalidFormat,
-	/// <summary>
 	/// Preceding channel must share the same parent
 	/// </summary>
 	PrecedingChannelMustShareParent,

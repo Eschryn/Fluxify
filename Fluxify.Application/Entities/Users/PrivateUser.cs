@@ -35,8 +35,7 @@ public class PrivateUser(FluxerApplication fluxerApplication, Snowflake id) : Gl
     public bool MfaEnabled { get; internal set; }
     public bool NsfwAllowed { get; internal set; }
     public string? PasswordLastChangedAt { get; internal set; }
-    public UserPrivateResponsePendingBulkMessageDeletion? PendingBulkMessageDeletion { get; internal set; }
-    public string? Phone { get; internal set; }
+    public PendingBulkMessageDeletion? PendingBulkMessageDeletion { get; internal set; }
     public bool PremiumBadgeHidden { get; internal set; }
     public bool PremiumBadgeMasked { get; internal set; }
     public bool PremiumBadgeSequenceHidden { get; internal set; }

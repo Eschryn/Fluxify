@@ -180,18 +180,6 @@ partial class RateLimitDefaults
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["phone:send_verification"] = new()
-        {
-            TokenLimit = 5,
-            TokensPerPeriod = 5,
-            ReplenishmentPeriod = TimeSpan.FromMinutes(1)
-        },
-        ["phone:verify_code"] = new()
-        {
-            TokenLimit = 10,
-            TokensPerPeriod = 10,
-            ReplenishmentPeriod = TimeSpan.FromMinutes(1)
-        },
         ["auth:handoff:initiate"] = new()
         {
             TokenLimit = 10,

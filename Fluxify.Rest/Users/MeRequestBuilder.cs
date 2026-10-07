@@ -51,7 +51,7 @@ public class MeRequestBuilder(HttpClient client)
     public MfaRequestBuilder Mfa { get; } = new(client);
     public NotesRequestBuilder Notes { get; } = new(client);
     public PasswordChangeRequestBuilder PasswordChange { get; } = new(client);
-    public PhoneRequestBuilder Phone { get; } = new(client);
+
     public PushRequestBuilder Push { get; } = new(client);
     public RelationshipsRequestBuilder Relationships { get; } = new(client);
     public SavedMessagesRequestBuilder SavedMessages { get; } = new(client);

@@ -28,8 +28,6 @@ namespace Fluxify.Dto.Users;
 /// <param name="Traits">All account traits.</param>
 /// <param name="Email">The email of the account.</param>
 /// <param name="EmailBounced">Whether the mail provider rejected the mails.</param>
-/// <param name="Phone">Always null.</param>
-/// <param name="HasVerifiedPhone">Whether a phone number was verified for this account.</param>
 /// <param name="Bio">The profile biography.</param>
 /// <param name="Pronouns">The pronouns of the user.</param>
 /// <param name="AccentColor">The accent color of the profile.</param>
@@ -84,8 +82,6 @@ public record UserPrivateReponse(
     string[] Traits,
     string? Email,
     bool? EmailBounced,
-    string? Phone,
-    bool HasVerifiedPhone,
     string? Bio,
     string? Pronouns,
     int? AccentColor,

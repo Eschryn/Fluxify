@@ -44,7 +44,6 @@ public record UserAdminResponseSchema(
     string? Locale,
     DateTimeOffset? PendingBulkMessageDeletionAt,
     DateTimeOffset? PendingDeletionAt,
-    string? Phone,
     DateTimeOffset? PremiumSince,
     int? PremiumType,
     DateTimeOffset? PremiumUntil,

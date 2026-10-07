@@ -25,7 +25,7 @@ namespace Fluxify.Application.Entities.Users;
 
 [Mapper]
 [UseStaticMapper(typeof(CommonMapper))]
-public partial class UserMapper(FluxerApplication application)
+internal partial class UserMapper(FluxerApplication application)
     : IUpdateEntity<GlobalUser, UserPartialResponse>,
         ICreateEntity<GlobalUser, UserPartialResponse>
 {
