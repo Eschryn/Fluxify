@@ -29,6 +29,10 @@ partial class RateLimitDefaults
     public const string UserEmailChangeBouncedRequestNew = "user:email_change:bounced:request_new";
     public const string UserEmailChangeBouncedResendNew = "user:email_change:bounced:resend_new";
     public const string UserEmailChangeBouncedVerifyNew = "user:email_change:bounced:verify_new";
+    public const string UserPasswordChangeStart = "user:password_change:start";
+    public const string UserPasswordChangeResend = "user:password_change:resend";
+    public const string UserPasswordChangeVerify = "user:password_change:verify";
+    public const string UserPasswordChangeComplete = "user:password_change:complete";
 
     public static partial FrozenDictionary<string, TokenBucketRateLimiterOptions> User
     {
@@ -119,25 +123,25 @@ partial class RateLimitDefaults
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:password_change:start"] = new()
+        [UserPasswordChangeStart] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:password_change:resend"] = new()
+        [UserPasswordChangeResend] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:password_change:verify"] = new()
+        [UserPasswordChangeVerify] = new()
         {
             TokenLimit = 20,
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:password_change:complete"] = new()
+        [UserPasswordChangeComplete] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,

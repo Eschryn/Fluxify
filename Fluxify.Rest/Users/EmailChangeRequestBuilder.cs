@@ -241,6 +241,7 @@ public class EmailChangeRequestBuilder(HttpClient client)
     /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
     /// <returns>The updated private user object.</returns>
     /// <exception cref="NotPermittedException">This exception is thrown when the user was not marked as bounced with ACCESS_DENIED.</exception>
+    /// <exception cref="RateLimitException">This exception is thrown when a rate limit has been hit without the <see cref="FluxerRateLimitingHandler"/>.</exception>
     /// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#verify-replacement-email-for-bounced-address"/>
     public Task<UserPrivateReponse> BouncedVerifyNewAsync(
         string ticket,

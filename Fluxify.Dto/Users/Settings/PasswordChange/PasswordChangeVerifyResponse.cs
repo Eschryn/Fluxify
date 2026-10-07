@@ -14,6 +14,11 @@
 
 namespace Fluxify.Dto.Users.Settings.PasswordChange;
 
+/// <summary>
+/// Response object that contains the verification proof returned from the verify request.
+/// </summary>
+/// <param name="VerificationProof">Verification proof that can be used to complete the password change.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#password-verification-object"/>
 public record PasswordChangeVerifyResponse(
     string VerificationProof
 );

@@ -13,5 +13,9 @@
 // limitations under the License.
 
 namespace Fluxify.Dto.Users.Settings.PasswordChange;
-
+/// <summary>
+/// Request object for requesting a new password change code.
+/// </summary>
+/// <param name="Ticket">The identifier of the password change process.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#resend-password-change-code"/>
 public record PasswordChangeTicketRequest(string Ticket);

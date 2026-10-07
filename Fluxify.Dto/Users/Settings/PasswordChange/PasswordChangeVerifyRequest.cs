@@ -14,6 +14,12 @@
 
 namespace Fluxify.Dto.Users.Settings.PasswordChange;
 
+/// <summary>
+/// Request object for verifying a password change process.
+/// </summary>
+/// <param name="Code">The code that was sent to the user's email address.</param>
+/// <param name="Ticket">The identifier of the password change process.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#verify-password-change-code"/>
 public record PasswordChangeVerifyRequest(
     string Code,
     string Ticket

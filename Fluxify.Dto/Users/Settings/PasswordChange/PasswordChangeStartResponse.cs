@@ -14,6 +14,13 @@
 
 namespace Fluxify.Dto.Users.Settings.PasswordChange;
 
+/// <summary>
+/// Response object of the start password change request.
+/// </summary>
+/// <param name="CodeExpiresAt">The point in time from when on the sent code becomes invalid.</param>
+/// <param name="ResendAvailableAt">The point in time from when on a new code for the verification can be requested.</param>
+/// <param name="Ticket">The identifier of the password change process.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#password-change-start-object"/>
 public record PasswordChangeStartResponse(
     DateTimeOffset CodeExpiresAt,
     DateTimeOffset? ResendAvailableAt,

@@ -14,6 +14,13 @@
 
 namespace Fluxify.Dto.Users.Settings.PasswordChange;
 
+/// <summary>
+/// Request object of the complete password change request.
+/// </summary>
+/// <param name="NewPassword">The new password that should be set for the account.</param>
+/// <param name="Ticket">The identifier of the password change process.</param>
+/// <param name="VerificationProof">The verification proof as returned from the verify request.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/email-and-password/#resend-password-change-code"/>
 public record PasswordChangeCompleteRequest(
     string NewPassword,
     string Ticket,
