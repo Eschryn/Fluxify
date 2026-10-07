@@ -16,6 +16,7 @@ namespace Fluxify.Commands.Model;
 
 public record ModuleMeta(
     string Name,
+    string[]? Aliases,
     string Description,
     string Help,
     string? DefaultCommand = null

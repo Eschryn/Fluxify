@@ -14,4 +14,4 @@
 
 namespace Fluxify.Commands.CommandCollection;
 
-public abstract record RegistrationEntry(string MetaName, string[] Preconditions);
+public abstract record RegistrationEntry(string MetaName, string[]? MetaAliases, string[] Preconditions);

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Fluxify.Application;
 using Fluxify.Application.Entities.Messages;
 using Fluxify.Commands.Exceptions;
 using Fluxify.Commands.Model;
@@ -32,7 +33,7 @@ public class TextCommandDispatcher
         _rootTreeNode = rootTreeNode;
     }
 
-    public async Task DispatchAsync(Message message)
+    public async Task DispatchAsync(Message message, FluxerApplication application)
     {
         if (_config.DetermineCommandStart(message) is not (> 0 and var start))
         {
@@ -40,12 +41,12 @@ public class TextCommandDispatcher
         }
 
         using var scope = _config.ServiceProvider.CreateScope();
-        var commandContext = new CommandContext(start, message, scope.ServiceProvider);
+        var commandContext = new CommandContext(start, message, scope.ServiceProvider, application);
         var currentTreeNode = _rootTreeNode;
 
         while (true)
         {
-            var command = commandContext.Tokenizer.Peek();
+            var command = commandContext.Lexer.Peek();
 
             try
             {
@@ -53,10 +54,10 @@ public class TextCommandDispatcher
 
                 if (currentTreeNode.Commands.TryGetValue(command.ToString(), out var nextTreeNode))
                 {
-                    commandContext.Tokenizer.ConsumeNext();
+                    commandContext.Lexer.ConsumeNext();
                     currentTreeNode = nextTreeNode;
                 }
-                else if (currentTreeNode.DefaultCommand is { } cmd)
+                else if (currentTreeNode.Execute is { } cmd)
                 {
                     // provide info about current command
                     commandContext.Meta = currentTreeNode.Meta switch
@@ -68,6 +69,10 @@ public class TextCommandDispatcher
                     
                     await cmd(commandContext).ConfigureAwait(false);
                     break;
+                }
+                else if (currentTreeNode.DefaultCommand is { } defaultCommand)
+                {
+                    currentTreeNode = defaultCommand;
                 }
                 else
                 {

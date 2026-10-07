@@ -23,14 +23,14 @@ public static class CommandCollectionExtensions
     {
         public ICommandCollection Module(string name, Action<ICommandCollection> func, string[]? preconditions)
         {
-            return collection.Module(new ModuleMeta(name, string.Empty, string.Empty), func, preconditions);
+            return collection.Module(new ModuleMeta(name, [], string.Empty, string.Empty), func, preconditions);
         }
 
         public ICommandCollection Module(string name, Action<ICommandCollection> func, params Precondition[]? preconditions)
         {
             return collection
                 .AddPreconditions(preconditions)
-                .Module(new ModuleMeta(name, string.Empty, string.Empty), func, preconditions?.Select(p => p.Name)?.ToArray());
+                .Module(new ModuleMeta(name, [], string.Empty, string.Empty), func, preconditions?.Select(p => p.Name)?.ToArray());
         }
 
         public ICommandCollection Command(CommandMeta meta, Delegate handler, string[]? preconditions = null)

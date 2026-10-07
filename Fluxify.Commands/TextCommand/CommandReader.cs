@@ -14,18 +14,20 @@
 
 using System.Buffers;
 using System.Collections.Frozen;
+using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.JavaScript;
 using Fluxify.Commands.Exceptions;
 
 namespace Fluxify.Commands.TextCommand;
 
-public class CommandReader(CommandTokenizer tokenizer)
+public class CommandReader(CommandLexer lexer)
 {
     private static readonly SearchValues<char> StringDelimiters = SearchValues.Create("\"'<>");
     private static readonly SearchValues<char> TopLevelDelimiters = SearchValues.Create("<\"'");
 
     private static readonly SearchValues<char> TopLevelDelimitersPlusWhitespace =
-        SearchValues.Create("<\"'" + CommandTokenizer.AllWhiteSpaceChars);
+        SearchValues.Create("<\"'" + CommandLexer.AllWhiteSpaceChars);
 
     private static readonly Dictionary<Type, Func<ReadOnlyMemory<char>, object?>> Parsers = new()
     {
@@ -73,9 +75,9 @@ public class CommandReader(CommandTokenizer tokenizer)
             : default) ?? throw new CommandException(
             $"Invalid arguments provided. Expected: {typeof(T).Name}, got {next?.GetType().Name}.");
 
-    public bool TryGetNext<T>(out T? result, bool ignoreWhitepace = false)
+    public bool TryGetNext<T>(out T? result, bool ignoreWhitespace = false)
     {
-        var next = _lastFailedRead ?? GetNext(ignoreWhitepace);
+        var next = _lastFailedRead ?? GetNext(ignoreWhitespace);
         _lastFailedRead = null;
 
         switch (next)
@@ -117,15 +119,15 @@ public class CommandReader(CommandTokenizer tokenizer)
         return result is not null;
     }
 
-    public object GetNext(bool ignoreWhitepace = false)
+    public object GetNext(bool ignoreWhitespace = false)
     {
-        var token = tokenizer.Until(
-            ignoreWhitepace ? TopLevelDelimiters : TopLevelDelimitersPlusWhitespace
+        var token = lexer.Until(
+            ignoreWhitespace ? TopLevelDelimiters : TopLevelDelimitersPlusWhitespace
         );
 
         return token.Span switch
         {
-            "<" when ParseMention() is { } mention => mention,
+            "<" when ParseMention(lexer) is { } mention => mention,
             // url
             "<" => ParseQuotedString(token.Span, '>', escapable: false).ToString().AsMemory(),
             "\"" or "'" => ParseQuotedString(token.Span)[1..^1].ToString().AsMemory(),
@@ -141,9 +143,9 @@ public class CommandReader(CommandTokenizer tokenizer)
         var ignoreNext = false;
         var terminated = false;
 
-        while (tokenizer.HasMore)
+        while (lexer.HasMore)
         {
-            var readOnlyMemory = tokenizer.Until(StringDelimiters);
+            var readOnlyMemory = lexer.Until(StringDelimiters);
             var lastPos = readOnlyMemory.Length - 1;
             totalLength += readOnlyMemory.Length;
             if (readOnlyMemory.Span[lastPos] == endChar && !ignoreNext)
@@ -166,54 +168,54 @@ public class CommandReader(CommandTokenizer tokenizer)
         );
     }
 
-    private Mentionable? ParseMention()
+    private static Mentionable? ParseMention(CommandLexer lexer)
     {
         var parsed = true;
         try
         {
-            var type = tokenizer.Peek().Span;
+            var type = lexer.Peek().Span;
             switch (type)
             {
                 case "@":
-                    tokenizer.ConsumeNext();
-                    var snowflakeStr = tokenizer.Next();
+                    lexer.ConsumeNext();
+                    var snowflakeStr = lexer.Next();
                     switch (snowflakeStr.Span)
                     {
                         case "!":
-                            snowflakeStr = tokenizer.Next();
+                            snowflakeStr = lexer.Next();
                             return new Mentionable.User(ulong.Parse(snowflakeStr.Span));
                         case "&":
-                            snowflakeStr = tokenizer.Next();
+                            snowflakeStr = lexer.Next();
                             return new Mentionable.Role(ulong.Parse(snowflakeStr.Span));
                         default:
                             return new Mentionable.User(ulong.Parse(snowflakeStr.Span));
                     }
                 case "#":
-                    tokenizer.ConsumeNext();
-                    snowflakeStr = tokenizer.Next();
+                    lexer.ConsumeNext();
+                    snowflakeStr = lexer.Next();
                     return new Mentionable.Channel(ulong.Parse(snowflakeStr.Span));
                 case ":":
-                    tokenizer.ConsumeNext();
-                    var name = tokenizer.Next().Span;
-                    if (tokenizer.Next().Span is not ":")
+                    lexer.ConsumeNext();
+                    var name = lexer.Next().Span;
+                    if (lexer.Next().Span is not ":")
                         throw new CommandParameterFormatException(
                             "Emoji name must be followed by a colon and an emoji id.s");
 
-                    var emojiId = tokenizer.Next().Span;
+                    var emojiId = lexer.Next().Span;
                     return new Mentionable.Emoji(name.ToString(), ulong.Parse(emojiId));
                 case "t":
-                    tokenizer.ConsumeNext();
-                    snowflakeStr = tokenizer.Next();
+                    lexer.ConsumeNext();
+                    snowflakeStr = lexer.Next();
                     if (snowflakeStr.Span is not ":")
                         throw new CommandParameterFormatException("Not a valid datetime format.");
 
-                    var dateTimeStr = tokenizer.Next().Span;
+                    var dateTimeStr = lexer.Next().Span;
                     var dateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(dateTimeStr));
 
-                    if (tokenizer.Next().Span is not ":")
+                    if (lexer.Next().Span is not ":")
                         return new Mentionable.DateTime(dateTime, "R");
 
-                    var format = tokenizer.Next().Span;
+                    var format = lexer.Next().Span;
                     return new Mentionable.DateTime(dateTime, format.ToString());
                 default:
                     parsed = false;
@@ -222,7 +224,7 @@ public class CommandReader(CommandTokenizer tokenizer)
         }
         finally
         {
-            if (parsed && tokenizer.Next().Span is not ">")
+            if (parsed && lexer.Next().Span is not ">")
                 throw new CommandParameterFormatException("Invalid mention format.");
         }
     }

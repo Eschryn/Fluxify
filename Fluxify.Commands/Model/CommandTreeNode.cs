@@ -19,17 +19,55 @@ namespace Fluxify.Commands.Model;
 
 internal record CommandTreeNode(
     FrozenDictionary<string, CommandTreeNode> Commands,
-    CommandDelegate? DefaultCommand,
+    CommandDelegate? Execute,
+    CommandTreeNode? DefaultCommand,
     Meta Meta,
     Precondition[] Preconditions
-) {
-    public static CommandTreeNode FromEntries(List<RegistrationEntry> collectionRegistrationEntries, Precondition[] preconditions)
+)
+{
+    public CommandTreeNode(
+        FrozenDictionary<string, CommandTreeNode> commands,
+        ModuleMeta meta,
+        Precondition[] preconditions
+    ) : this(
+        commands,
+        Execute: null,
+        meta.DefaultCommand != null ? commands[meta.DefaultCommand] : null,
+        meta,
+        preconditions
+    ) { }
+
+    public CommandTreeNode(
+        FrozenDictionary<string, CommandTreeNode> commands,
+        CommandDelegate? execute,
+        CommandMeta meta,
+        Precondition[] preconditions
+    ) : this(
+        commands,
+        execute,
+        null,
+        meta,
+        preconditions
+    ) { }
+
+    private static bool GetDefaultCommand(FrozenDictionary<string, CommandTreeNode> commands, Meta meta,
+        out CommandDelegate? defaultCommand)
+    {
+        defaultCommand = null;
+        return false;
+    }
+
+    public static CommandTreeNode FromEntries(List<RegistrationEntry> collectionRegistrationEntries,
+        Precondition[] preconditions, CommandDelegate? helpHandler = null)
     {
         var visitor = new RegistrationVisitor(preconditions);
+        var helpVisitor = new RegistrationVisitor(preconditions, helpHandler);
+
         return new CommandTreeNode(
-            collectionRegistrationEntries.ToFrozenDictionary(k => k.MetaName, visitor.Visit),
+            visitor.VisitAll(collectionRegistrationEntries).ToFrozenDictionary(),
             null,
-            new ModuleMeta("root", "Root contains all commands", ""), 
+            null,
+            new ModuleMeta("root", [], "Root contains all commands", ""),
             []);
     }
 }

@@ -17,7 +17,7 @@ using Fluxify.Commands.Model;
 
 namespace Fluxify.Commands.CommandCollection;
 
-internal class RegistrationVisitor(Precondition[] preconditions)
+internal class RegistrationVisitor(Precondition[] preconditions, CommandDelegate? handlerOverride = null)
 {
     private readonly Dictionary<string, Precondition> _preconditions = preconditions.ToDictionary(p => p.Name);
     public CommandTreeNode Visit(RegistrationEntry entry)
@@ -30,15 +30,29 @@ internal class RegistrationVisitor(Precondition[] preconditions)
                 reg.Meta,
                 reg.Preconditions.Select(p => _preconditions[p]).ToArray()),
             ModuleRegistration reg => new CommandTreeNode(
-                reg.Children.ToFrozenDictionary(k => k.MetaName, Visit),
-                null,
+                VisitAll(reg.Children).ToFrozenDictionary(),
                 reg.Meta,
                 reg.Preconditions.Select(p => _preconditions[p]).ToArray()),
             _ => throw new InvalidOperationException("Unknown registration entry type")
         };
     }
 
-    
+    public IEnumerable<KeyValuePair<string, CommandTreeNode>> VisitAll(IEnumerable<RegistrationEntry> registrationEntries) 
+        => registrationEntries
+            .SelectMany(c =>
+            {
+                var subTree = Visit(c);
+
+                if (c.MetaAliases is null)
+                {
+                    return [new KeyValuePair<string, CommandTreeNode>(c.MetaName, subTree)];
+                }
+                
+                return c.MetaAliases
+                    .Prepend(c.MetaName)
+                    .Select(n => new KeyValuePair<string, CommandTreeNode>(n, subTree));
+            });
+
     private static readonly FrozenDictionary<string, CommandTreeNode> Empty 
 #if NET10_0_OR_GREATER
         = FrozenDictionary.Create<string, CommandTreeNode>();

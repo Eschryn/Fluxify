@@ -26,12 +26,13 @@ namespace Fluxify.Commands;
 
 public class CommandContext
 {
-    public CommandContext(int skip, Message message, IServiceProvider services)
+    public CommandContext(int skip, Message message, IServiceProvider services, FluxerApplication client)
     {
         Message = message;
         Services = services;
-        Tokenizer = new CommandTokenizer(message.Content.AsMemory()[skip..], skip);
-        Reader = new CommandReader(Tokenizer);
+        Lexer = new CommandLexer(message.Content.AsMemory()[skip..], skip);
+        Reader = new CommandReader(Lexer);
+        Client = client;
     }
 
     public FluxerApplication Client { get; }
@@ -42,7 +43,7 @@ public class CommandContext
         : Message.Author is IGuildMember member ? member.Guild : null;
     public ITextChannel TextChannel => Message.Channel;
     public IServiceProvider Services { get; }
-    internal CommandTokenizer Tokenizer { get; }
+    internal CommandLexer Lexer { get; }
     public CommandReader Reader { get; }
     public CommandMeta Meta { get; internal set; }
     internal HashSet<string> PreconditionsFulfilled { get; set; } = [];

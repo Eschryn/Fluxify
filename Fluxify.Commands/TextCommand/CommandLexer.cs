@@ -17,7 +17,7 @@ using System.Runtime.CompilerServices;
 
 namespace Fluxify.Commands.TextCommand;
 
-public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
+public sealed class CommandLexer(ReadOnlyMemory<char> input, int offset = 0)
 {
     private const string WhiteSpaceChars =
         "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680"
@@ -42,6 +42,8 @@ public sealed class CommandTokenizer(ReadOnlyMemory<char> input, int offset = 0)
 
     private static readonly SearchValues<char> Delimiters = SearchValues.Create(DelimiterChars);
     public bool HasMore => _cached != null || _input.Length > 0;
+    
+    internal ReadOnlyMemory<char> Remainder => _input;
 
     private ReadOnlyMemory<char> NextChar()
     {
