@@ -17,7 +17,6 @@ using System.Text;
 using Fluxify.Core.Types;
 using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.BulkDelete;
-using Fluxify.Dto.Users.ScheduledMessages;
 
 namespace Fluxify.Rest.Channel.Messages;
 
@@ -27,7 +26,6 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
     private static readonly CompositeFormat GetUrl = CompositeFormat.Parse("channels/{0}/messages");
     private static readonly CompositeFormat AckUrl = CompositeFormat.Parse("channels/{0}/messages/ack");
     private static readonly CompositeFormat BulkDeleteUrl = CompositeFormat.Parse("channels/{0}/messages/bulk-delete");
-    private static readonly CompositeFormat ScheduleUrl = CompositeFormat.Parse("channels/{0}/messages/schedule");
     private static string Uri(CompositeFormat format, Snowflake id) => string.Format(FormatProvider, format, id);
 
     public MessageRequestBuilder this[Snowflake messageId] => new(client, channelId, messageId);
@@ -74,18 +72,6 @@ public class MessagesRequestBuilder(HttpClient client, Snowflake channelId)
         Uri(BulkDeleteUrl, channelId),
         request,
         DtoJsonContext.Default.BulkDeleteMessagesRequest,
-        cancellationToken: cancellationToken
-    );
-
-    public Task<ScheduleMessageResponseSchema> ScheduleMessageAsync(
-        ScheduledMessageSchema request,
-        CancellationToken cancellationToken = default
-    ) => client.MultipartJsonRequestAsync<ScheduledMessageSchema, ScheduleMessageResponseSchema>(
-        HttpMethod.Post,
-        Uri(ScheduleUrl, channelId),
-        request,
-        DtoJsonContext.Default.ScheduledMessageSchema,
-        DtoJsonContext.Default.ScheduleMessageResponseSchema,
         cancellationToken: cancellationToken
     );
 }

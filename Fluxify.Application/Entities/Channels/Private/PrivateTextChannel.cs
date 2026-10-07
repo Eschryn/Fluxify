@@ -118,20 +118,6 @@ public abstract class PrivateTextChannel : ITextChannel
     public Task BulkDeleteMessagesAsync(Snowflake[] ids, CancellationToken cancellationToken = default)
         => RequestBuilder.Messages.BulkDeleteAsync(new BulkDeleteMessagesRequest(ids), cancellationToken);
 
-    public Task ScheduleMessageAsync(
-        MessageCreate message,
-        DateTimeOffset scheduledTime,
-        CancellationToken cancellationToken = default
-    ) => RequestBuilder.Messages.ScheduleMessageAsync(
-        FluxerApplication.MessageMapper.MapToRequest(
-            message,
-            scheduledTime.LocalDateTime,
-            TimeZoneInfo.Local.StandardName
-        ),
-        cancellationToken
-    );
-
-
     public string ToString(string? format, IFormatProvider? formatProvider) => format switch
     {
         "i" or "I" => ((long)Id).ToString(),

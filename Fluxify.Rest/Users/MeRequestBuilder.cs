@@ -55,8 +55,6 @@ public class MeRequestBuilder(HttpClient client)
     public PushRequestBuilder Push { get; } = new(client);
     public RelationshipsRequestBuilder Relationships { get; } = new(client);
     public SavedMessagesRequestBuilder SavedMessages { get; } = new(client);
-    public ScheduledMessagesRequestBuilder ScheduledMessages { get; } = new(client);
-    public SudoRequestBuilder Sudo { get; } = new(client);
 
     public Task<UserPrivateReponse> GetMeAsync(CancellationToken cancellationToken = default)
         => client.JsonRequestAsync<UserPrivateReponse>(

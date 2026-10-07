@@ -26,7 +26,6 @@ using Fluxify.Dto.Channels.Text.Messages;
 using Fluxify.Dto.Channels.Text.Messages.Embeds.Response;
 using Fluxify.Dto.Channels.Text.Messages.Reference;
 using Fluxify.Dto.Users;
-using Fluxify.Dto.Users.ScheduledMessages;
 using Fluxify.Dto.Webhooks;
 using Fluxify.Gateway.Model.Data.Channel.Message;
 
@@ -76,9 +75,6 @@ public partial class MessageMapper(
 
     public partial CreateMessageRequest MapToRequest(MessageCreate message);
     public partial CreateWebhookMessageRequest MapToRequest(MessageCreate message, string? username, string? avatarUrl);
-
-    public partial ScheduledMessageSchema MapToRequest(MessageCreate messageCreate, DateTime scheduledLocalAt,
-        string timezone);
 
     private ICacheRef<Message>? ResolveMention(MessageBaseResponse reference)
     {

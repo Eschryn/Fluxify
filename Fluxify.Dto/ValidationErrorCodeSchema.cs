@@ -444,10 +444,6 @@ public enum ValidationErrorCodeSchema
 	/// </summary>
 	InvalidDateOfBirthFormat,
 	/// <summary>
-	/// Invalid datetime for scheduled send
-	/// </summary>
-	InvalidDatetimeForScheduledSend,
-	/// <summary>
 	/// Invalid email address
 	/// </summary>
 	InvalidEmailAddress,
@@ -559,10 +555,6 @@ public enum ValidationErrorCodeSchema
 	/// Invalid RTC region
 	/// </summary>
 	InvalidRtcRegion,
-	/// <summary>
-	/// Invalid scheduled message payload
-	/// </summary>
-	InvalidScheduledMessagePayload,
 	/// <summary>
 	/// Invalid snowflake
 	/// </summary>
@@ -771,14 +763,6 @@ public enum ValidationErrorCodeSchema
 	/// Rows field is required
 	/// </summary>
 	RowsIsRequired,
-	/// <summary>
-	/// Scheduled messages must be within 30 days
-	/// </summary>
-	ScheduledMessagesMax30Days,
-	/// <summary>
-	/// Scheduled time must be in the future
-	/// </summary>
-	ScheduledTimeMustBeFuture,
 	/// <summary>
 	/// Session has timed out
 	/// </summary>
