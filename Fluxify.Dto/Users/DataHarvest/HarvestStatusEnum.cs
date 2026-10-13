@@ -17,11 +17,27 @@ using Fluxify.Dto.Json;
 
 namespace Fluxify.Dto.Users.DataHarvest;
 
+/// <summary>
+/// States of a data harvest.
+/// </summary>
+/// <seealso href="https://docs.fluxer.app/http-api/users/data-harvest/#harvest-status-values"/>
 [JsonConverter(typeof(JsonLowerCaseStringEnumConverter<HarvestStatusEnum>))]
 public enum HarvestStatusEnum
 {
+    /// <summary>
+    /// The harvest is awaiting processing.
+    /// </summary>
     Pending,
+    /// <summary>
+    /// The harvest is currently being processed.
+    /// </summary>
     Processing,
+    /// <summary>
+    /// The harvest was successfully completed and is available for download.
+    /// </summary>
     Completed,
+    /// <summary>
+    /// The harvest failed to complete.
+    /// </summary>
     Failed,
 }

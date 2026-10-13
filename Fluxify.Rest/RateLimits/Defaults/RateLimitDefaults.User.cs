@@ -33,6 +33,19 @@ partial class RateLimitDefaults
     public const string UserPasswordChangeResend = "user:password_change:resend";
     public const string UserPasswordChangeVerify = "user:password_change:verify";
     public const string UserPasswordChangeComplete = "user:password_change:complete";
+    public const string UserMfaTotpEnable = "user:mfa:totp:enable";
+    public const string UserMfaTotpDisable = "user:mfa:totp:disable";
+    public const string UserAuthorizedIpsForget = "user:authorized_ips:forget";
+    public const string UserMfaBackupCodes = "user:mfa:backup_codes";
+    public const string UserMfaBackupCodesChallengeStart = "user:mfa:backup_codes_challenge:start";
+    public const string UserMfaBackupCodesChallengeResend = "user:mfa:backup_codes_challenge:resend";
+    public const string UserMfaBackupCodesChallengeVerify = "user:mfa:backup_codes_challenge:verify";
+    public const string UserMfaBackupCodesChallengeRegenerate = "user:mfa:backup_codes_challenge:regenerate";
+    public const string UserHarvestLatest = "user:harvest:latest";
+    public const string UserHarvestStatus = "user:harvest:status";
+    public const string UserHarvestDownload = "user:harvest:download";
+    public const string UserHarvestDownloadFile = "user:harvest:download_file";
+    public const string UserDataHarvest = "user:data:harvest";
 
     public static partial FrozenDictionary<string, TokenBucketRateLimiterOptions> User
     {
@@ -171,7 +184,7 @@ partial class RateLimitDefaults
             TokensPerPeriod = 5,
             ReplenishmentPeriod = TimeSpan.FromHours(1)
         },
-        ["user:data:harvest"] = new()
+        [UserDataHarvest] = new()
         {
             TokenLimit = 5,
             TokensPerPeriod = 5,
@@ -309,49 +322,49 @@ partial class RateLimitDefaults
             TokensPerPeriod = 30,
             ReplenishmentPeriod = TimeSpan.FromSeconds(10)
         },
-        ["user:mfa:totp:enable"] = new()
+        [UserMfaTotpEnable] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:mfa:totp:disable"] = new()
+        [UserMfaTotpDisable] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:authorized_ips:forget"] = new()
+        [UserAuthorizedIpsForget] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:mfa:backup_codes"] = new()
+        [UserMfaBackupCodes] = new()
         {
             TokenLimit = 6,
             TokensPerPeriod = 6,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:mfa:backup_codes_challenge:start"] = new()
+        [UserMfaBackupCodesChallengeStart] = new()
         {
             TokenLimit = 6,
             TokensPerPeriod = 6,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:mfa:backup_codes_challenge:resend"] = new()
+        [UserMfaBackupCodesChallengeResend] = new()
         {
             TokenLimit = 6,
             TokensPerPeriod = 6,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:mfa:backup_codes_challenge:verify"] = new()
+        [UserMfaBackupCodesChallengeVerify] = new()
         {
             TokenLimit = 20,
             TokensPerPeriod = 20,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:mfa:backup_codes_challenge:regenerate"] = new()
+        [UserMfaBackupCodesChallengeRegenerate] = new()
         {
             TokenLimit = 6,
             TokensPerPeriod = 6,
@@ -375,25 +388,25 @@ partial class RateLimitDefaults
             TokensPerPeriod = 40,
             ReplenishmentPeriod = TimeSpan.FromSeconds(10)
         },
-        ["user:harvest:latest"] = new()
+        [UserHarvestLatest] = new()
         {
             TokenLimit = 40,
             TokensPerPeriod = 40,
             ReplenishmentPeriod = TimeSpan.FromSeconds(10)
         },
-        ["user:harvest:status"] = new()
+        [UserHarvestStatus] = new()
         {
             TokenLimit = 40,
             TokensPerPeriod = 40,
             ReplenishmentPeriod = TimeSpan.FromSeconds(10)
         },
-        ["user:harvest:download"] = new()
+        [UserHarvestDownload] = new()
         {
             TokenLimit = 10,
             TokensPerPeriod = 10,
             ReplenishmentPeriod = TimeSpan.FromMinutes(1)
         },
-        ["user:harvest:download_file"] = new()
+        [UserHarvestDownloadFile] = new()
         {
             TokenLimit = 60,
             TokensPerPeriod = 60,

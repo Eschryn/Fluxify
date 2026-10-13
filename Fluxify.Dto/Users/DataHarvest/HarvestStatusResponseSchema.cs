@@ -16,17 +16,33 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Users.DataHarvest;
 
+/// <summary>
+/// Response object for the request harvest status request.
+/// </summary>
+/// <param name="CompletedAt">When the harvest completed and became available for download.</param>
+/// <param name="CreatedAt">When the harvest was requested.</param>
+/// <param name="DownloadUrlExpiresAt">When the download link for the harvest expires.</param>
+/// <param name="ErrorMessage">The failure message if the harvest failed, else null.</param>
+/// <param name="ExpiresAt">When the harvest expires.</param>
+/// <param name="FailedAt">When the harvest failed.</param>
+/// <param name="FileSize">The size of the harvest archive.</param>
+/// <param name="HarvestId">The id of the harvest.</param>
+/// <param name="ProgressPercent">The progress of the harvest in percent.</param>
+/// <param name="ProgressStep">Which step the harvest is in.</param>
+/// <param name="StartedAt">When the harvest started processing.</param>
+/// <param name="Status">The status of the harvest.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/data-harvest/#harvest-status-object"/>
 public record HarvestStatusResponseSchema(
-    DateTimeOffset? CompletedAt,
+    Snowflake HarvestId,
+    HarvestStatusEnum Status,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? DownloadUrlExpiresAt,
-    string? ErrorMessage,
-    DateTimeOffset? ExpiresAt,
+    DateTimeOffset? StartedAt,
+    DateTimeOffset? CompletedAt,
     DateTimeOffset? FailedAt,
     string? FileSize,
-    Snowflake HarvestId,
     double ProgressPercent,
     string? ProgressStep,
-    DateTimeOffset? StartedAt,
-    HarvestStatusEnum Status
+    string? ErrorMessage,
+    DateTimeOffset? DownloadUrlExpiresAt,
+    DateTimeOffset? ExpiresAt
 );

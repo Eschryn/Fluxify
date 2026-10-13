@@ -14,7 +14,13 @@
 
 namespace Fluxify.Dto.Users.DataHarvest;
 
+/// <summary>
+/// Response object for the get harvest download url request.
+/// </summary>
+/// <param name="DownloadUrl">The url that can be used to download the harvest.</param>
+/// <param name="ExpiresAt">The date and time when the download url expires.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/data-harvest/#harvest-download-object"/>
 public record HarvestDownloadUrlResponse(
-    string DownloadUrl,
+    Uri DownloadUrl,
     DateTimeOffset ExpiresAt
 );

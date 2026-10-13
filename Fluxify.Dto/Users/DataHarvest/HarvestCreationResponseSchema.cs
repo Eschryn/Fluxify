@@ -16,6 +16,13 @@ using Fluxify.Core.Types;
 
 namespace Fluxify.Dto.Users.DataHarvest;
 
+/// <summary>
+/// Response object for the create harvest request.
+/// </summary>
+/// <param name="CreatedAt">When the data harvest was created.</param>
+/// <param name="HarvestId">The id of the harvest.</param>
+/// <param name="Status">The current status of the harvest.</param>
+/// <seealso href="https://docs.fluxer.app/http-api/users/data-harvest/#harvest-creation-object"/>
 public record HarvestCreationResponseSchema(
     DateTimeOffset CreatedAt,
     Snowflake HarvestId,

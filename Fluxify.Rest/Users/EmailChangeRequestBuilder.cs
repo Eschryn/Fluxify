@@ -180,7 +180,7 @@ public class EmailChangeRequestBuilder(HttpClient client)
     public Task<UserPrivateReponse> ApplyChangeAsync(
         EmailChangeApplyRequest request,
         CancellationToken cancellationToken = default
-    ) => client.JsonRequestAsync<, UserPrivateReponse>(
+    ) => client.JsonRequestAsync<EmailChangeApplyRequest, UserPrivateReponse>(
         HttpMethod.Post,
         ApplyUrl,
         request: request,
